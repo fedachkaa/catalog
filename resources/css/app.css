@@ -1,0 +1,46 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.header {
+    @apply bg-gray-800 text-white p-4;
+}
+
+.nav-menu {
+    @apply container mx-auto flex justify-between items-center;
+}
+
+.nav-menu-item {
+    @apply hover:text-gray-300;
+}
+
+.title {
+    @apply text-3xl text-center font-bold
+}
+
+.form-group {
+    @apply flex flex-col items-center m-2
+}
+
+.form-control {
+    @apply border-gray-900 border-2 rounded-md w-3/5 h-12 p-3
+}
+
+.save-btn {
+    @apply font-medium text-lg border-green-800 border-2 rounded-md bg-green-600 h-fit p-3 text-white hover:bg-white hover:text-green-700
+}
+
+.alert-danger {
+    @apply text-red-500
+}
+
+.registration-form {
+    @apply flex flex-row justify-center
+}
+
+.sub-title {
+    @apply text-2xl text-center font-bold
+}
+.reg-step-first, .reg-step-second {
+    @apply w-full m-4
+}

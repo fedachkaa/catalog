@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -18,8 +19,11 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
+        'role_id',
+        'first_name',
+        'last_name',
         'email',
+        'phone_number',
         'password',
     ];
 
@@ -41,4 +45,49 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+
+    // --- Model relationships
+
+    /**
+     * @return BelongsTo
+     */
+    public function userRole(): BelongsTo
+    {
+        return $this->belongsTo(UserRole::class, 'role_id', 'id');
+    }
+
+    // --- Model getters
+
+    /**
+     * @return int
+     */
+    public function getId(): int
+    {
+        return (int) $this->getAttribute('id');
+    }
+
+    /**
+     * @return int
+     */
+    public function getRoleId(): int
+    {
+        return (int) $this->getAttribute('role_id');
+    }
+
+    /**
+     * @return string
+     */
+    public function getEmail(): string
+    {
+        return (string) $this->getAttribute('email');
+    }
+
+    /**
+     * @return string
+     */
+    public function getPassword(): string
+    {
+        return (string) $this->getAttribute('password');
+    }
 }
