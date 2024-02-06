@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UniversityController;
+use App\Http\Controllers\UserProfileController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -25,6 +26,8 @@ Route::post('/university/create', [UniversityController::class, 'store'])->name(
 Route::get('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/login', [AuthController::class, 'authenticate'])->name('authenticate');
 Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
+
+Route::get('/profile', [UserProfileController::class, 'userProfile'])->name('user.profile');
 //
 //// TODO add middleware
 //Route::get('/admin/overview', [DashboardOverviewController::class, 'overview'])->name('dashboard.overview');

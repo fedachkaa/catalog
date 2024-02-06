@@ -5,24 +5,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'UniSpace')</title>
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer"/>
 </head>
 <body>
-<header class="header">
-    <div class="nav-menu">
-        <div class="flex items-center">
-            <a href="/" class="text-lg font-bold">UniSpace</a>
-        </div>
-        <div class="flex items-center space-x-4">
-            <a href="{{ route('university.create') }}" class="nav-menu-item">Зареєструвати ВНЗ</a>
-            @if (auth()->user())
-                <a href="{{ route('logout') }}" class="nav-menu-item">Вийти</a>
-            @else
-                <a href="{{ route('login') }}" class="nav-menu-item">Увійти</a>
-            @endif
-        </div>
+<nav class="nav">
+    <div>
+        <a href="{{ route('home') }}" class="text-2xl font-bold">
+            Unispace
+        </a>
     </div>
-</header>
-<div class="container mx-auto mt-4">
+    <ul class="menu">
+        <li><a href="{{ route('home') }}">Головна</a></li>
+        <li><a href="#">Про нас</a></li>
+        @if (auth()->user())
+            <li class="sub-menu"><a href="#">{{ auth()->user()->getFirstName() }}</a>
+                <ul>
+                    <li><a href="{{ route('user.profile') }}">
+                            <span>Профіль</span>
+                            <i class="fa fa-user"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('logout') }}">
+                            <span>Вийти</span>
+                            <i class="fa-solid fa-right-from-bracket"></i>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        @else
+            <li><a href="{{ route('login') }}">Увійти</a></li>
+        @endif
+    </ul>
+</nav>
+
+<div class="container">
     @yield('content')
 </div>
 </body>
