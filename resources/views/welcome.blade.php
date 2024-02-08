@@ -1,6 +1,6 @@
 @extends('layouts.main')
 
-@section('title', 'UniSpace | Login')
+@section('title', 'UniSpace')
 
 @section('content')
 @endsection

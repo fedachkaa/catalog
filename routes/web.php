@@ -28,6 +28,7 @@ Route::post('/login', [AuthController::class, 'authenticate'])->name('authentica
 Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::get('/profile', [UserProfileController::class, 'userProfile'])->name('user.profile');
+Route::put('/user/api/change-password', [UserProfileController::class, 'changePassword'])->name('user.changePassword');
 //
 //// TODO add middleware
 //Route::get('/admin/overview', [DashboardOverviewController::class, 'overview'])->name('dashboard.overview');

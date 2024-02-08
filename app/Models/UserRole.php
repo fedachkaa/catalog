@@ -16,6 +16,14 @@ class UserRole extends Model
     const USER_ROLE_TEACHER = 3;
     const USER_ROLE_STUDENT = 4;
 
+    /** @const string[] */
+    const AVAILABLE_USER_ROLES = [
+        self::USER_ROLE_ADMIN => 'Адміністратор',
+        self::USER_ROLE_UNIVERSITY_ADMIN => 'Адміністратор університету',
+        self::USER_ROLE_TEACHER => 'Викладач',
+        self::USER_ROLE_STUDENT => 'Студент',
+    ];
+
     /** @var int */
     public $id;
 
