@@ -1,6 +1,6 @@
 @extends('layouts.main')
 
-@section('title', 'UniSpace | Profile')
+@section('title', 'Profile | UniSpace')
 
 @section('content')
     <div id="nav">
@@ -56,6 +56,9 @@
             </div>
             <input type="hidden" name="_token" value="{{ csrf_token() }}" />
             <button class="js-change-password save-btn">Оновити пароль</button>
+            <div class="reset-link">
+                <a href="{{ route('forget.password.get') }}" target="_blank" class="js-reset-password">Забули пароль?</a>
+            </div>
         </div>
 
     </div>

@@ -27,30 +27,4 @@ class UserProfileController extends Controller
         $user = auth()->user()->toArray();
         return view('userProfile.userProfile', compact('user'));
     }
-
-    /**
-     * @param ChangePasswordRequest $request
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function changePassword(ChangePasswordRequest $request)
-    {
-        /** @var User $user */
-        $user = auth()->user();
-
-        $data = $request->validated();
-
-        try {
-            $user->updateOrFail(['password' => password_hash($data['password'], PASSWORD_BCRYPT)]);
-        } catch (\Throwable $e) {
-            return response()->json([
-                'message' => 'Internal serve error',
-                'error' => $e->getMessage()
-            ])->setStatusCode(500);
-        }
-
-        // TODO send email about successful changing password
-        return response()->json([
-            'message' => 'Password successfully changed!',
-        ])->setStatusCode(200);
-    }
 }

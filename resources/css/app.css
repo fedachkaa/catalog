@@ -120,3 +120,20 @@
 .password-form-group {
     @apply flex flex-col items-start mb-2
 }
+
+.reset-link {
+    @apply text-sm hover:underline hover:font-semibold
+}
+
+.reset-password-block {
+    @apply flex items-center justify-center mt-10
+}
+.forget-password-form {
+    @apply border-2 border-gray-600 text-center p-6 gap-4 flex flex-col
+}
+.reset-password-form {
+    @apply border-2 border-gray-600 text-center p-6 gap-4 flex flex-col
+}
+.form-control-reset {
+    @apply border-gray-900 border-2 rounded-md h-12 p-3
+}
