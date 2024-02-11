@@ -20,7 +20,8 @@ class UserSignup extends Mailable
     private $password;
 
     /**
-     * Create a new message instance.
+     * @param User $user
+     * @param string $password
      */
     public function __construct(User $user, string $password)
     {
@@ -29,7 +30,7 @@ class UserSignup extends Mailable
     }
 
     /**
-     * Get the message envelope.
+     * @return Envelope
      */
     public function envelope(): Envelope
     {
@@ -39,12 +40,12 @@ class UserSignup extends Mailable
     }
 
     /**
-     * Get the message content definition.
+     * @return Content
      */
     public function content(): Content
     {
         return new Content(
-            markdown: 'mail.users.signup',
+            markdown: 'mail.auth.signup',
             with: [
                 'user' => $this->user->toArray(),
                 'password' => $this->password,

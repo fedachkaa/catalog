@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UniversityController;
+use App\Http\Controllers\UserProfileController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -25,6 +26,15 @@ Route::post('/university/create', [UniversityController::class, 'store'])->name(
 Route::get('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/login', [AuthController::class, 'authenticate'])->name('authenticate');
 Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
+
+Route::get('/profile', [UserProfileController::class, 'userProfile'])->name('user.profile');
+
+Route::put('/user/api/change-password', [AuthController::class, 'changePassword'])->name('user.changePassword');
+Route::get('forget-password', [AuthController::class, 'showForgetPassword'])->name('forget.password.get');
+Route::post('forget-password', [AuthController::class, 'sendResetLink'])->name('forget.password.post');
+Route::get('reset-password/{token}', [AuthController::class, 'showResetPassword'])->name('reset.password.get');
+Route::post('reset-password', [AuthController::class, 'submitResetPassword'])->name('reset.password.post');
+
 //
 //// TODO add middleware
 //Route::get('/admin/overview', [DashboardOverviewController::class, 'overview'])->name('dashboard.overview');

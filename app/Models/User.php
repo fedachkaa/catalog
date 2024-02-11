@@ -68,6 +68,14 @@ class User extends Authenticatable
     }
 
     /**
+     * @return string
+     */
+    public function getFirstName() : string
+    {
+        return (string) $this->getAttribute('first_name');
+    }
+
+    /**
      * @return int
      */
     public function getRoleId(): int
