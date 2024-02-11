@@ -885,7 +885,7 @@ video {
 /* USER PROFILE */
 
 .sidebar_nav {
-  position: fixed;
+  position: absolute;
   margin: 0px;
   display: flex;
   height: 100%;
@@ -953,6 +953,13 @@ video {
   text-align: left;
   font-size: 1.25rem;
   line-height: 1.75rem;
+}
+
+.locked {
+  pointer-events: none;
+  --tw-bg-opacity: 1;
+  background-color: rgb(253 230 138 / var(--tw-bg-opacity));
+  opacity: 0.25;
 }
 
 .error-message {

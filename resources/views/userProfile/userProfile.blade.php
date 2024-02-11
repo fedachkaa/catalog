@@ -3,28 +3,26 @@
 @section('title', 'Profile | UniSpace')
 
 @section('content')
-    <div id="nav">
-        <ul class="sidebar_nav">
-            <li class="sidebar-menu-title active-tab">
-                <a>
-                    <i class="fas fa-user"></i>
-                    <span>Особисті дані</span>
-                </a>
-            </li>
-            <li class="sidebar-menu-title">
-                <a>
-                    <i class="fas fa-book"></i>
-                    <span>Навчання</span>
-                </a>
-            </li>
-            <li class="sidebar-menu-title">
-                <a>
-                    <i class="fas fa-square-check"></i>
-                    <span>Запити</span>
-                </a>
-            </li>
-        </ul>
-    </div>
+    @switch(auth()->user()->getRoleId())
+        @case(\App\Models\UserRole::USER_ROLE_UNIVERSITY_ADMIN)
+            @include('userProfile.partials.universityAdminProfile')
+            @break
+
+        @case(\App\Models\UserRole::USER_ROLE_STUDENT)
+            @include('userProfile.partials.studentProfile')
+            @break
+
+        @case(\App\Models\UserRole::USER_ROLE_TEACHER)
+            @include('userProfile.partials.teacherProfile')
+            @break
+
+        @case(\App\Models\UserRole::USER_ROLE_ADMIN)
+            @include('userProfile.partials.adminProfile')
+            @break
+
+        @default
+            @include('404NotFound')
+    @endswitch
 
     <div class="pl-52">
         <div class="name-info">
@@ -37,36 +35,37 @@
             <div>Номер телефону: {{$user['phone_number']}}</div>
         </div>
 
-        <div class="password-block">
+        <i class="fa-solid fa-lock js-lock-icon"></i>
+        <div class="password-block locked">
             <div>Пароль</div>
             <div class="password-form-group">
-                <label for="old_password">Старий пароль</label>
-                <input type="password" name="old_password" class="js-old-password form-control">
-                <p class="error-message old_password-message">
-            </div>
+                    <label for="old_password">Старий пароль</label>
+                    <input type="password" name="old_password" class="js-old-password form-control">
+                    <p class="error-message old_password-message">
+                </div>
             <div class="password-form-group">
-                <label for="password">Новий пароль</label>
-                <input type="password" name="password" class="js-password form-control">
-                <p class="error-message password-message">
-            </div>
+                    <label for="password">Новий пароль</label>
+                    <input type="password" name="password" class="js-password form-control">
+                    <p class="error-message password-message">
+                </div>
             <div class="password-form-group">
-                <label for="old_password">Підтвердження паролю</label>
-                <input type="password" name="password_confirmation" class="js-password-confirm form-control">
-                <p class="error-message password-confirm-message">
-            </div>
+                    <label for="old_password">Підтвердження паролю</label>
+                    <input type="password" name="password_confirmation" class="js-password-confirm form-control">
+                    <p class="error-message password-confirm-message">
+                </div>
             <input type="hidden" name="_token" value="{{ csrf_token() }}" />
             <button class="js-change-password save-btn">Оновити пароль</button>
             <div class="reset-link">
-                <a href="{{ route('forget.password.get') }}" target="_blank" class="js-reset-password">Забули пароль?</a>
-            </div>
+                    <a href="{{ route('forget.password.get') }}" target="_blank" class="js-reset-password">Забули пароль?</a>
+                </div>
         </div>
-
     </div>
 @endsection
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         initClearErrors();
+        initLockPasswordBlock();
 
         $('.js-change-password').on('click', function () {
             if (!validatePasswordFields()) {
@@ -86,6 +85,18 @@
             });
 
         });
+
+        function initLockPasswordBlock() {
+            $('.js-lock-icon').on('click', function () {
+                if ($(this).hasClass('fa-lock')) {
+                    $('.password-block').removeClass('locked');
+                    $(this).removeClass('fa-lock').addClass('fa-unlock');
+                } else {
+                    $('.password-block').addClass('locked');
+                    $(this).removeClass('fa-unlock').addClass('fa-lock');
+                }
+            });
+        }
 
         function validatePasswordFields() {
             const oldPasswordEl = $('.js-old-password');
