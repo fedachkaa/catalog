@@ -14,8 +14,6 @@ class User extends Authenticatable
     use HasApiTokens, HasFactory, Notifiable;
 
     /**
-     * The attributes that are mass assignable.
-     *
      * @var array<int, string>
      */
     protected $fillable = [
@@ -68,6 +66,14 @@ class User extends Authenticatable
     }
 
     /**
+     * @return int
+     */
+    public function getRoleId(): int
+    {
+        return (int) $this->getAttribute('role_id');
+    }
+
+    /**
      * @return string
      */
     public function getFirstName() : string
@@ -76,11 +82,11 @@ class User extends Authenticatable
     }
 
     /**
-     * @return int
+     * @return string
      */
-    public function getRoleId(): int
+    public function getLastName() : string
     {
-        return (int) $this->getAttribute('role_id');
+        return (string) $this->getAttribute('last_name');
     }
 
     /**

@@ -77,9 +77,11 @@
                 method: 'PUT',
                 data: getFormData(),
                 success: function (response) {
+                    general.showResponse(response.status, response.message);
                     console.log('Успішно!', response);
                 },
                 error: function (xhr, status, error) {
+                    general.showResponse(response.status, response.message);
                     console.error('Помилка:', error);
                 }
             });
@@ -103,8 +105,14 @@
             const newPasswordEl = $('.js-password');
             const passwordConfirmEl = $('.js-password-confirm');
 
-            const fields = [oldPasswordEl, newPasswordEl, passwordConfirmEl];
+            const fields = [newPasswordEl, passwordConfirmEl];
             const errorMessage = 'Пароль має складатись з 8 символів та містити мінімуму 1 цифру та 1 букву латинського алфавіту';
+
+            if (oldPasswordEl.val().length === 0) {
+                oldPasswordEl.parent().find('.error-message').text('Старий пароль не може бути пустим');
+                oldPasswordEl.css('border-color', 'red');
+                return false;
+            }
 
             for (const field of fields) {
                 const value = field.val();
