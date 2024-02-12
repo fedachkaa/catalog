@@ -27,6 +27,10 @@ class University extends RepositoryAbstract implements UniversityRepositoryInter
             $query = $query->where('id', (int) $filters['id']);
         }
 
+        if (!empty($filters['admin_id'])) {
+            $query = $query->where('admin_id', (int) $filters['admin_id']);
+        }
+
         return $query->first();
     }
 

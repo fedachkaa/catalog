@@ -930,7 +930,7 @@ video {
   color: rgb(17 24 39 / var(--tw-text-opacity));
 }
 
-.active-tab:hover {
+.active-tab {
   --tw-bg-opacity: 1;
   background-color: rgb(253 230 138 / var(--tw-bg-opacity));
   --tw-text-opacity: 1;
@@ -943,7 +943,7 @@ video {
   font-weight: 600;
 }
 
-.contact-info, .password-block {
+.contact-info, .password-block, .address-info {
   margin: 1.25rem;
   width: 50%;
   border-width: 2px;

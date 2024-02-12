@@ -28,6 +28,8 @@ Route::post('/login', [AuthController::class, 'authenticate'])->name('authentica
 Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::get('/profile', [UserProfileController::class, 'userProfile'])->name('user.profile');
+Route::get('/profile/api/university', [UserProfileController::class, 'getUniversity'])->name('universityAdmin.university.get');
+Route::post('/profile/api/university/faculty/create', [\App\Http\Controllers\FacultyController::class, 'saveFaculty'])->name('universityAdmin.faculty.post');
 
 Route::put('/user/api/change-password', [AuthController::class, 'changePassword'])->name('user.changePassword');
 Route::get('forget-password', [AuthController::class, 'showForgetPassword'])->name('forget.password.get');

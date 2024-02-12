@@ -24,41 +24,12 @@
             @include('404NotFound')
     @endswitch
 
-    <div class="pl-52">
-        <div class="name-info">
-            <div class="text-3xl">{{ \App\Models\UserRole::AVAILABLE_USER_ROLES[$user['role_id']] }}</div>
-            <div class="text-3xl">{{$user['last_name'] . ' ' . $user['first_name'] }} </div>
-        </div>
-        <div class="contact-info">
-            <div>Контактна інформація</div>
-            <div>Електронна пошта: {{ $user['email'] }}</div>
-            <div>Номер телефону: {{$user['phone_number']}}</div>
-        </div>
+    <div class="js-user-info">
+        @include('userProfile.partials.userInfo-block', ['userData' => $user])
+    </div>
 
-        <i class="fa-solid fa-lock js-lock-icon"></i>
-        <div class="password-block locked">
-            <div>Пароль</div>
-            <div class="password-form-group">
-                    <label for="old_password">Старий пароль</label>
-                    <input type="password" name="old_password" class="js-old-password form-control">
-                    <p class="error-message old_password-message">
-                </div>
-            <div class="password-form-group">
-                    <label for="password">Новий пароль</label>
-                    <input type="password" name="password" class="js-password form-control">
-                    <p class="error-message password-message">
-                </div>
-            <div class="password-form-group">
-                    <label for="old_password">Підтвердження паролю</label>
-                    <input type="password" name="password_confirmation" class="js-password-confirm form-control">
-                    <p class="error-message password-confirm-message">
-                </div>
-            <input type="hidden" name="_token" value="{{ csrf_token() }}" />
-            <button class="js-change-password save-btn">Оновити пароль</button>
-            <div class="reset-link">
-                    <a href="{{ route('forget.password.get') }}" target="_blank" class="js-reset-password">Забули пароль?</a>
-                </div>
-        </div>
+    <div class="js-university-info hidden">
+        @include('userProfile.partials.universityInfo-block')
     </div>
 @endsection
 
