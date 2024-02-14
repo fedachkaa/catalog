@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Repositories\University;
 use App\Services\UserService;
+use Illuminate\Http\JsonResponse;
 
 class UserProfileController extends Controller
 {
@@ -33,16 +34,15 @@ class UserProfileController extends Controller
     }
 
     /**
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
-    public function getUniversity()
+    public function getUniversity(): JsonResponse
     {
         $universityAdmin = auth()->user();
-
         $university = $this->universityRepository->getOne(['admin_id' => $universityAdmin->getId()]);
 
         return response()->json([
-            'data' => $university->toArray(),
+            'data' => $this->universityRepository->export($university, ['faculties']),
         ])->setStatusCode(200);
     }
 }

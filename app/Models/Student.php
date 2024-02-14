@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Student extends Model
 {
@@ -15,45 +14,28 @@ class Student extends Model
      */
     protected $fillable = [
         'user_id',
-        'course_id',
         'group_id',
     ];
 
     // --- Model relationships
 
     /**
-     * @return BelongsTo
+     * @return Model
      */
-    public function user(): BelongsTo
+    public function getUser(): Model
     {
-        return $this->belongsTo(User::class, 'user_id', 'id');
+        return $this->belongsTo(User::class, 'user_id', 'id')->first();
     }
 
     /**
-     * @return BelongsTo
+     * @return Model
      */
-    public function course(): BelongsTo
+    public function getGroup(): Model
     {
-        return $this->belongsTo(Course::class, 'course_id', 'id');
-    }
-
-    /**
-     * @return BelongsTo
-     */
-    public function group(): BelongsTo
-    {
-        return $this->belongsTo(Group::class, 'group_id', 'id');
+        return $this->belongsTo(Group::class, 'group_id', 'id')->first();
     }
 
     // --- Model getters
-
-    /**
-     * @return int
-     */
-    public function getId(): int
-    {
-        return (int) $this->getAttribute('id');
-    }
 
     /**
      * @return int
@@ -66,16 +48,24 @@ class Student extends Model
     /**
      * @return int
      */
-    public function getCourseId(): int
-    {
-        return (int) $this->getAttribute('course_id');
-    }
-
-    /**
-     * @return int
-     */
     public function getGroupId(): int
     {
         return (int) $this->getAttribute('group_id');
+    }
+
+    /**
+     * @return string
+     */
+    public function getCreatedAt(): string
+    {
+        return (string) $this->getAttribute('created_at');
+    }
+
+    /**
+     * @return string
+     */
+    public function getUpdatedAt(): string
+    {
+        return (string) $this->getAttribute('updated_at');
     }
 }

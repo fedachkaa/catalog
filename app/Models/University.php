@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Collection;
 
 class University extends Model
 {
@@ -21,39 +21,6 @@ class University extends Model
         self::ACCREDITATION_LEVEL_FOURTH => 'IV рівень акредитації',
     ];
 
-    /** @var int */
-    public $id;
-
-    /** @var int */
-    public $admin_id;
-
-    /** @var string */
-    public $name;
-
-    /** @var string */
-    public $city;
-
-    /** @var string */
-    public $address;
-
-    /** @var string */
-    public $phone_number;
-
-    /** @var string */
-    public $email;
-
-    /** @var string */
-    public $accreditation_level;
-
-    /** @var string */
-    public $founded_at;
-
-    /** @var string */
-    public $website;
-
-    /** @var string */
-    public $activated_at;
-
     /** @var array */
     protected $fillable = [
         'admin_id',
@@ -67,20 +34,32 @@ class University extends Model
         'website',
     ];
 
+    // --- Model relationships
+
     /**
-     * @return HasOne
+     * @return Model
      */
-    public function admin(): HasOne
+    public function getAdmin(): Model
     {
-        return $this->hasOne(User::class, 'id', 'admin_id');
+        return $this->hasOne(User::class, 'id', 'admin_id')->first();
     }
+
+    /**
+     * @return Collection
+     */
+    public function getFaculties(): Collection
+    {
+        return $this->hasMany(Faculty::class, 'university_id', 'id')->get();
+    }
+
+    // --- Model getters
 
     /**
      * @return int
      */
     public function getId(): int
     {
-        return (int) $this->id;
+        return (int) $this->getAttribute('id');
     }
 
     /**
@@ -88,7 +67,7 @@ class University extends Model
      */
     public function getAdminId() : int
     {
-        return (int) $this->admin_id;
+        return (int) $this->getAttribute('admin_id');
     }
 
     /**
@@ -96,7 +75,7 @@ class University extends Model
      */
     public function getName(): string
     {
-        return (string) $this->name;
+        return (string) $this->getAttribute('name');
     }
 
     /**
@@ -104,7 +83,7 @@ class University extends Model
      */
     public function getCity() : string
     {
-        return (string) $this->city;
+        return (string) $this->getAttribute('city');
     }
 
     /**
@@ -112,7 +91,7 @@ class University extends Model
      */
     public function getAddress(): string
     {
-        return (string) $this->address;
+        return (string) $this->getAttribute('address');
     }
 
     /**
@@ -120,7 +99,7 @@ class University extends Model
      */
     public function getPhoneNumber(): string
     {
-        return (string) $this->phone_number;
+        return (string) $this->getAttribute('phone_number');
     }
 
     /**
@@ -128,7 +107,7 @@ class University extends Model
      */
     public function getEmail(): string
     {
-        return (string) $this->email;
+        return (string) $this->getAttribute('email');
     }
 
     /**
@@ -136,7 +115,7 @@ class University extends Model
      */
     public function getAccreditationLevel(): string
     {
-        return (string) $this->accreditation_level;
+        return (string) $this->getAttribute('accreditation_level');
     }
 
     /**
@@ -144,7 +123,7 @@ class University extends Model
      */
     public function getFoundedAt(): string
     {
-        return (string) $this->founded_at;
+        return (string) $this->getAttribute('founded_at');
     }
 
     /**
@@ -152,7 +131,7 @@ class University extends Model
      */
     public function getWebsite(): string
     {
-        return (string) $this->website;
+        return (string) $this->getAttribute('website');
     }
 
     /**
@@ -160,6 +139,22 @@ class University extends Model
      */
     public function getActivatedAt(): string
     {
-        return (string) $this->activated_at;
+        return (string) $this->getAttribute('activated_at');
+    }
+
+    /**
+     * @return string
+     */
+    public function getCreatedAt(): string
+    {
+        return (string) $this->getAttribute('created_at');
+    }
+
+    /**
+     * @return string
+     */
+    public function getUpdatedAt(): string
+    {
+        return (string) $this->getAttribute('updated_at');
     }
 }

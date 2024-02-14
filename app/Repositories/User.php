@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Models\User as UserModel;
+use App\Exporters\User as UserExporter;
 use App\Repositories\Interfaces\UserRepositoryInterface;
 
 class User extends RepositoryAbstract implements UserRepositoryInterface
@@ -13,6 +14,14 @@ class User extends RepositoryAbstract implements UserRepositoryInterface
     public function getModelName(): string
     {
         return UserModel::class;
+    }
+
+    /**
+     * @return string
+     */
+    public function getExporterName(): string
+    {
+        return UserExporter::class;
     }
 
     /**
@@ -30,6 +39,7 @@ class User extends RepositoryAbstract implements UserRepositoryInterface
         if (!empty($filters['email'])) {
             $query = $query->where('email', $filters['email']);
         }
+
         return $query->first();
     }
 

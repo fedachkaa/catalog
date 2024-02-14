@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Models\Group as GroupModel;
+use App\Exporters\Group as GroupExporter;
 use App\Repositories\Interfaces\GroupRepositoryInterface;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -16,6 +17,14 @@ class Group extends RepositoryAbstract implements GroupRepositoryInterface
     public function getModelName(): string
     {
         return GroupModel::class;
+    }
+
+    /**
+     * @return string
+     */
+    public function getExporterName(): string
+    {
+        return GroupExporter::class;
     }
 
     /**

@@ -2,21 +2,21 @@
 
 namespace App\Repositories;
 
-use App\Models\Faculty as FacultyModel;
-use App\Exporters\Faculty as FacultyExporter;
-use App\Repositories\Interfaces\FacultyRepositoryInterface;
+use App\Repositories\Interfaces\UserRoleRepositoryInterface;
+use App\Models\UserRole as UserRoleModel;
+use App\Exporters\UserRole as UserRoleExporter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
-class Faculty extends RepositoryAbstract implements FacultyRepositoryInterface
+class UserRole extends RepositoryAbstract implements UserRoleRepositoryInterface
 {
     /**
      * @return string
      */
     public function getModelName(): string
     {
-        return FacultyModel::class;
+        return UserRoleModel::class;
     }
 
     /**
@@ -24,23 +24,19 @@ class Faculty extends RepositoryAbstract implements FacultyRepositoryInterface
      */
     public function getExporterName(): string
     {
-        return FacultyExporter::class;
+        return UserRoleExporter::class;
     }
 
     /**
      * @param array $filters
-     * @return Builder|Model|FacultyModel|object|null
+     * @return Builder|Model|object|null
      */
     public function getOne(array $filters = [])
     {
-        $query = FacultyModel::query();
+        $query = UserRoleModel::query();
 
         if (!empty($filters['id'])) {
             $query = $query->where('id', (int) $filters['id']);
-        }
-
-        if (!empty($filters['title'])) {
-            $query = $query->where('title','like','%' . $filters['title'] . '%');
         }
 
         return $query->first();
@@ -48,11 +44,15 @@ class Faculty extends RepositoryAbstract implements FacultyRepositoryInterface
 
     /**
      * @param array $filters
-     * @return Builder[]|Collection|FacultyModel[]
+     * @return Builder[]|Collection
      */
     public function getAll(array $filters = [])
     {
-        $query = FacultyModel::query();
+        $query = UserRoleModel::query();
+
+        if (!empty($filters['id'])) {
+            $query = $query->where('id', (int) $filters['id']);
+        }
 
         return $query->get();
     }

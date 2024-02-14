@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Models\University as UniversityModel;
 use App\Repositories\Interfaces\UniversityRepositoryInterface;
+use App\Exporters\University as UniversityExporter;
 
 class University extends RepositoryAbstract implements UniversityRepositoryInterface
 {
@@ -13,6 +14,14 @@ class University extends RepositoryAbstract implements UniversityRepositoryInter
     public function getModelName(): string
     {
         return UniversityModel::class;
+    }
+
+    /**
+     * @return string
+     */
+    public function getExporterName(): string
+    {
+        return UniversityExporter::class;
     }
 
     /**

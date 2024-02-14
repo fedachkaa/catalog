@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Models\Course as CourseModel;
+use App\Exporters\Course as CourseExporter;
 use App\Repositories\Interfaces\CourseRepositoryInterface;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -16,6 +17,14 @@ class Course extends RepositoryAbstract implements CourseRepositoryInterface
     public function getModelName(): string
     {
         return CourseModel::class;
+    }
+
+    /**
+     * @return string
+     */
+    public function getExporterName(): string
+    {
+        return CourseExporter::class;
     }
 
     /**

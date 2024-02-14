@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -48,11 +48,11 @@ class User extends Authenticatable
     // --- Model relationships
 
     /**
-     * @return BelongsTo
+     * @return Model
      */
-    public function userRole(): BelongsTo
+    public function getUserRole(): Model
     {
-        return $this->belongsTo(UserRole::class, 'role_id', 'id');
+        return $this->belongsTo(UserRole::class, 'role_id', 'id')->first();
     }
 
     // --- Model getters
@@ -100,8 +100,32 @@ class User extends Authenticatable
     /**
      * @return string
      */
+    public function getPhoneNumber(): string
+    {
+        return (string) $this->getAttribute('phone_number');
+    }
+
+    /**
+     * @return string
+     */
     public function getPassword(): string
     {
         return (string) $this->getAttribute('password');
+    }
+
+    /**
+     * @return string
+     */
+    public function getCreatedAt(): string
+    {
+        return (string) $this->getAttribute('created_at');
+    }
+
+    /**
+     * @return string
+     */
+    public function getUpdatedAt(): string
+    {
+        return (string) $this->getAttribute('updated_at');
     }
 }

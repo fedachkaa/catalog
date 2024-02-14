@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Models\Student as StudentModel;
+use App\Exporters\Student as StudentExporter;
 use App\Repositories\Interfaces\StudentRepositoryInterface;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -16,6 +17,14 @@ class Student extends RepositoryAbstract implements StudentRepositoryInterface
     public function getModelName(): string
     {
         return StudentModel::class;
+    }
+
+    /**
+     * @return string
+     */
+    public function getExporterName(): string
+    {
+        return StudentExporter::class;
     }
 
     /**

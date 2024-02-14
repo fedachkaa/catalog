@@ -2,10 +2,9 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Course extends Model
 {
@@ -19,30 +18,35 @@ class Course extends Model
         'course'
     ];
 
+    /**
+     * @var bool
+     */
+    public $timestamps = false;
+
     // --- Model relationships
 
     /**
-     * @return BelongsTo
+     * @return Model
      */
-    public function faculty(): BelongsTo
+    public function getFaculty(): Model
     {
-        return $this->belongsTo(Faculty::class, 'faculty_id', 'id');
+        return $this->belongsTo(Faculty::class, 'faculty_id', 'id')->first();
     }
 
     /**
-     * @return HasMany
+     * @return Collection
      */
-    public function groups(): HasMany
+    public function getGroups(): Collection
     {
-        return $this->hasMany(Group::class, 'course_id', 'id');
+        return $this->hasMany(Group::class, 'course_id', 'id')->get();
     }
 
     /**
-     * @return HasMany
+     * @return Collection
      */
-    public function students(): HasMany
+    public function getStudents(): Collection
     {
-        return $this->hasMany(Student::class, 'course_id', 'id');
+        return $this->hasMany(Student::class, 'course_id', 'id')->get();
     }
 
     // --- Model getters
