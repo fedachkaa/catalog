@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\Faculty as FacultyModel;
 use Illuminate\Support\Facades\App;
 use App\Repositories\University as UniversityRepository;
+use App\Repositories\Course as CourseRepository;
 
 class Faculty extends ExporterAbstract
 {
@@ -16,6 +17,7 @@ class Faculty extends ExporterAbstract
     {
         return [
             'university' => 'university',
+            'courses' => 'courses'
         ];
     }
 
@@ -36,11 +38,23 @@ class Faculty extends ExporterAbstract
      * @param FacultyModel $faculty
      * @return array
      */
-    public function expandUniversity(FacultyModel $faculty): array
+    protected function expandUniversity(FacultyModel $faculty): array
     {
         /** @var UniversityRepository $facultyRepository */
         $universityRepository = App::make(UniversityRepository::class);
 
         return $universityRepository->export($faculty->getUniversity());
+    }
+
+    /**
+     * @param FacultyModel $faculty
+     * @return array
+     */
+    protected function expandCourses(FacultyModel $faculty): array
+    {
+        /** @var CourseRepository $courseRepository */
+        $courseRepository = App::make(CourseRepository::class);
+
+        return $courseRepository->exportAll($faculty->getCourses());
     }
 }

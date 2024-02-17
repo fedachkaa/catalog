@@ -15,55 +15,55 @@
 }
 
 .title {
-    @apply text-3xl text-center font-bold
+    @apply text-3xl text-center font-bold;
 }
 
 .form-group {
-    @apply flex flex-col items-center m-2
+    @apply flex flex-col items-center m-2;
 }
 
 .form-control {
-    @apply border-gray-900 border-2 rounded-md w-3/5 h-12 p-3
+    @apply border-gray-900 border-2 rounded-md w-3/5 h-12 p-3;
 }
 
 .save-btn {
-    @apply font-medium text-lg border-green-800 border-2 rounded-md bg-green-600 h-fit p-3 text-white hover:bg-white hover:text-green-700
+    @apply font-medium text-lg border-green-800 border-2 rounded-md bg-green-600 h-fit p-3 text-white hover:bg-white hover:text-green-700;
 }
 
 .alert-danger {
-    @apply text-red-500
+    @apply text-red-500;
 }
 
 .registration-form {
-    @apply flex flex-row justify-center
+    @apply flex flex-row justify-center;
 }
 
 .sub-title {
-    @apply text-2xl text-center font-bold
+    @apply text-2xl text-center font-bold;
 }
-.reg-step-first, .reg-step-second {
-    @apply w-full m-4
+.reg-step-first,
+.reg-step-second {
+    @apply w-full m-4;
 }
 
 .nav {
-    @apply flex flex-wrap justify-between ps-2 pe-14 items-center bg-gray-400
+    @apply flex flex-wrap justify-between ps-2 pe-14 items-center bg-gray-400;
 }
 
-
 .nav ul {
-    @apply flex
+    @apply flex;
 }
 
 .nav ul li {
-    @apply relative list-none
+    @apply relative list-none;
 }
 
 .nav ul li a {
-    @apply p-5 text-black bg-gray-400 no-underline flex transition-all duration-200 ease-in-out hover:bg-amber-200
+    @apply p-5 text-black bg-gray-400 no-underline flex transition-all duration-200 ease-in-out hover:bg-amber-200;
 }
 
 .nav ul li > ul {
-    @apply hidden bg-white absolute p-0 transition-all duration-300 ease-in-out
+    @apply hidden bg-white absolute p-0 transition-all duration-300 ease-in-out;
 }
 
 .nav ul li:hover > ul {
@@ -71,73 +71,81 @@
 }
 
 .nav ul li > ul li {
-    @apply w-auto
+    @apply w-auto;
 }
 
-.nav ul li > ul li a{
-    @apply flex flex-row items-center
+.nav ul li > ul li a {
+    @apply flex flex-row items-center;
 }
-.nav ul li > ul li a span{
-    @apply pe-2
+.nav ul li > ul li a span {
+    @apply pe-2;
 }
 
 .nav ul li.sub-menu:before {
     @apply font-black absolute leading-10 text-white left-20;
 }
 
-
-
 /* USER PROFILE */
 
 .sidebar_nav {
-    @apply h-full bg-gray-400 list-none absolute m-0 p-0 flex flex-col items-start
+    @apply h-full bg-gray-400 list-none absolute m-0 p-0 flex flex-col items-start;
 }
 
 .sidebar_nav li a i {
-    @apply mr-2
+    @apply mr-2;
 }
 
 .sidebar-menu-title {
-    @apply px-2.5 py-6 pl-2 mr-0 block text-center text-2xl mb-1 no-underline text-gray-800 text-center p-2.5 flex flex-row items-center hover:text-gray-900 hover:bg-amber-200 w-full hover:cursor-pointer
+    @apply px-2.5 py-6 pl-2 mr-0 block text-center text-2xl mb-1 no-underline text-gray-800 text-center p-2.5 flex flex-row items-center hover:text-gray-900 hover:bg-amber-200 w-full hover:cursor-pointer;
 }
 
 .active-tab {
-    @apply text-gray-900 bg-amber-200
+    @apply text-gray-900 bg-amber-200;
 }
 
 .user-name {
-    @apply text-3xl font-semibold
+    @apply text-3xl font-semibold;
 }
 
-.contact-info, .password-block, .address-info {
-    @apply border-2 border-gray-700 p-5 m-5 text-xl w-1/2 text-left
+.contact-info,
+.password-block,
+.address-info {
+    @apply border-2 border-gray-700 p-5 m-5 text-xl w-1/2 text-left;
 }
 
 .locked {
-    @apply pointer-events-none opacity-25 bg-amber-200
+    @apply pointer-events-none opacity-25 bg-amber-200;
 }
 
 .error-message {
-    @apply text-red-600 text-sm
+    @apply text-red-600 text-sm;
 }
 
 .password-form-group {
-    @apply flex flex-col items-start mb-2
+    @apply flex flex-col items-start mb-2;
 }
 
 .reset-link {
-    @apply text-sm hover:underline hover:font-semibold
+    @apply text-sm hover:underline hover:font-semibold;
 }
 
 .reset-password-block {
-    @apply flex items-center justify-center mt-10
+    @apply flex items-center justify-center mt-10;
 }
 .forget-password-form {
-    @apply border-2 border-gray-600 text-center p-6 gap-4 flex flex-col
+    @apply border-2 border-gray-600 text-center p-6 gap-4 flex flex-col;
 }
 .reset-password-form {
-    @apply border-2 border-gray-600 text-center p-6 gap-4 flex flex-col
+    @apply border-2 border-gray-600 text-center p-6 gap-4 flex flex-col;
 }
 .form-control-reset {
-    @apply border-gray-900 border-2 rounded-md h-12 p-3
+    @apply border-gray-900 border-2 rounded-md h-12 p-3;
+}
+
+.faculty-item {
+    @apply border-2 border-gray-900 w-full p-2.5 flex flex-row;
+}
+
+.faculty-info {
+    @apply w-full;
 }

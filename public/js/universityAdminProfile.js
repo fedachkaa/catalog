@@ -2278,6 +2278,229 @@ module.exports = {
 
 /***/ }),
 
+/***/ "./resources/js/universityAdminProfile.js":
+/*!************************************************!*\
+  !*** ./resources/js/universityAdminProfile.js ***!
+  \************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+__webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
+window.$ = window.jQuery = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js");
+var _require = __webpack_require__(/*! ./general.js */ "./resources/js/general.js"),
+  toggleTabsSideBar = _require.toggleTabsSideBar,
+  toggleContentBlock = _require.toggleContentBlock;
+document.addEventListener("DOMContentLoaded", function () {
+  $('.js-university').on('click', function () {
+    toggleTabsSideBar('js-university');
+    getUniversity();
+  });
+  $('.js-faculties').on('click', function () {
+    toggleTabsSideBar('js-faculties');
+    getFaculties();
+  });
+  $('.js-add-faculty').on('click', function () {
+    addFaculty();
+  });
+  $('.js-save-faculty').on('click', function () {
+    saveFaculty();
+  });
+  $('.js-add-course').on('click', addCourse);
+  $('.js-save-course').on('click', saveCourse);
+  $(document).on('click', '.js-view-course', getCourseGroups);
+  $(document).on('click', '.js-add-group', addGroup);
+  $(document).on('click', '.js-save-group', saveGroup);
+});
+var getUniversity = function getUniversity() {
+  $.ajax({
+    url: '/profile/api/university',
+    method: 'GET',
+    success: function success(response) {
+      displayUniversityData(response.data);
+    },
+    error: function error(xhr, status, _error) {
+      console.error('Помилка:', _error);
+    }
+  });
+};
+var getFaculties = function getFaculties() {
+  $.ajax({
+    url: '/profile/api/faculties',
+    method: 'GET',
+    success: function success(response) {
+      displayFacultiesData(response.data);
+    },
+    error: function error(xhr, status, _error2) {
+      console.error('Помилка:', _error2);
+    }
+  });
+};
+var displayUniversityData = function displayUniversityData(data) {
+  var universityBlock = $('.js-university-info');
+  universityBlock.data('universityid', data.id);
+  universityBlock.find('.js-university-name').text(data.name);
+  universityBlock.find('.js-city').text(data.city);
+  universityBlock.find('.js-address').text(data.address);
+  universityBlock.find('.js-phone').text(data.phone_number);
+  universityBlock.find('.js-email').text(data.email);
+  universityBlock.find('.js-website').text(data.website);
+  universityBlock.find('.js-university-acc-level').text(data.accreditation_level);
+  universityBlock.find('.js-university-founded').text(data.founded_at);
+  toggleContentBlock('js-university-profile', 'admin-profile-content-block', 'js-university-info');
+};
+var displayFacultiesData = function displayFacultiesData(data) {
+  var facultiesBlock = $('.js-faculties-block');
+  facultiesBlock.attr('data-universityId', data.university_id);
+  $('.js-faculties-list').empty();
+  data.faculties.forEach(function (faculty) {
+    var facultyItem = "<div class=\"faculty-list-item\" data-id=\"" + faculty.id + "\">" + faculty.title + "<i class=\"fa fa-eye js-view-faculty\"></i>\n            <i class=\"fa fa-trash\"></i>\n            </div>";
+    $('.js-faculties-list').append(facultyItem);
+  });
+  $('.js-view-faculty').on('click', function () {
+    getFacultyInfo($(this).parent().data('id'));
+  });
+  toggleContentBlock('js-university-profile', 'admin-profile-content-block', 'js-faculties-block');
+};
+var getFacultyInfo = function getFacultyInfo(facultyId) {
+  $.ajax({
+    url: '/profile/api/faculty/' + facultyId,
+    method: 'GET',
+    success: function success(response) {
+      var facultyItem = $('.js-faculty-item');
+      facultyItem.attr('data-facultyid', response.data.id);
+      facultyItem.find('.js-title').text(response.data.title);
+      if (response.data.courses.length === 0) {
+        facultyItem.find('.js-courses').text('Ще немає курсів');
+      } else {
+        response.data.courses.forEach(function (course) {
+          facultyItem.find('.js-courses').append("<div class=\"js-course-item\" data-courseid=" + response.data.id + ">" + course.course + " \u043A\u0443\u0440\u0441" + "<i class=\"fa fa-eye js-view-course\"></i>\n                            <i class=\"fa fa-trash\"></i>\n                        </div>");
+        });
+      }
+      facultyItem.find('.js-faculty-info').removeClass('hidden');
+      console.log('Success:', response);
+    },
+    error: function error(xhr, status, _error3) {
+      console.error('Помилка:', _error3);
+    }
+  });
+};
+var addFaculty = function addFaculty() {
+  var token = '<?= csrf_token(); ?>';
+  var inputField = "\n        <input type=\"text\" class=\"form-control js-faculty-title\">\n        <input type=\"hidden\" name=\"_token\" value=\"" + token + "\" />\n    ";
+  $(inputField).insertBefore('.js-add-faculty');
+  $(this).addClass('hidden');
+  $('.js-save-faculty').removeClass('hidden');
+};
+var saveFaculty = function saveFaculty() {
+  $.ajax({
+    url: '/profile/api/faculty/create',
+    method: 'POST',
+    data: {
+      university_id: $('.js-faculties-block').data('universityid'),
+      title: $('.js-faculty-title').val(),
+      _token: $('.faculties-block input[name="_token"]').val()
+    },
+    success: function success(response) {
+      var facultyItem = "<div class=\"faculty-list-item\" data-id=\"" + response.data.id + "\">" + response.data.title + "<i class=\"fa fa-eye js-view-faculty\"></i>\n             </div>";
+      $('.js-faculties-list').append(facultyItem);
+      $('.js-view-faculty').on('click', function () {
+        getFacultyInfo($(this).parent().data('id'));
+      });
+      $('.js-faculties-container').find('input.js-faculty-title').addClass('hidden');
+      $('.js-save-faculty').addClass('hidden');
+      $('.js-add-faculty').removeClass('hidden');
+    },
+    error: function error(xhr, status, _error4) {
+      console.error('Помилка:', _error4);
+    }
+  });
+};
+var addCourse = function addCourse(e) {
+  var inputField = "<input type=\"number\" class=\"form-control js-course-number\" min=\"1\" max=\"6\">";
+  $(inputField).insertBefore('.js-add-course');
+  $(e.target).addClass('hidden');
+  $('.js-save-course').removeClass('hidden');
+};
+var saveCourse = function saveCourse(e) {
+  var facultyItem = $(e.target).closest('.js-faculty-item');
+  $.ajax({
+    url: '/profile/api/course/create',
+    method: 'POST',
+    data: {
+      faculty_id: facultyItem.data('facultyid'),
+      course: facultyItem.find('.js-course-number').val(),
+      _token: $(e.target).data('token')
+    },
+    success: function success(response) {
+      $('.js-courses').append("<div class=\"js-course-item\" data-courseid=" + response.data.id + ">" + response.data.course + " \u043A\u0443\u0440\u0441" + "<i class=\"fa fa-eye js-view-course\"></i>\n                </div>");
+      $(e.target).addClass('hidden');
+      $('.js-add-course').removeClass('hidden');
+    },
+    error: function error(xhr, status, _error5) {
+      console.error('Помилка:', _error5);
+    }
+  });
+};
+var getCourseGroups = function getCourseGroups(e) {
+  var courseId = $(e.target).closest('.js-course-item').data('courseid');
+  $.ajax({
+    url: '/profile/api/course/' + courseId + '/groups',
+    method: 'GET',
+    success: function success(response) {
+      var groupsContainer = $('.js-faculty-item .js-groups-info');
+      groupsContainer.attr('data-courseid', courseId);
+      if (response.data.length === 0) {
+        groupsContainer.find('.js-groups').text('Ще немає груп');
+      } else {
+        response.data.forEach(function (group) {
+          groupsContainer.find('.js-groups').append("<div class=\"js-group-item\" data-group=" + group.id + ">" + group.title + "<i class=\"fa fa-eye js-view-course\"></i>\n                        </div>");
+        });
+      }
+      groupsContainer.removeClass('hidden');
+      console.log('Success:', response);
+    },
+    error: function error(xhr, status, _error6) {
+      console.error('Помилка:', _error6);
+    }
+  });
+};
+var addGroup = function addGroup(e) {
+  var inputField = "<input type=\"text\" class=\"form-control js-group-title\">";
+  $(inputField).insertBefore('.js-add-group');
+  $(e.target).addClass('hidden');
+  $('.js-save-group').removeClass('hidden');
+};
+var saveGroup = function saveGroup(e) {
+  var courseId = $(e.target).closest('.js-groups-info').data('courseid');
+  $.ajax({
+    url: '/profile/api/course/' + courseId + '/group/create',
+    method: 'POST',
+    data: {
+      title: $('.js-groups-info').find('.js-group-title').val(),
+      _token: $(e.target).data('token')
+    },
+    success: function success(response) {
+      $('.js-groups').append("<div class=\"js-group-item\" data-groupid=" + response.data.id + ">" + response.data.title + "<i class=\"fa fa-eye js-view-group\"></i>\n                </div>");
+      $(e.target).addClass('hidden');
+      $('.js-groups-info').find('input.js-group-title').remove();
+      $('.js-add-group').removeClass('hidden');
+    },
+    error: function error(xhr, status, _error7) {
+      console.error('Помилка:', _error7);
+    }
+  });
+};
+module.exports = {
+  getUniversity: getUniversity,
+  getFaculties: getFaculties,
+  displayUniversityData: displayUniversityData,
+  displayFacultiesData: displayFacultiesData,
+  getFacultyInfo: getFacultyInfo,
+  addFaculty: addFaculty,
+  saveFaculty: saveFaculty
+};
+
+/***/ }),
+
 /***/ "./node_modules/jquery/dist/jquery.js":
 /*!********************************************!*\
   !*** ./node_modules/jquery/dist/jquery.js ***!
@@ -30467,7 +30690,7 @@ process.umask = function() { return 0; };
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module is referenced by other modules so it can't be inlined
-/******/ 	var __webpack_exports__ = __webpack_require__("./resources/js/general.js");
+/******/ 	var __webpack_exports__ = __webpack_require__("./resources/js/universityAdminProfile.js");
 /******/ 	
 /******/ 	return __webpack_exports__;
 /******/ })()

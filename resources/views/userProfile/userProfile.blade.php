@@ -5,7 +5,10 @@
 @section('content')
     @switch(auth()->user()->getRoleId())
         @case(\App\Models\UserRole::USER_ROLE_UNIVERSITY_ADMIN)
-            @include('userProfile.partials.universityAdminProfile')
+            @include('universityAdminProfile.profile', ['userData' => $user])
+            @push('scripts')
+                <script src="{{ asset('js/universityAdminProfile.js') }}"></script>
+            @endpush
             @break
 
         @case(\App\Models\UserRole::USER_ROLE_STUDENT)
@@ -23,14 +26,6 @@
         @default
             @include('404NotFound')
     @endswitch
-
-    <div class="js-user-info">
-        @include('userProfile.partials.userInfo-block', ['userData' => $user])
-    </div>
-
-    <div class="js-university-info hidden">
-        @include('userProfile.partials.universityInfo-block')
-    </div>
 @endsection
 
 <script>

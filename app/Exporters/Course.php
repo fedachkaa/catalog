@@ -5,6 +5,7 @@ namespace App\Exporters;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\App;
 use App\Repositories\Faculty as FacultyRepository;
+use App\Repositories\Group as GroupRepository;
 use App\Models\Course as CourseModel;
 
 class Course extends ExporterAbstract
@@ -16,6 +17,7 @@ class Course extends ExporterAbstract
     {
         return [
             'faculty' => 'faculty',
+            'groups' => 'groups',
         ];
     }
 
@@ -42,5 +44,17 @@ class Course extends ExporterAbstract
         $facultyRepository = App::get(FacultyRepository::class);
 
         return $facultyRepository->export($course->getFaculty());
+    }
+
+    /**
+     * @param CourseModel $course
+     * @return array
+     */
+    protected function expandGroups(CourseModel $course): array
+    {
+        /** @var GroupRepository $groupRepository */
+        $groupRepository = App::get(GroupRepository::class);
+
+        return $groupRepository->exportAll($course->getGroups());
     }
 }

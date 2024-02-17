@@ -40,7 +40,7 @@ class Faculty extends RepositoryAbstract implements FacultyRepositoryInterface
         }
 
         if (!empty($filters['title'])) {
-            $query = $query->where('title','like','%' . $filters['title'] . '%');
+            $query = $query->where('title', 'like', '%' . $filters['title'] . '%');
         }
 
         return $query->first();
@@ -53,6 +53,15 @@ class Faculty extends RepositoryAbstract implements FacultyRepositoryInterface
     public function getAll(array $filters = [])
     {
         $query = FacultyModel::query();
+
+        if (!empty($filters['admin_id'])) {
+            $query = $query->join('universities', 'faculties' . '.university_id', '=', 'universities.id');
+            $query = $query->where('universities.admin_id', (int) $filters['admin_id']);
+        }
+
+        if (!empty($filters['university_id'])) {
+            $query = $query->where('university_id', (int) $filters['university_id']);
+        }
 
         return $query->get();
     }
