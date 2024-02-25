@@ -34,7 +34,7 @@ class UserProfileController extends Controller
      */
     public function userProfile()
     {
-        $user = $this->userRepository->export(auth()->user());
+        $user = $this->userRepository->export(auth()->user(), ['university']);
         return view('userProfile.userProfile', compact('user'));
     }
 

@@ -55,6 +55,14 @@ class User extends Authenticatable
         return $this->belongsTo(UserRole::class, 'role_id', 'id')->first();
     }
 
+    /**
+     * @return Model|null
+     */
+    public function getUniversity(): ?Model
+    {
+       return $this->hasOne(University::class, 'admin_id', 'id')->first();
+    }
+
     // --- Model getters
 
     /**

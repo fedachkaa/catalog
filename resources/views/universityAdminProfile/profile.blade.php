@@ -1,3 +1,8 @@
+<?php
+/**
+ * @var array $user
+ */
+?>
 <style>
     .modal {
         display: none; /* Початково вікно приховане */
@@ -82,7 +87,6 @@
         </div>
     </div>
 
-
     <div class="js-user-info admin-profile-content-block">
         @include('userProfile.partials.userInfo-block', ['userData' => $user])
     </div>
@@ -95,3 +99,7 @@
         @include('universityAdminProfile.partials.faculties-block')
     </div>
 </div>
+
+<script>
+    const universityId = <?= $user['university']['id'] ?? '';?>
+</script>

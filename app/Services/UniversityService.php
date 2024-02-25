@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Models\University;
 use App\Repositories\Interfaces\UniversityRepositoryInterface;
-use Illuminate\Database\Eloquent\Model;
 
 class UniversityService
 {
@@ -21,12 +20,13 @@ class UniversityService
 
     /**
      * @param array $data
-     * @return University|Model
+     * @return University
      * @throws \Exception
      */
     public function createUniversity(array $data) : University
     {
         try {
+            /** @var University $university */
             $university = $this->universityRepository->getNew($data);
         } catch(\Exception $e) {
             throw new \Exception('University not created. Errors: ' . $e->getMessage());

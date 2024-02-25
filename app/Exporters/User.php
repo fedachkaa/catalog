@@ -15,6 +15,7 @@ class User extends ExporterAbstract
     {
         return [
             'userRole' => 'userRole',
+            'university' => 'university'
         ];
     }
 
@@ -47,5 +48,18 @@ class User extends ExporterAbstract
         $userRoleRepository = App::get(\App\Repositories\UserRole::class);
 
         return $userRoleRepository->export($user->getUserRole());
+    }
+
+    /**
+     * @param UserModel $user
+     * @return array
+     */
+    protected function expandUniversity(UserModel $user): array
+    {
+        /** @var \App\Repositories\University $universityRepository */
+        $universityRepository = App::get(\App\Repositories\University::class);
+
+        return $universityRepository->export($user->getUniversity());
+
     }
 }

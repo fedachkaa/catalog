@@ -14,18 +14,11 @@ document.addEventListener("DOMContentLoaded", function () {
         getFaculties();
     });
 
-    $('.js-add-faculty').on('click', function () {
-        addFaculty();
-    });
+    $(document).on('click', '.js-add-faculty', addFaculty);
+    $(document).on('click', '.js-save-faculty', saveFaculty);
 
-    $('.js-save-faculty').on('click', function () {
-        saveFaculty();
-    });
-
-    $('.js-add-course').on('click', addCourse);
-
-    $('.js-save-course').on('click', saveCourse);
-
+    $(document).on('click', '.js-add-course', addCourse);
+    $(document).on('click', '.js-save-course', saveCourse);
     $(document).on('click', '.js-view-course', getCourseGroups);
 
     $(document).on('click', '.js-add-group', addGroup);
@@ -52,7 +45,7 @@ const getUniversity = function() {
 
 const getFaculties = function() {
     $.ajax({
-        url: '/profile/api/faculties',
+        url: '/api/university/' + universityId +'/faculties',
         method: 'GET',
         success: function (response) {
             displayFacultiesData(response.data);
@@ -81,7 +74,7 @@ const displayUniversityData = function(data) {
 
 const displayFacultiesData = function(data) {
     const facultiesBlock = $('.js-faculties-block');
-    facultiesBlock.attr('data-universityId', data.university_id);
+    facultiesBlock.attr('data-universityId', universityId);
     $('.js-faculties-list').empty();
     data.faculties.forEach(function (faculty) {
         const facultyItem = `<div class="faculty-list-item" data-id="` + faculty.id + `">`
@@ -101,7 +94,7 @@ const displayFacultiesData = function(data) {
 
 const getFacultyInfo = function(facultyId) {
     $.ajax({
-        url: '/profile/api/faculty/' + facultyId,
+        url: '/api/university/' + universityId +'/faculty/' + facultyId,
         method: 'GET',
         success: function (response) {
             const facultyItem = $('.js-faculty-item');
@@ -119,7 +112,6 @@ const getFacultyInfo = function(facultyId) {
                             course.course +
                             ` курс` +
                             `<i class="fa fa-eye js-view-course"></i>
-                            <i class="fa fa-trash"></i>
                         </div>`);
                 });
             }
@@ -131,25 +123,21 @@ const getFacultyInfo = function(facultyId) {
     });
 }
 
-const addFaculty = function() {
-    const token = '<?= csrf_token(); ?>';
-    const inputField = `
-        <input type="text" class="form-control js-faculty-title">
-        <input type="hidden" name="_token" value="`+ token + `" />
-    `;
+const addFaculty = function(e) {
+    const inputField = `<input type="text" class="form-control js-faculty-title">`;
     $(inputField).insertBefore('.js-add-faculty');
-    $(this).addClass('hidden');
+    $(e.target).addClass('hidden');
     $('.js-save-faculty').removeClass('hidden');
 }
 
-const saveFaculty = function() {
+const saveFaculty = function(e) {
     $.ajax({
-        url: '/profile/api/faculty/create',
+        url: 'api/university/'+ universityId +'/faculty/create',
         method: 'POST',
         data: {
             university_id: $('.js-faculties-block').data('universityid'),
             title: $('.js-faculty-title').val(),
-            _token: $('.faculties-block input[name="_token"]').val()
+            _token: $(e.target).data('token'),
         },
         success: function (response) {
             const facultyItem = `<div class="faculty-list-item" data-id="` + response.data.id + `">`
@@ -185,10 +173,9 @@ const saveCourse = function(e) {
     const facultyItem = $(e.target).closest('.js-faculty-item');
 
     $.ajax({
-        url: '/profile/api/course/create',
+        url: '/api/university/' + universityId +'/faculty/' + facultyItem.data('facultyid') + '/course/create',
         method: 'POST',
         data: {
-            faculty_id: facultyItem.data('facultyid'),
             course: facultyItem.find('.js-course-number').val(),
             _token: $(e.target).data('token'),
         },
@@ -200,6 +187,7 @@ const saveCourse = function(e) {
                     `<i class="fa fa-eye js-view-course"></i>
                 </div>`);
             $(e.target).addClass('hidden');
+            $('.js-course-number').remove();
             $('.js-add-course').removeClass('hidden');
         },
         error: function (xhr, status, error) {
@@ -212,7 +200,7 @@ const getCourseGroups = function(e) {
     const courseId = $(e.target).closest('.js-course-item').data('courseid');
 
     $.ajax({
-        url: '/profile/api/course/' + courseId + '/groups',
+        url: '/api/university/'+ universityId +'/faculty/' + $('.js-faculty-item').data('facultyid') + '/course/' + courseId +'/groups',
         method: 'GET',
         success: function (response) {
             const groupsContainer = $('.js-faculty-item .js-groups-info');
@@ -245,9 +233,10 @@ const addGroup = function(e) {
 
 const saveGroup = function(e) {
     const courseId = $(e.target).closest('.js-groups-info').data('courseid');
+    const facultyId = $(e.target).closest('.js-faculty-item').data('facultyid');
 
     $.ajax({
-        url: '/profile/api/course/' + courseId +'/group/create',
+        url: '/api/university/' + universityId + '/faculty/' + facultyId +'/course/' + courseId + '/group/create',
         method: 'POST',
         data: {
             title: $('.js-groups-info').find('.js-group-title').val(),
@@ -273,14 +262,19 @@ const saveGroup = function(e) {
 
 const getGroupStudents = function (e) {
     const groupId = $(e.target).closest('.js-group-item').data('groupid');
+    const courseId = $(e.target).closest('.js-group-item').parent().parent().data('courseid');
+    const facultyId = $(e.target).closest('.js-group-item').parent().parent().parent().data('facultyid');
 
     $.ajax({
-        url: '/profile/api/group/' + groupId,
+        url: '/api/university/' + universityId + '/faculty/' + facultyId +'/course/' + courseId +'/group/' + groupId + '/students',
         method: 'GET',
         success: function (response) {
             const modal =  $('#groupStudents');
             modal.find('.modal-title').text('Студенти ' + $(e.target).closest('.js-group-item').text());
-            modal.attr('data-groupid', $(e.target).closest('.js-group-item').data('groupid'));
+            modal.attr('data-groupid', groupId);
+            modal.attr('data-courseid', courseId);
+            modal.attr('data-facultyid', facultyId);
+
             modal.find('.js-students-content').empty();
             if (response.data.length === 0) {
                 modal.find('.js-students-content').append(`<p>Ще немає студентів</p>`);
@@ -327,10 +321,9 @@ const addStudent = function (e) {
 
 const saveStudent = function (e) {
     const modal = $('#groupStudents');
-    const groupId = modal.data('groupid');
 
     $.ajax({
-        url: '/profile/api/group/' + groupId +'/student/create',
+        url: '/api/university/' + universityId + '/faculty/' + modal.data('facultyid') +'/course/' + modal.data('courseid') +'/group/' + modal.data('groupid') + '/students',
         method: 'POST',
         data: {
             first_name: modal.find('.js-first-name').val(),
@@ -357,6 +350,4 @@ module.exports = {
     displayUniversityData,
     displayFacultiesData,
     getFacultyInfo,
-    addFaculty,
-    saveFaculty,
 }

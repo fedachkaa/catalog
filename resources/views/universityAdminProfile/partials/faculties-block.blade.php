@@ -2,7 +2,7 @@
 
     <div class="faculties-block js-faculties-container">
         <button class="save-btn js-add-faculty">Додати факультет</button>
-        <button class="save-btn js-save-faculty hidden">Зберегти</button>
+        <button class="save-btn js-save-faculty hidden" data-token="{{ csrf_token() }}">Зберегти</button>
 
         <div class="js-faculties-list"></div>
 
