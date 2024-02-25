@@ -5,7 +5,10 @@
 @section('content')
     @switch(auth()->user()->getRoleId())
         @case(\App\Models\UserRole::USER_ROLE_UNIVERSITY_ADMIN)
-            @include('userProfile.partials.universityAdminProfile')
+            @include('universityAdminProfile.profile', ['userData' => $user])
+            @push('scripts')
+                <script src="{{ asset('js/universityAdminProfile.js') }}"></script>
+            @endpush
             @break
 
         @case(\App\Models\UserRole::USER_ROLE_STUDENT)
@@ -23,43 +26,6 @@
         @default
             @include('404NotFound')
     @endswitch
-
-    <div class="pl-52">
-        <div class="name-info">
-            <div class="text-3xl">{{ \App\Models\UserRole::AVAILABLE_USER_ROLES[$user['role_id']] }}</div>
-            <div class="text-3xl">{{$user['last_name'] . ' ' . $user['first_name'] }} </div>
-        </div>
-        <div class="contact-info">
-            <div>Контактна інформація</div>
-            <div>Електронна пошта: {{ $user['email'] }}</div>
-            <div>Номер телефону: {{$user['phone_number']}}</div>
-        </div>
-
-        <i class="fa-solid fa-lock js-lock-icon"></i>
-        <div class="password-block locked">
-            <div>Пароль</div>
-            <div class="password-form-group">
-                    <label for="old_password">Старий пароль</label>
-                    <input type="password" name="old_password" class="js-old-password form-control">
-                    <p class="error-message old_password-message">
-                </div>
-            <div class="password-form-group">
-                    <label for="password">Новий пароль</label>
-                    <input type="password" name="password" class="js-password form-control">
-                    <p class="error-message password-message">
-                </div>
-            <div class="password-form-group">
-                    <label for="old_password">Підтвердження паролю</label>
-                    <input type="password" name="password_confirmation" class="js-password-confirm form-control">
-                    <p class="error-message password-confirm-message">
-                </div>
-            <input type="hidden" name="_token" value="{{ csrf_token() }}" />
-            <button class="js-change-password save-btn">Оновити пароль</button>
-            <div class="reset-link">
-                    <a href="{{ route('forget.password.get') }}" target="_blank" class="js-reset-password">Забули пароль?</a>
-                </div>
-        </div>
-    </div>
 @endsection
 
 <script>
@@ -77,9 +43,11 @@
                 method: 'PUT',
                 data: getFormData(),
                 success: function (response) {
+                    general.showResponse(response.status, response.message);
                     console.log('Успішно!', response);
                 },
                 error: function (xhr, status, error) {
+                    general.showResponse(response.status, response.message);
                     console.error('Помилка:', error);
                 }
             });
@@ -103,8 +71,14 @@
             const newPasswordEl = $('.js-password');
             const passwordConfirmEl = $('.js-password-confirm');
 
-            const fields = [oldPasswordEl, newPasswordEl, passwordConfirmEl];
+            const fields = [newPasswordEl, passwordConfirmEl];
             const errorMessage = 'Пароль має складатись з 8 символів та містити мінімуму 1 цифру та 1 букву латинського алфавіту';
+
+            if (oldPasswordEl.val().length === 0) {
+                oldPasswordEl.parent().find('.error-message').text('Старий пароль не може бути пустим');
+                oldPasswordEl.css('border-color', 'red');
+                return false;
+            }
 
             for (const field of fields) {
                 const value = field.val();

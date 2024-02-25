@@ -3,6 +3,10 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UniversityController;
 use App\Http\Controllers\UserProfileController;
+use App\Http\Controllers\FacultyController;
+use App\Http\Controllers\CourseController;
+use App\Http\Controllers\StudentController;
+use App\Http\Controllers\GroupController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -28,6 +32,20 @@ Route::post('/login', [AuthController::class, 'authenticate'])->name('authentica
 Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::get('/profile', [UserProfileController::class, 'userProfile'])->name('user.profile');
+Route::get('/api/profile', [UserProfileController::class, 'getUserProfile'])->name('user.profile.get');
+Route::get('/profile/api/university', [UserProfileController::class, 'getUniversity'])->name('universityAdmin.university.get');
+
+Route::get('/api/university/{universityId}/faculties', [FacultyController::class, 'getFaculties'])->middleware('university.get');
+Route::post('/api/university/{universityId}/faculty/create', [FacultyController::class, 'saveFaculty'])->middleware('university.get');
+Route::get('/api/university/{universityId}/faculty/{facultyId}', [FacultyController::class, 'getFaculty'])->middleware('universityWithFaculty.get');
+
+Route::post('/api/university/{universityId}/faculty/{facultyId}/course/create', [CourseController::class, 'saveCourse'])->middleware('universityWithFaculty.get');
+
+Route::get('/api/university/{universityId}/faculty/{facultyId}/course/{courseId}/groups', [GroupController::class, 'getCourseGroups'])->middleware('universityWithFacultyCourse.get');
+Route::post('/api/university/{universityId}/faculty/{facultyId}/course/{courseId}/group/create', [GroupController::class, 'saveGroup'])->middleware('universityWithFacultyCourse.get');
+
+Route::get('/api/university/{universityId}/faculty/{facultyId}/course/{courseId}/group/{groupId}/students', [StudentController::class, 'getGroupStudents'])->middleware('universityWithFacultyCourseGroup.get');
+Route::post('/api/university/{universityId}/faculty/{facultyId}/course/{courseId}/group/{groupId}/students', [StudentController::class, 'saveStudent'])->middleware('universityWithFacultyCourseGroup.get');
 
 Route::put('/user/api/change-password', [AuthController::class, 'changePassword'])->name('user.changePassword');
 Route::get('forget-password', [AuthController::class, 'showForgetPassword'])->name('forget.password.get');

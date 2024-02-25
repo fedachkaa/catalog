@@ -11,7 +11,15 @@ const mix = require('laravel-mix');
  |
  */
 
-mix.js('resources/js/app.js', 'public/js')
-    .postCss('resources/css/app.css', 'public/css', [
-        //
-    ]);
+ mix.js('resources/js/general.js', 'public/js/general.js');
+ mix.js('resources/js/universityAdminProfile.js', 'public/js/universityAdminProfile.js');
+ 
+ mix.webpackConfig({
+     output: {
+         library: ['general', 'universityAdminProfile'],
+         libraryTarget: 'umd',
+         umdNamedDefine: true,
+         globalObject: 'this'
+     }
+ });
+ 

@@ -175,6 +175,8 @@ class AuthController extends Controller
         }
 
         // TODO send email about successful changing password
+        $request->session()->flash('message', 'Password successfully changed!');
+
         return response()->json([
             'message' => 'Password successfully changed!',
         ])->setStatusCode(200);

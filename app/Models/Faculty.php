@@ -1,0 +1,70 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class Faculty extends Model
+{
+    use HasFactory;
+
+    /**
+     * @var array<int, string>
+     */
+    protected $fillable = [
+        'university_id',
+        'title',
+    ];
+
+    /**
+     * @var bool
+     */
+    public $timestamps = false;
+
+
+    // --- Model relationships
+
+    /**
+     * @return Collection
+     */
+    public function getCourses(): Collection
+    {
+        return $this->hasMany(Course::class, 'faculty_id', 'id')->get();
+    }
+
+    /**
+     * @return Model
+     */
+    public function getUniversity(): Model
+    {
+        return $this->belongsTo(University::class, 'university_id', 'id')->first();
+    }
+
+    // --- Model getters
+
+    /**
+     * @return int
+     */
+    public function getId(): int
+    {
+        return (int) $this->getAttribute('id');
+    }
+
+    /**
+     * @return int
+     */
+    public function getUniversityId(): int
+    {
+        return (int) $this->getAttribute('university_id');
+    }
+
+    /**
+     * @return string
+     */
+    public function getTitle(): string
+    {
+        return (string) $this->getAttribute('title');
+    }
+}

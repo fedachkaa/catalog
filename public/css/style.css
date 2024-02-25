@@ -801,7 +801,8 @@ video {
   font-weight: 700;
 }
 
-.reg-step-first, .reg-step-second {
+.reg-step-first,
+.reg-step-second {
   margin: 1rem;
   width: 100%;
 }
@@ -930,7 +931,7 @@ video {
   color: rgb(17 24 39 / var(--tw-text-opacity));
 }
 
-.active-tab:hover {
+.active-tab {
   --tw-bg-opacity: 1;
   background-color: rgb(253 230 138 / var(--tw-bg-opacity));
   --tw-text-opacity: 1;
@@ -943,7 +944,9 @@ video {
   font-weight: 600;
 }
 
-.contact-info, .password-block {
+.contact-info,
+.password-block,
+.address-info {
   margin: 1.25rem;
   width: 50%;
   border-width: 2px;
@@ -1022,4 +1025,18 @@ video {
   --tw-border-opacity: 1;
   border-color: rgb(17 24 39 / var(--tw-border-opacity));
   padding: 0.75rem;
+}
+
+.faculty-item {
+  display: flex;
+  width: 100%;
+  flex-direction: row;
+  border-width: 2px;
+  --tw-border-opacity: 1;
+  border-color: rgb(17 24 39 / var(--tw-border-opacity));
+  padding: 0.625rem;
+}
+
+.faculty-info {
+  width: 100%;
 }

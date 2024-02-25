@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class UserRole extends Model
 {
@@ -24,21 +24,20 @@ class UserRole extends Model
         self::USER_ROLE_STUDENT => 'Студент',
     ];
 
-    /** @var int */
-    public $id;
-
-    /** @var string */
-    public $role;
+    /**
+     * @var bool
+     */
+    public $timestamps = false;
 
 
     // --- Model relationships
 
     /**
-     * @return HasMany
+     * @return Collection
      */
-    public function users(): HasMany
+    public function getUsers(): Collection
     {
-        return $this->HasMany(User::class);
+        return $this->hasMany(User::class)->get();
     }
 
 
@@ -49,7 +48,7 @@ class UserRole extends Model
      */
     public function getId(): int
     {
-        return (int) $this->id;
+        return (int) $this->getAttribute('id');
     }
 
     /**
@@ -57,6 +56,6 @@ class UserRole extends Model
      */
     public function getRole(): string
     {
-        return (string) $this->role;
+        return (string) $this->getAttribute('role');
     }
 }
