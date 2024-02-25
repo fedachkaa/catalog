@@ -12,6 +12,7 @@ use App\Repositories\Interfaces\StudentRepositoryInterface;
 use App\Services\UserService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class StudentController extends Controller
 {
@@ -97,5 +98,60 @@ class StudentController extends Controller
             'message' => 'Success',
             'data' => $this->studentRepository->export($student, ['user']),
         ])->setStatusCode(200);
+    }
+
+    /**
+     * @param Request $request
+     * @param University $university
+     * @param Faculty $faculty
+     * @param Course $course
+     * @param Group $group
+     * @return JsonResponse
+     */
+    public function importStudents(Request $request, University $university, Faculty $faculty, Course $course, Group $group): JsonResponse
+    {
+        if ($request->hasFile('students_file') && $request->file('students_file')->isValid()) {
+            $excelFile = $request->file('students_file');
+
+            $spreadsheet = IOFactory::load($excelFile->getPathname());
+            $worksheet = $spreadsheet->getActiveSheet();
+            $data = $worksheet->toArray();
+
+            if (!empty($data)) {
+                $columns = array_shift($data);
+
+                $parsedData = [];
+                foreach ($data as $row) {
+                    $rowData = [];
+                    foreach ($row as $key => $value) {
+                        $columnName = $columns[$key];
+                        switch ($columnName) {
+                            case 'Name':
+                                $rowData['first_name'] = $value;
+                                break;
+                            case 'Surname':
+                                $rowData['last_name'] = $value;
+                                break;
+                            case 'Email':
+                                $rowData['email'] = $value;
+                                break;
+                            case 'Phone':
+                                $rowData['phone_number'] = $value;
+                                break;
+                        }
+                    }
+                    $rowData['role_id'] = UserRole::USER_ROLE_STUDENT;
+                    $rowData['group_id'] = $group->getId();
+                    $parsedData[] = $rowData;
+                }
+                // TODO add saving
+                return response()->json(['data' => $parsedData], 200);
+            } else {
+                return response()->json([
+                    'message' => 'Empty data',
+                ])->setStatusCode(400);
+            }
+        }
+        return response()->json(['data' => []], 200);
     }
 }

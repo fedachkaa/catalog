@@ -46,6 +46,7 @@ Route::post('/api/university/{universityId}/faculty/{facultyId}/course/{courseId
 
 Route::get('/api/university/{universityId}/faculty/{facultyId}/course/{courseId}/group/{groupId}/students', [StudentController::class, 'getGroupStudents'])->middleware('universityWithFacultyCourseGroup.get');
 Route::post('/api/university/{universityId}/faculty/{facultyId}/course/{courseId}/group/{groupId}/students', [StudentController::class, 'saveStudent'])->middleware('universityWithFacultyCourseGroup.get');
+Route::post('/api/university/{universityId}/faculty/{facultyId}/course/{courseId}/group/{groupId}/students-import', [StudentController::class, 'importStudents'])->middleware('universityWithFacultyCourseGroup.get');
 
 Route::put('/user/api/change-password', [AuthController::class, 'changePassword'])->name('user.changePassword');
 Route::get('forget-password', [AuthController::class, 'showForgetPassword'])->name('forget.password.get');

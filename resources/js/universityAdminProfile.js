@@ -27,7 +27,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     $(document).on('click', '.js-add-student', addStudent);
     $(document).on('click', '.js-save-student', saveStudent);
-
+    $(document).on('click', '.js-import-students', importStudents);
+    $(document).on('click', '.js-import-students-save', importStudentsStore);
 });
 
 const getUniversity = function() {
@@ -342,7 +343,40 @@ const saveStudent = function (e) {
             console.error('Помилка:', error);
         }
     });
+}
 
+const importStudents = function (e) {
+    const inputsField = `<div class="js-form-import">
+        <input type="file" class="form-control js-students-file">
+    </div>`;
+    $(inputsField).insertBefore('.js-import-students');
+    $(e.target).addClass('hidden');
+    $('.js-import-students-save').removeClass('hidden');
+}
+
+const importStudentsStore = function (e) {
+    const modal = $('#groupStudents');
+    let formData = new FormData();
+
+    formData.append('students_file', $('.js-students-file')[0].files[0]);
+    formData.append('_token', $(e.target).data('token'));
+
+    $.ajax({
+        url: '/api/university/' + universityId + '/faculty/' + modal.data('facultyid') +'/course/' + modal.data('courseid') +'/group/' + modal.data('groupid') + '/students-import',
+        method: 'POST',
+        data: formData,
+        contentType: false,
+        processData: false,
+        success: function (response) {
+            modal.find('.js-form-fields').remove();
+            modal.find('.js-students-content').append(`<p>` + response.data.user.full_name +`</p>`);
+            $(e.target).addClass('hidden');
+            $('.js-add-student').removeClass('hidden');
+        },
+        error: function (xhr, status, error) {
+            console.error('Помилка:', error);
+        }
+    });
 }
 module.exports = {
     getUniversity,
