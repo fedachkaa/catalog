@@ -2211,7 +2211,6 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 __webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
 window.$ = window.jQuery = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js");
 document.addEventListener("DOMContentLoaded", function () {
-  console.log('DOMContentLoaded');
   $('.js-user-profile').on('click', function () {
     general.toggleTabsSideBar('js-user-profile');
     getUserData();

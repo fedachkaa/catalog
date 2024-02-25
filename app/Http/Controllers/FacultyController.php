@@ -2,12 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\UserRole;
+use App\Repositories\Student;
+use App\Services\UserService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Repositories\Faculty;
 use App\Repositories\University;
 use App\Repositories\Course;
 use App\Repositories\Group;
+use Psy\Util\Json;
 
 class FacultyController extends Controller
 {
@@ -23,6 +27,12 @@ class FacultyController extends Controller
     /** @var Group */
     private $groupRepository;
 
+    /** @var Student */
+    private $studentRepository;
+
+    /** @var UserService */
+    private $userService;
+
     /**
      * @param Faculty $facultyRepository
      * @return void
@@ -31,12 +41,16 @@ class FacultyController extends Controller
         Faculty $facultyRepository,
         University $universityRepository,
         Course $courseRepository,
-        Group $groupRepository
+        Group $groupRepository,
+        Student $studentRepository,
+        UserService $userService
     ) {
         $this->facultyRepository    = $facultyRepository;
         $this->universityRepository = $universityRepository;
         $this->courseRepository     = $courseRepository;
         $this->groupRepository      = $groupRepository;
+        $this->studentRepository = $studentRepository;
+        $this->userService = $userService;
     }
 
     /**
@@ -66,7 +80,7 @@ class FacultyController extends Controller
 
     /**
      * AJAX Route
-     * 
+     *
      * @return JsonResponse
      */
     public function getFaculties(): JsonResponse
@@ -87,7 +101,7 @@ class FacultyController extends Controller
 
     /**
      * AJAX Route
-     * 
+     *
      * @param int $facultyId
      * @return JsonResponse
      */
@@ -104,7 +118,7 @@ class FacultyController extends Controller
 
     /**
      * AJAX Route
-     * 
+     *
      * @param Request $request
      * @return JsonResponse
      */
@@ -129,9 +143,9 @@ class FacultyController extends Controller
         ])->setStatusCode(200);
     }
 
-    /**     
+    /**
      * AJAX Route
-     * 
+     *
      * @param int $courseId
      * @return JsonResponse
      */
@@ -149,7 +163,7 @@ class FacultyController extends Controller
 
     /**
      * AJAX Route
-     * 
+     *
      * @param Request $request
      * @param int $courseId
      * @return JsonResponse
@@ -180,6 +194,55 @@ class FacultyController extends Controller
         return response()->json([
             'message' => 'Success',
             'data' => $this->groupRepository->export($group),
+        ])->setStatusCode(200);
+    }
+
+    /**
+     * @param int $groupId
+     * @return JsonResponse
+     */
+    public function getGroupStudents(int $groupId): JsonResponse
+    {
+        $group = $this->groupRepository->getOne(['id' => $groupId]);
+
+        return response()->json([
+            'message' => 'Success',
+            'data' => $this->studentRepository->exportAll($group->getStudents(), ['user']),
+        ])->setStatusCode(200);
+    }
+
+    /**
+     * @param Request $request
+     * @param int $groupId
+     * @return JsonResponse
+     * @throws \Exception
+     */
+    public function saveStudent(Request $request, int $groupId): JsonResponse
+    {
+        $user = $this->userService->createUser([
+            'role_id' => UserRole::USER_ROLE_STUDENT,
+            'first_name' => $request->post('first_name'),
+            'last_name' => $request->post('last_name'),
+            'user_email' => $request->post('email'),
+            'user_phone_number' => $request->post('phone_number')
+        ]);
+
+        try {
+            $student = $this->studentRepository->getNew([
+                'user_id' => $user->getId(),
+                'group_id' => $groupId,
+            ]);
+            $student->saveOrFail();
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'Internal serve error',
+                'error' => $e->getMessage()
+            ])->setStatusCode(500);
+        }
+
+        return response()->json([
+            'message' => 'Success',
+            'data' => $this->studentRepository->export($student, ['user']),
         ])->setStatusCode(200);
     }
 }

@@ -31,6 +31,7 @@ Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/profile', [UserProfileController::class, 'userProfile'])->name('user.profile');
 
 Route::get('/api/profile', [UserProfileController::class, 'getUserProfile'])->name('user.profile.get');
+
 Route::get('/profile/api/university', [UserProfileController::class, 'getUniversity'])->name('universityAdmin.university.get');
 Route::get('/profile/api/faculties', [FacultyController::class, 'getFaculties']);
 Route::post('/profile/api/faculty/create', [FacultyController::class, 'saveFaculty'])->name('universityAdmin.faculty.post');
@@ -38,7 +39,8 @@ Route::get('/profile/api/faculty/{id}', [FacultyController::class, 'getFaculty']
 Route::post('/profile/api/course/create', [FacultyController::class, 'saveFacultyCourse'])->name('universityAdmin.course.post');
 Route::get('/profile/api/course/{id}/groups', [FacultyController::class, 'getCourseGroups']);
 Route::post('/profile/api/course/{courseId}/group/create', [FacultyController::class, 'saveCourseGroup']);
-
+Route::get('/profile/api/group/{groupId}', [FacultyController::class, 'getGroupStudents']);
+Route::post('/profile/api/group/{groupId}/student/create', [FacultyController::class, 'saveStudent']);
 
 Route::put('/user/api/change-password', [AuthController::class, 'changePassword'])->name('user.changePassword');
 Route::get('forget-password', [AuthController::class, 'showForgetPassword'])->name('forget.password.get');

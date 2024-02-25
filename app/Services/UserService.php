@@ -51,11 +51,13 @@ class UserService
     /**
      * @param array $data
      * @return array
+     *
+     * // TODO refactor it and refactor register
      */
     private function prepareUserData(array $data) : array
     {
         return [
-            'role_id' => UserRole::USER_ROLE_UNIVERSITY_ADMIN,
+            'role_id' => $data['role_id'], //UserRole::USER_ROLE_UNIVERSITY_ADMIN,
             'first_name' => $data['first_name'],
             'last_name' => $data['last_name'],
             'email' => $data['user_email'],

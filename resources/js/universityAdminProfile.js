@@ -30,6 +30,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
     $(document).on('click', '.js-add-group', addGroup);
     $(document).on('click', '.js-save-group', saveGroup);
+    $(document).on('click', '.js-view-group', getGroupStudents);
+
+    $(document).on('click', '.js-add-student', addStudent);
+    $(document).on('click', '.js-save-student', saveStudent);
 
 });
 
@@ -104,22 +108,22 @@ const getFacultyInfo = function(facultyId) {
 
             facultyItem.attr('data-facultyid', response.data.id);
             facultyItem.find('.js-title').text(response.data.title);
-            
+
             if (response.data.courses.length === 0) {
                 facultyItem.find('.js-courses').text('Ще немає курсів');
             } else {
+                $('.js-courses').empty();
                 response.data.courses.forEach(function (course) {
                     facultyItem.find('.js-courses').append(
-                        `<div class="js-course-item" data-courseid=` + response.data.id +`>`  + 
-                            course.course + 
-                            ` курс` + 
+                        `<div class="js-course-item" data-courseid=` + course.id +`>`  +
+                            course.course +
+                            ` курс` +
                             `<i class="fa fa-eye js-view-course"></i>
                             <i class="fa fa-trash"></i>
                         </div>`);
                 });
             }
             facultyItem.find('.js-faculty-info').removeClass('hidden');
-            console.log('Success:', response);
         },
         error: function (xhr, status, error) {
             console.error('Помилка:', error);
@@ -190,8 +194,8 @@ const saveCourse = function(e) {
         },
         success: function (response) {
             $('.js-courses').append(
-                `<div class="js-course-item" data-courseid=` + response.data.id +`>` + 
-                    response.data.course + 
+                `<div class="js-course-item" data-courseid=` + response.data.id +`>` +
+                    response.data.course +
                     ` курс` +
                     `<i class="fa fa-eye js-view-course"></i>
                 </div>`);
@@ -211,21 +215,20 @@ const getCourseGroups = function(e) {
         url: '/profile/api/course/' + courseId + '/groups',
         method: 'GET',
         success: function (response) {
-            const groupsContainer = $('.js-faculty-item .js-groups-info');  
-            groupsContainer.attr('data-courseid', courseId);          
+            const groupsContainer = $('.js-faculty-item .js-groups-info');
+            groupsContainer.attr('data-courseid', courseId);
             if (response.data.length === 0) {
                 groupsContainer.find('.js-groups').text('Ще немає груп');
             } else {
                 response.data.forEach(function (group) {
                     groupsContainer.find('.js-groups').append(
-                        `<div class="js-group-item" data-group=` + group.id +`>`  + 
-                            group.title + 
-                            `<i class="fa fa-eye js-view-course"></i>
+                        `<div class="js-group-item" data-groupid=` + group.id +`>`  +
+                            group.title +
+                            `<i class="fa fa-eye js-view-group"></i>
                         </div>`);
                 });
             }
             groupsContainer.removeClass('hidden');
-            console.log('Success:', response);
         },
         error: function (xhr, status, error) {
             console.error('Помилка:', error);
@@ -252,8 +255,8 @@ const saveGroup = function(e) {
         },
         success: function (response) {
             $('.js-groups').append(
-                `<div class="js-group-item" data-groupid=` + response.data.id +`>` + 
-                    response.data.title + 
+                `<div class="js-group-item" data-groupid=` + response.data.id +`>` +
+                    response.data.title +
                     `<i class="fa fa-eye js-view-group"></i>
                 </div>`
             );
@@ -266,9 +269,88 @@ const saveGroup = function(e) {
             console.error('Помилка:', error);
         }
     });
-
 }
 
+const getGroupStudents = function (e) {
+    const groupId = $(e.target).closest('.js-group-item').data('groupid');
+
+    $.ajax({
+        url: '/profile/api/group/' + groupId,
+        method: 'GET',
+        success: function (response) {
+            const modal =  $('#groupStudents');
+            modal.find('.modal-title').text('Студенти ' + $(e.target).closest('.js-group-item').text());
+            modal.attr('data-groupid', $(e.target).closest('.js-group-item').data('groupid'));
+            modal.find('.js-students-content').empty();
+            if (response.data.length === 0) {
+                modal.find('.js-students-content').append(`<p>Ще немає студентів</p>`);
+            } else {
+                response.data.forEach(function (student) {
+                    modal.find('.js-students-content').append(`<p>`+ student.user.full_name +`</p>`);
+                });
+            }
+            showModal('groupStudents');
+        },
+        error: function (xhr, status, error) {
+            console.error('Помилка:', error);
+        }
+    });
+}
+
+const showModal = function (id) {
+    var modal = document.getElementById(id);
+    modal.style.display = "block";
+
+    var closeBtn = document.getElementsByClassName("close")[0];
+
+    closeBtn.onclick = function() {
+        modal.style.display = "none";
+    }
+    window.onclick = function(event) {
+        if (event.target === modal) {
+            modal.style.display = "none";
+        }
+    }
+}
+
+const addStudent = function (e) {
+    const inputsField = `<div class="js-form-fields">
+        <input type="text" class="form-control js-first-name" placeholder="Введіть ім'я">
+        <input type="text" class="form-control js-last-name" placeholder="Введіть прізвище">
+        <input type="email" class="form-control js-email" placeholder="Введіть електронну пошту">
+        <input type="text" class="form-control js-phone-number" placeholder="Введіть номер телефону">
+    </div>`;
+    $(inputsField).insertBefore('.js-add-student');
+    $(e.target).addClass('hidden');
+    $('.js-save-student').removeClass('hidden');
+};
+
+const saveStudent = function (e) {
+    const modal = $('#groupStudents');
+    const groupId = modal.data('groupid');
+
+    $.ajax({
+        url: '/profile/api/group/' + groupId +'/student/create',
+        method: 'POST',
+        data: {
+            first_name: modal.find('.js-first-name').val(),
+            last_name: modal.find('.js-last-name').val(),
+            email: modal.find('.js-email').val(),
+            phone_number: modal.find('.js-phone-number').val(),
+            _token: $(e.target).data('token'),
+        },
+        success: function (response) {
+            modal.find('.js-form-fields').remove();
+            modal.find('.js-students-content').append(`<p>` + response.data.user.full_name +`</p>`);
+            $(e.target).addClass('hidden');
+            $('.js-add-student').removeClass('hidden');
+        },
+        error: function (xhr, status, error) {
+            console.error('Помилка:', error);
+        }
+    });
+
+}
 module.exports = {
     getUniversity,
     getFaculties,

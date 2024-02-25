@@ -2211,7 +2211,6 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 __webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
 window.$ = window.jQuery = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js");
 document.addEventListener("DOMContentLoaded", function () {
-  console.log('DOMContentLoaded');
   $('.js-user-profile').on('click', function () {
     general.toggleTabsSideBar('js-user-profile');
     getUserData();
@@ -2309,6 +2308,9 @@ document.addEventListener("DOMContentLoaded", function () {
   $(document).on('click', '.js-view-course', getCourseGroups);
   $(document).on('click', '.js-add-group', addGroup);
   $(document).on('click', '.js-save-group', saveGroup);
+  $(document).on('click', '.js-view-group', getGroupStudents);
+  $(document).on('click', '.js-add-student', addStudent);
+  $(document).on('click', '.js-save-student', saveStudent);
 });
 var getUniversity = function getUniversity() {
   $.ajax({
@@ -2371,12 +2373,12 @@ var getFacultyInfo = function getFacultyInfo(facultyId) {
       if (response.data.courses.length === 0) {
         facultyItem.find('.js-courses').text('Ще немає курсів');
       } else {
+        $('.js-courses').empty();
         response.data.courses.forEach(function (course) {
-          facultyItem.find('.js-courses').append("<div class=\"js-course-item\" data-courseid=" + response.data.id + ">" + course.course + " \u043A\u0443\u0440\u0441" + "<i class=\"fa fa-eye js-view-course\"></i>\n                            <i class=\"fa fa-trash\"></i>\n                        </div>");
+          facultyItem.find('.js-courses').append("<div class=\"js-course-item\" data-courseid=" + course.id + ">" + course.course + " \u043A\u0443\u0440\u0441" + "<i class=\"fa fa-eye js-view-course\"></i>\n                            <i class=\"fa fa-trash\"></i>\n                        </div>");
         });
       }
       facultyItem.find('.js-faculty-info').removeClass('hidden');
-      console.log('Success:', response);
     },
     error: function error(xhr, status, _error3) {
       console.error('Помилка:', _error3);
@@ -2452,11 +2454,10 @@ var getCourseGroups = function getCourseGroups(e) {
         groupsContainer.find('.js-groups').text('Ще немає груп');
       } else {
         response.data.forEach(function (group) {
-          groupsContainer.find('.js-groups').append("<div class=\"js-group-item\" data-group=" + group.id + ">" + group.title + "<i class=\"fa fa-eye js-view-course\"></i>\n                        </div>");
+          groupsContainer.find('.js-groups').append("<div class=\"js-group-item\" data-groupid=" + group.id + ">" + group.title + "<i class=\"fa fa-eye js-view-group\"></i>\n                        </div>");
         });
       }
       groupsContainer.removeClass('hidden');
-      console.log('Success:', response);
     },
     error: function error(xhr, status, _error6) {
       console.error('Помилка:', _error6);
@@ -2486,6 +2487,73 @@ var saveGroup = function saveGroup(e) {
     },
     error: function error(xhr, status, _error7) {
       console.error('Помилка:', _error7);
+    }
+  });
+};
+var getGroupStudents = function getGroupStudents(e) {
+  var groupId = $(e.target).closest('.js-group-item').data('groupid');
+  $.ajax({
+    url: '/profile/api/group/' + groupId,
+    method: 'GET',
+    success: function success(response) {
+      var modal = $('#groupStudents');
+      modal.find('.modal-title').text('Студенти ' + $(e.target).closest('.js-group-item').text());
+      modal.attr('data-groupid', $(e.target).closest('.js-group-item').data('groupid'));
+      modal.find('.js-students-content').empty();
+      if (response.data.length === 0) {
+        modal.find('.js-students-content').append("<p>\u0429\u0435 \u043D\u0435\u043C\u0430\u0454 \u0441\u0442\u0443\u0434\u0435\u043D\u0442\u0456\u0432</p>");
+      } else {
+        response.data.forEach(function (student) {
+          modal.find('.js-students-content').append("<p>" + student.user.full_name + "</p>");
+        });
+      }
+      showModal('groupStudents');
+    },
+    error: function error(xhr, status, _error8) {
+      console.error('Помилка:', _error8);
+    }
+  });
+};
+var showModal = function showModal(id) {
+  var modal = document.getElementById(id);
+  modal.style.display = "block";
+  var closeBtn = document.getElementsByClassName("close")[0];
+  closeBtn.onclick = function () {
+    modal.style.display = "none";
+  };
+  window.onclick = function (event) {
+    if (event.target === modal) {
+      modal.style.display = "none";
+    }
+  };
+};
+var addStudent = function addStudent(e) {
+  var inputsField = "<div class=\"js-form-fields\">\n        <input type=\"text\" class=\"form-control js-first-name\" placeholder=\"\u0412\u0432\u0435\u0434\u0456\u0442\u044C \u0456\u043C'\u044F\">\n        <input type=\"text\" class=\"form-control js-last-name\" placeholder=\"\u0412\u0432\u0435\u0434\u0456\u0442\u044C \u043F\u0440\u0456\u0437\u0432\u0438\u0449\u0435\">\n        <input type=\"email\" class=\"form-control js-email\" placeholder=\"\u0412\u0432\u0435\u0434\u0456\u0442\u044C \u0435\u043B\u0435\u043A\u0442\u0440\u043E\u043D\u043D\u0443 \u043F\u043E\u0448\u0442\u0443\">\n        <input type=\"text\" class=\"form-control js-phone-number\" placeholder=\"\u0412\u0432\u0435\u0434\u0456\u0442\u044C \u043D\u043E\u043C\u0435\u0440 \u0442\u0435\u043B\u0435\u0444\u043E\u043D\u0443\">\n    </div>";
+  $(inputsField).insertBefore('.js-add-student');
+  $(e.target).addClass('hidden');
+  $('.js-save-student').removeClass('hidden');
+};
+var saveStudent = function saveStudent(e) {
+  var modal = $('#groupStudents');
+  var groupId = modal.data('groupid');
+  $.ajax({
+    url: '/profile/api/group/' + groupId + '/student/create',
+    method: 'POST',
+    data: {
+      first_name: modal.find('.js-first-name').val(),
+      last_name: modal.find('.js-last-name').val(),
+      email: modal.find('.js-email').val(),
+      phone_number: modal.find('.js-phone-number').val(),
+      _token: $(e.target).data('token')
+    },
+    success: function success(response) {
+      modal.find('.js-form-fields').remove();
+      modal.find('.js-students-content').append("<p>" + response.data.user.full_name + "</p>");
+      $(e.target).addClass('hidden');
+      $('.js-add-student').removeClass('hidden');
+    },
+    error: function error(xhr, status, _error9) {
+      console.error('Помилка:', _error9);
     }
   });
 };
