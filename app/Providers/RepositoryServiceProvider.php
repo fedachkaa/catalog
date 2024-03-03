@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Repositories\Interfaces\TeacherRepositoryInterface;
 use App\Repositories\Interfaces\UserRoleRepositoryInterface;
 use App\Repositories\Student as StudentRepository;
 use App\Repositories\Course as CourseRepository;
@@ -16,6 +17,8 @@ use App\Repositories\Interfaces\UserRepositoryInterface;
 use App\Repositories\University as UniversityRepository;
 use App\Repositories\User as UserRepository;
 use App\Repositories\UserRole as UserRoleRepository;
+use App\Repositories\Teacher as TeacherRepository;
+
 use Illuminate\Support\ServiceProvider;
 
 class RepositoryServiceProvider extends ServiceProvider
@@ -32,6 +35,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(GroupRepositoryInterface::class, GroupRepository::class);
         $this->app->bind(StudentRepositoryInterface::class, StudentRepository::class);
         $this->app->bind(UserRoleRepositoryInterface::class, UserRoleRepository::class);
+        $this->app->bind(TeacherRepositoryInterface::class, TeacherRepository::class);
     }
 
     /**
