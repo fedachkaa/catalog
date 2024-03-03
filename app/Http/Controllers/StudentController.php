@@ -7,9 +7,8 @@ use App\Models\Faculty;
 use App\Models\Group;
 use App\Models\University;
 use App\Models\UserRole;
-use App\Repositories\Interfaces\GroupRepositoryInterface;
 use App\Repositories\Interfaces\StudentRepositoryInterface;
-use App\Services\UserService;
+use App\Services\StudentService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -19,26 +18,19 @@ class StudentController extends Controller
     /** @var StudentRepositoryInterface */
     private $studentRepository;
 
-    /** @var GroupRepositoryInterface */
-    private $groupRepository;
-
-    /** @var UserService */
-    private $userService;
+    /** @var StudentService */
+    private $studentService;
 
     /**
      * @param StudentRepositoryInterface $studentRepository
-     * @param GroupRepositoryInterface $groupRepository
-     * @param UserService $userService
+     * @param StudentService $studentService
      */
     public function __construct(
         StudentRepositoryInterface $studentRepository,
-        GroupRepositoryInterface $groupRepository,
-        UserService $userService
+        StudentService $studentService
     ) {
         $this->studentRepository = $studentRepository;
-        $this->groupRepository = $groupRepository;
-        $this->userService = $userService;
-
+        $this->studentService = $studentService;
     }
 
     /**
@@ -52,11 +44,9 @@ class StudentController extends Controller
      */
     public function getGroupStudents(University $university, Faculty $faculty, Course $course, Group $group): JsonResponse
     {
-        $group = $this->groupRepository->getOne(['id' => $group->getId()]);
-
         return response()->json([
             'message' => 'Success',
-            'data' => $this->studentRepository->exportAll($group->getStudents(), ['user']),
+            'data' => $this->studentService->getStudentsByGroup($group),
         ])->setStatusCode(200);
     }
 
@@ -73,20 +63,15 @@ class StudentController extends Controller
      */
     public function saveStudent(Request $request, University $university, Faculty $faculty, Course $course, Group $group): JsonResponse
     {
-        $user = $this->userService->createUser([
-            'role_id' => UserRole::USER_ROLE_STUDENT,
-            'first_name' => $request->post('first_name'),
-            'last_name' => $request->post('last_name'),
-            'user_email' => $request->post('email'),
-            'user_phone_number' => $request->post('phone_number')
-        ]);
-
         try {
-            $student = $this->studentRepository->getNew([
-                'user_id' => $user->getId(),
+            $student = $this->studentService->saveStudent([
+                'role_id' => UserRole::USER_ROLE_STUDENT,
+                'first_name' => $request->post('first_name'),
+                'last_name' => $request->post('last_name'),
+                'email' => $request->post('email'),
+                'phone_number' => $request->post('phone_number'),
                 'group_id' => $group->getId(),
             ]);
-            $student->saveOrFail();
         } catch (\Throwable $e) {
             return response()->json([
                 'message' => 'Internal serve error',
@@ -117,10 +102,10 @@ class StudentController extends Controller
             $worksheet = $spreadsheet->getActiveSheet();
             $data = $worksheet->toArray();
 
+            $students = [];
             if (!empty($data)) {
                 $columns = array_shift($data);
 
-                $parsedData = [];
                 foreach ($data as $row) {
                     $rowData = [];
                     foreach ($row as $key => $value) {
@@ -142,16 +127,26 @@ class StudentController extends Controller
                     }
                     $rowData['role_id'] = UserRole::USER_ROLE_STUDENT;
                     $rowData['group_id'] = $group->getId();
-                    $parsedData[] = $rowData;
+
+                    try {
+                        $student = $this->studentService->saveStudent($rowData);
+                        $students[] = $this->studentRepository->export($student, ['user']);
+                    } catch (\Throwable $e) {
+                        return response()->json([
+                            'message' => 'Error while saving student: "' . $e->getMessage() . '".',
+                        ])->setStatusCode(500);
+                    }
                 }
-                // TODO add saving
-                return response()->json(['data' => $parsedData], 200);
-            } else {
+
                 return response()->json([
-                    'message' => 'Empty data',
-                ])->setStatusCode(400);
+                    'data' => $students,
+                    'message' => 'Students were successfully saved!',
+                ]);
             }
         }
-        return response()->json(['data' => []], 200);
+
+        return response()->json([
+            'message' => 'Empty data',
+        ])->setStatusCode(400);
     }
 }

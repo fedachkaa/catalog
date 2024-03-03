@@ -2,11 +2,12 @@
 
 namespace App\Models;
 
+use App\Models\Interfaces\UserRoleInterface;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class UserRole extends Model
+class UserRole extends Model implements UserRoleInterface
 {
     use HasFactory;
 

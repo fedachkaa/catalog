@@ -35,7 +35,7 @@ class UserService
             $password = Str::random(12);
 
             /** @var User $user */
-            $user = $this->userRepository->getNew(array_merge($this->prepareUserData($data), [
+            $user = $this->userRepository->getNew(array_merge($data, [
                 'password' => password_hash($password, PASSWORD_BCRYPT),
             ]));
             $user->save();

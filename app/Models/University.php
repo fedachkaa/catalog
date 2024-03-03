@@ -2,10 +2,11 @@
 
 namespace App\Models;
 
+use App\Models\Interfaces\UniversityInterface;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Collection;
 
-class University extends Model
+class University extends Model implements UniversityInterface
 {
     /** @const string  */
     const ACCREDITATION_LEVEL_FIRST = 'I';
