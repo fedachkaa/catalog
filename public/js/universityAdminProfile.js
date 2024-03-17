@@ -2301,6 +2301,10 @@ document.addEventListener("DOMContentLoaded", function () {
     toggleTabsSideBar('js-teachers');
     getTeachers();
   });
+  $('.js-students').on('click', function () {
+    toggleTabsSideBar('js-students');
+    getStudents();
+  });
   $(document).on('click', '.js-add-faculty', addFaculty);
   $(document).on('click', '.js-save-faculty', saveFaculty);
   $(document).on('click', '.js-add-course', addCourse);
@@ -2315,6 +2319,7 @@ document.addEventListener("DOMContentLoaded", function () {
   $(document).on('click', '.js-import-students-save', importStudentsStore);
   $(document).on('click', '.js-add-teacher', addTeacher);
   $(document).on('click', '.js-save-teacher', saveTeacher);
+  $(document).on('click', '.js-search-students', searchStudents);
 });
 var getUniversity = function getUniversity() {
   $.ajax({
@@ -2659,6 +2664,59 @@ var drawSingleFaculty = function drawSingleFaculty(faculty) {
   row.append(addActionCell);
   row.addClass(($('#faculties-table tr').length + 1) % 2 === 0 ? 'row-gray' : 'row-beige');
   tbody.append(row);
+};
+var getStudents = function getStudents() {
+  var query = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+  $.ajax({
+    url: '/api/university/' + universityId + '/students?' + query,
+    method: 'GET',
+    success: function success(response) {
+      console.log(response);
+      displayStudentsData(response.data);
+    },
+    error: function error(xhr, status, _error13) {
+      console.error('Помилка:', _error13);
+    }
+  });
+};
+var displayStudentsData = function displayStudentsData(data) {
+  var tbody = $('#students-table tbody');
+  tbody.empty();
+  data.forEach(function (student, id) {
+    var row = $('<tr>');
+    row.append($('<td>').text(student.user_id));
+    row.append($('<td>').text(student.user.full_name));
+    row.append($('<td>').text(student.faculty.title));
+    row.append($('<td>').text(student.course.course + ' курс'));
+    row.append($('<td>').text(student.group.title));
+    row.addClass(id % 2 === 0 ? 'row-gray' : 'row-beige');
+    tbody.append(row);
+  });
+  toggleContentBlock('js-university-profile', 'admin-profile-content-block', 'js-students-block');
+};
+var searchStudents = function searchStudents() {
+  var query = '';
+  var surnameInput = $('.search-tool input[name="surname"]').val();
+  if (surnameInput) {
+    query += '&surname=' + surnameInput;
+  }
+  var facultyInput = $('.search-tool input[name="faculty"]').val();
+  if (facultyInput) {
+    query += '&faculty=' + facultyInput;
+  }
+  var courseInput = $('.search-tool input[name="course"]').val();
+  if (courseInput) {
+    query += '&course=' + courseInput;
+  }
+  var groupInput = $('.search-tool input[name="group"]').val();
+  if (groupInput) {
+    query += '&group=' + groupInput;
+  }
+  var emailInput = $('.search-tool input[name="email"]').val();
+  if (emailInput) {
+    query += '&email=' + emailInput;
+  }
+  getStudents(query);
 };
 module.exports = {
   getUniversity: getUniversity,

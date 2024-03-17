@@ -54,6 +54,8 @@ class Student extends RepositoryAbstract implements StudentRepositoryInterface
     {
         $query = StudentModel::query();
 
+        $query = $query->join('groups', 'groups.id', '=', 'students.group_id');
+
         if (!empty($filters['id'])) {
             $query = $query->where('id', (int) $filters['id']);
         }
@@ -62,12 +64,20 @@ class Student extends RepositoryAbstract implements StudentRepositoryInterface
             $query = $query->where('user_id', (int) $filters['user_id']);
         }
 
-        if (!empty($filters['course_id'])) {
-            $query = $query->where('course_id', (int) $filters['course_id']);
-        }
-
         if (!empty($filters['group_id'])) {
             $query = $query->where('group_id', (int) $filters['group_id']);
+        }
+
+        if (!empty($filters['groupTitle'])) {
+            $query = $query->where('groups.title', 'LIKE', '%' . $filters['groupTitle'] . '%');
+        }
+
+        if (!empty($filters['university_id'])) {
+            $query = $query->join('courses', 'courses.id', '=', 'groups.course_id')
+                ->join('faculties', 'faculties.id', '=', 'courses.faculty_id')
+                ->join('universities', 'universities.id', '=', 'faculties.university_id');
+
+            $query = $query->where('universities.id', $filters['university_id']);
         }
         return $query->get();
     }

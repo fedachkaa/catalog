@@ -61,6 +61,9 @@
     </div>
     @include('universityAdminProfile.partials.add-teacher-modal')
 
+    <div class="js-students-block hidden admin-profile-content-block">
+        @include('universityAdminProfile.partials.students-block')
+    </div>
 </div>
 
 <script>

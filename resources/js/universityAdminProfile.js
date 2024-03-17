@@ -19,6 +19,11 @@ document.addEventListener("DOMContentLoaded", function () {
         getTeachers();
     });
 
+    $('.js-students').on('click', function () {
+        toggleTabsSideBar('js-students');
+        getStudents();
+    });
+
     $(document).on('click', '.js-add-faculty', addFaculty);
     $(document).on('click', '.js-save-faculty', saveFaculty);
 
@@ -37,6 +42,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     $(document).on('click', '.js-add-teacher', addTeacher);
     $(document).on('click', '.js-save-teacher', saveTeacher);
+
+    $(document).on('click', '.js-search-students', searchStudents)
 
 });
 
@@ -453,6 +460,67 @@ const drawSingleFaculty = function (faculty) {
     tbody.append(row);
 }
 
+const getStudents = function (query = '') {
+    $.ajax({
+        url: '/api/university/' + universityId +'/students?' + query,
+        method: 'GET',
+        success: function (response) {
+            console.log(response);
+            displayStudentsData(response.data);
+        },
+        error: function (xhr, status, error) {
+            console.error('Помилка:', error);
+        }
+    });
+}
+
+const displayStudentsData = function (data) {
+    const tbody = $('#students-table tbody');
+    tbody.empty();
+
+    data.forEach((student, id) => {
+        const row = $('<tr>');
+        row.append($('<td>').text(student.user_id));
+        row.append($('<td>').text(student.user.full_name));
+        row.append($('<td>').text(student.faculty.title));
+        row.append($('<td>').text(student.course.course + ' курс'));
+        row.append($('<td>').text(student.group.title));
+        row.addClass(id % 2 === 0 ? 'row-gray' : 'row-beige');
+        tbody.append(row);
+    });
+    toggleContentBlock('js-university-profile', 'admin-profile-content-block', 'js-students-block');
+}
+
+const searchStudents = function () {
+    let query = '';
+
+    const surnameInput = $('.search-tool input[name="surname"]').val();
+    if (surnameInput) {
+        query += '&surname=' + surnameInput;
+    }
+
+    const facultyInput = $('.search-tool input[name="faculty"]').val();
+    if (facultyInput) {
+        query += '&faculty=' + facultyInput;
+    }
+
+    const courseInput = $('.search-tool input[name="course"]').val();
+    if (courseInput) {
+        query += '&course=' + courseInput;
+    }
+
+    const groupInput = $('.search-tool input[name="group"]').val();
+    if (groupInput) {
+        query += '&group=' + groupInput;
+    }
+
+    const emailInput = $('.search-tool input[name="email"]').val();
+    if (emailInput) {
+        query += '&email=' + emailInput;
+    }
+
+    getStudents(query);
+}
 module.exports = {
     getUniversity,
     getFaculties,

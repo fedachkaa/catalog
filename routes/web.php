@@ -52,6 +52,8 @@ Route::post('/api/university/{universityId}/faculty/{facultyId}/course/{courseId
 Route::get('/api/university/{universityId}/teachers', [TeacherController::class, 'getTeachers'])->middleware('university.get');
 Route::post('/api/university/{universityId}/teachers', [TeacherController::class, 'saveTeacher'])->middleware('university.get');
 
+Route::get('/api/university/{universityId}/students', [StudentController::class, 'getStudents'])->middleware('university.get');
+
 Route::put('/user/api/change-password', [AuthController::class, 'changePassword'])->name('user.changePassword');
 Route::get('forget-password', [AuthController::class, 'showForgetPassword'])->name('forget.password.get');
 Route::post('forget-password', [AuthController::class, 'sendResetLink'])->name('forget.password.post');

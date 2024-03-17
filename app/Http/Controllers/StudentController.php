@@ -34,6 +34,22 @@ class StudentController extends Controller
     }
 
     /**
+     * @param University $university
+     * @return JsonResponse
+     */
+    public function getStudents(Request $request, University $university): JsonResponse
+    {
+        $searchParams = array_merge(['university_id' => $university->getId()], $this->getSearchParams($request));
+
+        $students = $this->studentRepository->getAll($searchParams);
+
+        return response()->json([
+            'message' => 'Success',
+            'data' => $this->studentRepository->exportAll($students, ['user', 'faculty', 'course', 'group'])
+        ])->setStatusCode(200);
+    }
+
+    /**
      * AJAX Route
      *
      * @param University $university
@@ -147,5 +163,19 @@ class StudentController extends Controller
         return response()->json([
             'message' => 'Empty data',
         ])->setStatusCode(400);
+    }
+
+    /**
+     * @param Request $request
+     * @return array
+     */
+    private function getSearchParams(Request $request): array
+    {
+        $searchParams = [];
+        if ($request->query('group')) {
+            $searchParams['groupTitle'] = $request->query('group');
+        }
+
+        return $searchParams;
     }
 }
