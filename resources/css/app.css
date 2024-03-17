@@ -149,3 +149,62 @@
 .faculty-info {
     @apply w-full;
 }
+
+.table-block {
+    @apply w-full p-2 text-center text-xl;
+}
+
+.table-block td {
+    @apply p-2 border-2 border-gray-200;
+}
+
+.row-gray {
+    @apply bg-gray-100;
+}
+
+.row-beige {
+    @apply bg-amber-100;
+}
+
+.action-icon {
+    @apply cursor-pointer p-0.5;
+}
+
+.add-user-btn {
+    @apply font-medium text-lg border-amber-300 border-2 rounded-md bg-amber-100 h-fit p-3 hover:bg-white hover:text-gray-700 my-4;
+}
+
+.add-teacher-modal-content {
+    @apply flex flex-col items-start gap-2.5;
+}
+
+.modal {
+    @apply hidden fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 p-2.5;
+}
+
+.modal-title {
+    @apply text-3xl text-center font-bold pb-2.5 text-gray-700;
+}
+
+.modal-content {
+    @apply bg-white m-auto p-5 w-10/12;
+}
+.add-course-modal-content {
+    @apply bg-white m-auto p-5 w-4/12;
+}
+
+.close {
+    @apply text-gray-500 text-3xl font-bold float-right hover:text-black decoration-0 cursor-pointer;
+}
+
+.list-course-item {
+    @apply hover:font-bold hover:cursor-pointer;
+}
+
+.course-info-modal-content {
+    @apply flex flex-row justify-around;
+}
+
+.course-info-modal-content div {
+    @apply flex-1;
+}

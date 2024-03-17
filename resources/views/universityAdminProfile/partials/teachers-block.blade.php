@@ -1,7 +1,21 @@
 <div class="pl-52">
-
     <div class="faculties-block js-faculties-container">
-        <button class="save-btn js-add-teacher">Додати викладача</button>
-        <button class="save-btn js-save-teacher hidden" data-token="{{ csrf_token() }}">Зберегти</button>
+        <button class="add-user-btn js-add-teacher">Додати викладача</button>
+    </div>
+    <div>
+        <table id="teachers-table" class="table-block">
+            <thead>
+            <tr>
+                <th>№</th>
+                <th>ПІБ</th>
+                <th>Факультет</th>
+                <th>Предмети</th>
+                <th>Дії</th>
+            </tr>
+            </thead>
+            <tbody>
+            <!-- Table body will be populated dynamically -->
+            </tbody>
+        </table>
     </div>
 </div>

@@ -2228,7 +2228,7 @@ var showResponse = function showResponse(status, message) {
 };
 var toggleTabsSideBar = function toggleTabsSideBar(activeTabClass) {
   $('.sidebar-menu-title').each(function () {
-    if ($(this).hasClass('activeTabClass')) {
+    if ($(this).hasClass(activeTabClass)) {
       $(this).addClass('active-tab');
     } else {
       $(this).removeClass('active-tab');

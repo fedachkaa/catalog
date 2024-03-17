@@ -65,7 +65,6 @@ class StudentController extends Controller
     {
         try {
             $student = $this->studentService->saveStudent([
-                'role_id' => UserRole::USER_ROLE_STUDENT,
                 'first_name' => $request->post('first_name'),
                 'last_name' => $request->post('last_name'),
                 'email' => $request->post('email'),

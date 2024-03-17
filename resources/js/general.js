@@ -23,7 +23,7 @@ const showResponse = function (status, message) {
 
 const toggleTabsSideBar = function(activeTabClass) {
     $('.sidebar-menu-title').each(function () {
-        if ($(this).hasClass('activeTabClass')) {
+        if ($(this).hasClass(activeTabClass)) {
             $(this).addClass('active-tab');
         } else {
             $(this).removeClass('active-tab');
