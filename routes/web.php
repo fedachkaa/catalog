@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\UniversityController;
 use App\Http\Controllers\UserProfileController;
@@ -53,6 +54,13 @@ Route::get('/api/university/{universityId}/teachers', [TeacherController::class,
 Route::post('/api/university/{universityId}/teachers', [TeacherController::class, 'saveTeacher'])->middleware('university.get');
 
 Route::get('/api/university/{universityId}/students', [StudentController::class, 'getStudents'])->middleware('university.get');
+
+Route::get('/api/university/{universityId}/subjects', [SubjectController::class, 'getSubjects'])->middleware('university.get');
+Route::post('/api/university/{universityId}/subject/create', [SubjectController::class, 'saveSubject'])->middleware('university.get');
+Route::put('/api/university/{universityId}/subject', [SubjectController::class, 'saveSubject'])->middleware('university.get');
+
+
+
 
 Route::put('/user/api/change-password', [AuthController::class, 'changePassword'])->name('user.changePassword');
 Route::get('forget-password', [AuthController::class, 'showForgetPassword'])->name('forget.password.get');

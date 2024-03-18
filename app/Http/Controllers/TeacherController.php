@@ -30,9 +30,10 @@ class TeacherController extends Controller
      * @param UniversityInterface $university
      * @return JsonResponse
      */
-    public function getTeachers(UniversityInterface $university): JsonResponse
+    public function getTeachers(Request $request, UniversityInterface $university): JsonResponse
     {
-        $teachers = $this->teacherRepository->getAll(['university_id' => $university->getId()]);
+        $searchParams = array_merge($this->getSearchParams($request), ['university_id' => $university->getId()]);
+        $teachers = $this->teacherRepository->getAll($searchParams);
 
         return response()->json([
             'message' => 'Success',
@@ -66,5 +67,20 @@ class TeacherController extends Controller
             'message' => 'Success',
             'data' => $this->teacherRepository->export($teacher, ['user', 'faculty']),
         ])->setStatusCode(200);
+    }
+
+    /**
+     * @param Request $request
+     * @return array
+     */
+    private function getSearchParams(Request $request): array
+    {
+        $searchParams = [];
+
+        if ($request->has('searchText')) {
+            $searchParams['searchText'] = $request->get('searchText');
+        }
+
+        return $searchParams;
     }
 }

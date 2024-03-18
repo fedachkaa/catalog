@@ -2305,6 +2305,10 @@ document.addEventListener("DOMContentLoaded", function () {
     toggleTabsSideBar('js-students');
     getStudents();
   });
+  $('.js-subjects').on('click', function () {
+    toggleTabsSideBar('js-subjects');
+    getSubjects();
+  });
   $(document).on('click', '.js-add-faculty', addFaculty);
   $(document).on('click', '.js-save-faculty', saveFaculty);
   $(document).on('click', '.js-add-course', addCourse);
@@ -2320,6 +2324,9 @@ document.addEventListener("DOMContentLoaded", function () {
   $(document).on('click', '.js-add-teacher', addTeacher);
   $(document).on('click', '.js-save-teacher', saveTeacher);
   $(document).on('click', '.js-search-students', searchStudents);
+  $(document).on('click', '.js-add-subject', addSubject);
+  $(document).on('click', '.js-save-subject', saveSubject);
+  $(document).on('click', '.js-edit-subject', editSubject);
 });
 var getUniversity = function getUniversity() {
   $.ajax({
@@ -2564,7 +2571,7 @@ var importStudentsStore = function importStudentsStore(e) {
     }
   });
 };
-var getTeachers = function getTeachers(e) {
+var getTeachers = function getTeachers() {
   $.ajax({
     url: '/api/university/' + universityId + '/teachers',
     method: 'GET',
@@ -2717,6 +2724,128 @@ var searchStudents = function searchStudents() {
     query += '&email=' + emailInput;
   }
   getStudents(query);
+};
+var getSubjects = function getSubjects() {
+  $.ajax({
+    url: '/api/university/' + universityId + '/subjects',
+    method: 'GET',
+    success: function success(response) {
+      console.log(response);
+      displaySubjectsData(response.data);
+    },
+    error: function error(xhr, status, _error14) {
+      console.error('Помилка:', _error14);
+    }
+  });
+};
+var displaySubjectsData = function displaySubjectsData(data) {
+  var tbody = $('#subjects-table tbody');
+  tbody.empty();
+  data.forEach(function (subject) {
+    drawSingleSubject(subject);
+  });
+  toggleContentBlock('js-university-profile', 'admin-profile-content-block', 'js-subjects-block');
+};
+var addSubject = function addSubject(e) {
+  $('#addEditSubjectModal .js-search-teacher-btn').on('click', searchTeachers);
+  showModal('addEditSubjectModal');
+};
+var editSubject = function editSubject(e) {
+  $('#addEditSubjectModal .js-search-teacher-btn').on('click', searchTeachers);
+  $('#addEditSubjectModal').attr('data-subjectid', $(e.target).data('subjectid'));
+  var teacherIds = $(e.target).closest('td.js-subject-teachers').find('li').map(function () {
+    return $(this).data('id');
+  }).get();
+  console.log($(e.target).closest('td.js-single-subject-title').text());
+  $('#addEditSubjectModal .js-subject-title').val($(e.target).closest('td.js-single-subject-title').text());
+
+  // $('#addEditSubjectModal .js-teachers-list')
+  showModal('addEditSubjectModal');
+};
+var saveSubject = function saveSubject(e) {
+  var teacherIds = $('#addEditSubjectModal .js-teachers-list li').map(function () {
+    return $(this).data('id');
+  }).get();
+  console.log(teacherIds);
+  $.ajax({
+    url: 'api/university/' + universityId + '/subject/create',
+    method: 'POST',
+    data: {
+      title: $('#addEditSubjectModal .js-subject-title').val(),
+      teachersIds: teacherIds,
+      _token: $(e.target).data('token')
+    },
+    success: function success(response) {
+      drawSingleSubject(response.data);
+      $('.js-save-subject').addClass('hidden');
+      $('.js-add-subject').removeClass('hidden');
+    },
+    error: function error(xhr, status, _error15) {
+      console.error('Помилка:', _error15);
+    }
+  });
+};
+var drawSingleSubject = function drawSingleSubject(subject) {
+  var tbody = $('#subjects-table tbody');
+  var row = $("<tr>");
+  row.append($('<td>').text(subject.id));
+  row.append($('<td class="js-single-subject-title">').text(subject.title));
+  var teachersList = $('<ul class="js-subject-teachers">');
+  subject.teachers.forEach(function (teacher) {
+    var listItem = $("<li class=\"list-course-item\" data-id=\"" + teacher.id + "\">").text(teacher.user.full_name);
+    teachersList.append(listItem);
+  });
+  row.append($('<td>').append(teachersList));
+  var addActionCell = $('<td>');
+  var addActionIcon = $('<i>').addClass('fas fa-edit action-icon js-edit-subject').attr('title', 'Редагувати').attr('data-subjectid', subject.id);
+  addActionCell.append(addActionIcon);
+  row.append(addActionCell);
+  row.addClass(($('#subjects-table tr').length + 1) % 2 === 0 ? 'row-gray' : 'row-beige');
+  tbody.append(row);
+};
+var searchTeachers = function searchTeachers() {
+  var searchText = $('#addEditSubjectModal .js-teacher-search').val();
+  $.ajax({
+    url: '/api/university/' + universityId + '/teachers?searchText=' + searchText,
+    method: 'GET',
+    success: function success(response) {
+      var teachersSelect = $('#addEditSubjectModal').find('.js-teachers-select');
+      teachersSelect.empty();
+      teachersSelect.append($('<option >').attr('value', '').text());
+      response.data.forEach(function (teacher) {
+        teachersSelect.append($('<option class="js-teacher-item">').attr('value', teacher.user_id).text(teacher.user.full_name));
+      });
+      initTeachersSelectClick(teachersSelect);
+      initRemoveTeacherClick(teachersSelect);
+      teachersSelect.removeClass('hidden');
+    },
+    error: function error(xhr, status, _error16) {
+      console.error('Помилка:', _error16);
+    }
+  });
+};
+var initTeachersSelectClick = function initTeachersSelectClick(teachersSelect) {
+  teachersSelect.on('change', function () {
+    var selectedTeacherId = $(this).val();
+    var selectedTeacherName = $(this).find('option:selected').text();
+    var teachersList = $('#addEditSubjectModal .js-teachers-list ul');
+    var listItem = $("<li data-id=\"" + selectedTeacherId + "\">").text(selectedTeacherName);
+    var deleteIcon = $('<i>').addClass('fas fa-times js-delete-teacher');
+    listItem.append(deleteIcon);
+    teachersList.append(listItem);
+    $(this).find('option:selected').hide();
+  });
+};
+var initRemoveTeacherClick = function initRemoveTeacherClick(teachersSelect) {
+  $('#addEditSubjectModal .js-teachers-list').on('click', '.js-delete-teacher', function () {
+    var teacherId = parseInt($(this).parent().data('id'), 10);
+    teachersSelect.find('option').each(function () {
+      if ($(this).val() !== teacherId) {
+        $(this).show();
+      }
+    });
+    $(this).parent().remove();
+  });
 };
 module.exports = {
   getUniversity: getUniversity,

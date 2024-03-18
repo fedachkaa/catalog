@@ -36,6 +36,12 @@
                     <span>Студенти</span>
                 </a>
             </li>
+            <li class="sidebar-menu-title js-subjects">
+                <a>
+                    <i class="fa-solid fa-book-open"></i>
+                    <span>Предмети</span>
+                </a>
+            </li>
         </ul>
     </div>
 
@@ -64,8 +70,12 @@
     <div class="js-students-block hidden admin-profile-content-block">
         @include('universityAdminProfile.partials.students-block')
     </div>
+
+    <div class="js-subjects-block hidden admin-profile-content-block">
+        @include('universityAdminProfile.partials.subjects.subjects-block')
+    </div>
 </div>
 
 <script>
-    const universityId = <?= $user['university']['id'] ?? '';?>
+    const universityId = <?= $user['university']['id'] ?? ''; ?>
 </script>
