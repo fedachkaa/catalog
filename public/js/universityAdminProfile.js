@@ -2283,6 +2283,12 @@ module.exports = {
   \************************************************/
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
+function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 __webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
 window.$ = window.jQuery = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js");
 var _require = __webpack_require__(/*! ./general.js */ "./resources/js/general.js"),
@@ -2592,7 +2598,12 @@ var displayTeachersData = function displayTeachersData(data) {
     row.append($('<td>').text(teacher.user_id));
     row.append($('<td>').text(teacher.user.full_name));
     row.append($('<td>').text(teacher.faculty.title));
-    row.append($('<td>').text('Subjects ...'));
+    var subjectsList = $('<ul>').addClass('js-teacher-subjects');
+    teacher.subjects.forEach(function (subject) {
+      var listItem = $('<li>').addClass('list-course-item').attr('data-id', subject.id).text(subject.title);
+      subjectsList.append(listItem);
+    });
+    row.append($('<td>').append(subjectsList));
     var actionsCell = $('<td>');
     var editIcon = $('<i>').addClass('fas fa-edit action-icon');
     var deleteIcon = $('<i>').addClass('fas fa-trash action-icon');
@@ -2753,23 +2764,34 @@ var addSubject = function addSubject(e) {
 var editSubject = function editSubject(e) {
   $('#addEditSubjectModal .js-search-teacher-btn').on('click', searchTeachers);
   $('#addEditSubjectModal').attr('data-subjectid', $(e.target).data('subjectid'));
-  var teacherIds = $(e.target).closest('td.js-subject-teachers').find('li').map(function () {
-    return $(this).data('id');
-  }).get();
-  console.log($(e.target).closest('td.js-single-subject-title').text());
-  $('#addEditSubjectModal .js-subject-title').val($(e.target).closest('td.js-single-subject-title').text());
-
-  // $('#addEditSubjectModal .js-teachers-list')
+  var row = $(e.target).closest('tr');
+  $('#addEditSubjectModal .js-subject-title').val(row.find('.js-single-subject-title').text());
+  var teachersList = row.find('.js-subject-teachers');
+  var editTeachersList = $('#addEditSubjectModal .js-teachers-list ul');
+  teachersList.find('li').each(function () {
+    var listItem = $("<li data-id=\"" + $(this).data('id') + "\">").text($(this).text());
+    var deleteIcon = $('<i>').addClass('fas fa-times js-delete-teacher');
+    listItem.append(deleteIcon);
+    editTeachersList.append(listItem);
+  });
+  console.log($('#addEditSubjectModal .js-subject-title').val());
+  initRemoveTeacherClick();
   showModal('addEditSubjectModal');
 };
 var saveSubject = function saveSubject(e) {
+  var method = 'POST';
+  var url = 'api/university/' + universityId + '/subject';
   var teacherIds = $('#addEditSubjectModal .js-teachers-list li').map(function () {
     return $(this).data('id');
   }).get();
-  console.log(teacherIds);
+  var subjectId = $('#addEditSubjectModal').attr('data-subjectid');
+  if (subjectId) {
+    method = 'PUT';
+    url = 'api/university/' + universityId + '/subject/' + subjectId;
+  }
   $.ajax({
-    url: 'api/university/' + universityId + '/subject/create',
-    method: 'POST',
+    url: url,
+    method: method,
     data: {
       title: $('#addEditSubjectModal .js-subject-title').val(),
       teachersIds: teacherIds,
@@ -2777,31 +2799,51 @@ var saveSubject = function saveSubject(e) {
     },
     success: function success(response) {
       drawSingleSubject(response.data);
-      $('.js-save-subject').addClass('hidden');
-      $('.js-add-subject').removeClass('hidden');
+      $('#addEditSubjectModal').removeAttr('data-subjectid');
+      $('#addEditSubjectModal .js-subject-title').val('');
+      $('#addEditSubjectModal .js-teachers-list ul').empty();
+      hideModal('addEditSubjectModal');
     },
-    error: function error(xhr, status, _error15) {
-      console.error('Помилка:', _error15);
+    error: function error(response) {
+      if (response.responseJSON.errors) {
+        Object.entries(response.responseJSON.errors).forEach(function (_ref) {
+          var _ref2 = _slicedToArray(_ref, 2),
+            key = _ref2[0],
+            errorMessage = _ref2[1];
+          var errorParagraph = $('#addEditSubjectModal').find("p.error-message.".concat(key, "-error-message"));
+          errorParagraph.text(errorMessage);
+        });
+      }
     }
   });
 };
 var drawSingleSubject = function drawSingleSubject(subject) {
-  var tbody = $('#subjects-table tbody');
-  var row = $("<tr>");
-  row.append($('<td>').text(subject.id));
-  row.append($('<td class="js-single-subject-title">').text(subject.title));
-  var teachersList = $('<ul class="js-subject-teachers">');
-  subject.teachers.forEach(function (teacher) {
-    var listItem = $("<li class=\"list-course-item\" data-id=\"" + teacher.id + "\">").text(teacher.user.full_name);
-    teachersList.append(listItem);
-  });
-  row.append($('<td>').append(teachersList));
-  var addActionCell = $('<td>');
-  var addActionIcon = $('<i>').addClass('fas fa-edit action-icon js-edit-subject').attr('title', 'Редагувати').attr('data-subjectid', subject.id);
-  addActionCell.append(addActionIcon);
-  row.append(addActionCell);
-  row.addClass(($('#subjects-table tr').length + 1) % 2 === 0 ? 'row-gray' : 'row-beige');
-  tbody.append(row);
+  var existingRow = $('#subjects-table tbody tr[data-id="' + subject.id + '"]');
+  if (existingRow.length > 0) {
+    existingRow.find('.js-single-subject-title').text(subject.title);
+    var teachersList = existingRow.find('.js-subject-teachers');
+    teachersList.empty();
+    subject.teachers.forEach(function (teacher) {
+      var listItem = $('<li>').addClass('list-course-item').attr('data-id', teacher.id).text(teacher.user.full_name);
+      teachersList.append(listItem);
+    });
+  } else {
+    var newRow = $('<tr>').attr('data-id', subject.id);
+    newRow.append($('<td>').text(subject.id));
+    newRow.append($('<td>').addClass('js-single-subject-title').text(subject.title));
+    var _teachersList = $('<ul>').addClass('js-subject-teachers');
+    subject.teachers.forEach(function (teacher) {
+      var listItem = $('<li>').addClass('list-course-item').attr('data-id', teacher.id).text(teacher.user.full_name);
+      _teachersList.append(listItem);
+    });
+    newRow.append($('<td>').append(_teachersList));
+    var addActionCell = $('<td>');
+    var addActionIcon = $('<i>').addClass('fas fa-edit action-icon js-edit-subject').attr('title', 'Редагувати').attr('data-subjectid', subject.id);
+    addActionCell.append(addActionIcon);
+    newRow.append(addActionCell);
+    newRow.addClass(($('#subjects-table tbody tr').length + 1) % 2 === 0 ? 'row-gray' : 'row-beige');
+    $('#subjects-table tbody').append(newRow);
+  }
 };
 var searchTeachers = function searchTeachers() {
   var searchText = $('#addEditSubjectModal .js-teacher-search').val();
@@ -2816,11 +2858,11 @@ var searchTeachers = function searchTeachers() {
         teachersSelect.append($('<option class="js-teacher-item">').attr('value', teacher.user_id).text(teacher.user.full_name));
       });
       initTeachersSelectClick(teachersSelect);
-      initRemoveTeacherClick(teachersSelect);
+      initRemoveTeacherClick();
       teachersSelect.removeClass('hidden');
     },
-    error: function error(xhr, status, _error16) {
-      console.error('Помилка:', _error16);
+    error: function error(xhr, status, _error15) {
+      console.error('Помилка:', _error15);
     }
   });
 };
@@ -2836,10 +2878,10 @@ var initTeachersSelectClick = function initTeachersSelectClick(teachersSelect) {
     $(this).find('option:selected').hide();
   });
 };
-var initRemoveTeacherClick = function initRemoveTeacherClick(teachersSelect) {
+var initRemoveTeacherClick = function initRemoveTeacherClick() {
   $('#addEditSubjectModal .js-teachers-list').on('click', '.js-delete-teacher', function () {
     var teacherId = parseInt($(this).parent().data('id'), 10);
-    teachersSelect.find('option').each(function () {
+    $('#addEditSubjectModal .js-teachers-select').find('option').each(function () {
       if ($(this).val() !== teacherId) {
         $(this).show();
       }

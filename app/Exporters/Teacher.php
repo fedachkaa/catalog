@@ -16,6 +16,7 @@ class Teacher extends ExporterAbstract
         return [
             'user' => 'user',
             'faculty' => 'faculty',
+            'subjects' => 'subjects',
         ];
     }
 
@@ -55,5 +56,17 @@ class Teacher extends ExporterAbstract
         $facultyRepository = App::get(\App\Repositories\Faculty::class);
 
         return $facultyRepository->export($teacher->getFaculty());
+    }
+
+    /**
+     * @param TeacherModel $teacher
+     * @return array
+     */
+    protected function expandSubjects(TeacherModel $teacher): array
+    {
+        /** @var \App\Repositories\Subject $subjectRepository */
+        $subjectRepository = App::get(\App\Repositories\Subject::class);
+
+        return $subjectRepository->exportAll($teacher->getSubjects()->get());
     }
 }

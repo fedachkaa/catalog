@@ -27,6 +27,7 @@ class TeacherController extends Controller
     }
 
     /**
+     * @param Request $request
      * @param UniversityInterface $university
      * @return JsonResponse
      */
@@ -37,7 +38,7 @@ class TeacherController extends Controller
 
         return response()->json([
             'message' => 'Success',
-            'data' => $this->teacherRepository->exportAll($teachers, ['user', 'faculty']),
+            'data' => $this->teacherRepository->exportAll($teachers, ['user', 'faculty', 'subjects']),
         ])->setStatusCode(200);
     }
 

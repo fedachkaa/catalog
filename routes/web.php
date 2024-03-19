@@ -56,8 +56,8 @@ Route::post('/api/university/{universityId}/teachers', [TeacherController::class
 Route::get('/api/university/{universityId}/students', [StudentController::class, 'getStudents'])->middleware('university.get');
 
 Route::get('/api/university/{universityId}/subjects', [SubjectController::class, 'getSubjects'])->middleware('university.get');
-Route::post('/api/university/{universityId}/subject/create', [SubjectController::class, 'saveSubject'])->middleware('university.get');
-Route::put('/api/university/{universityId}/subject', [SubjectController::class, 'saveSubject'])->middleware('university.get');
+Route::post('/api/university/{universityId}/subject', [SubjectController::class, 'saveSubject'])->middleware('university.get');
+Route::put('/api/university/{universityId}/subject/{subjectId}', [SubjectController::class, 'updateSubject'])->middleware('subject.get');
 
 
 

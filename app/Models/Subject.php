@@ -22,12 +22,11 @@ class Subject extends Model implements SubjectInterface
     public $timestamps = false;
 
     /**
-     * @return Collection
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function getTeachers()
     {
-        return $this->belongsToMany(Teacher::class, 'teacher_subjects', 'subject_id', 'teacher_id', 'id', 'user_id')->get();
-
+        return $this->belongsToMany(Teacher::class, 'teacher_subjects', 'subject_id', 'teacher_id', 'id', 'user_id');
     }
 
     // --- Model getters

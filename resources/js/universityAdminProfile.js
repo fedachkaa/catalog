@@ -370,7 +370,14 @@ const displayTeachersData = function (data) {
         row.append($('<td>').text(teacher.user_id));
         row.append($('<td>').text(teacher.user.full_name));
         row.append($('<td>').text(teacher.faculty.title));
-        row.append($('<td>').text('Subjects ...'));
+
+        const subjectsList = $('<ul>').addClass('js-teacher-subjects');
+        teacher.subjects.forEach(subject => {
+            const listItem = $('<li>').addClass('list-course-item').attr('data-id', subject.id).text(subject.title);
+            subjectsList.append(listItem);
+        });
+        row.append($('<td>').append(subjectsList));
+
         const actionsCell = $('<td>');
         const editIcon = $('<i>').addClass('fas fa-edit action-icon');
         const deleteIcon = $('<i>').addClass('fas fa-trash action-icon');
@@ -559,27 +566,44 @@ const addSubject = function (e) {
     $('#addEditSubjectModal .js-search-teacher-btn').on('click', searchTeachers);
     showModal('addEditSubjectModal');
 }
+
 const editSubject = function (e) {
     $('#addEditSubjectModal .js-search-teacher-btn').on('click', searchTeachers);
     $('#addEditSubjectModal').attr('data-subjectid', $(e.target).data('subjectid'));
-    const teacherIds = $(e.target).closest('td.js-subject-teachers').find('li').map(function() {
-        return $(this).data('id');
-    }).get();
-    console.log($(e.target).closest('td.js-single-subject-title').text());
-    $('#addEditSubjectModal .js-subject-title').val($(e.target).closest('td.js-single-subject-title').text());
+    const row = $(e.target).closest('tr');
 
-    // $('#addEditSubjectModal .js-teachers-list')
+    $('#addEditSubjectModal .js-subject-title').val(row.find('.js-single-subject-title').text());
+
+    const teachersList = row.find('.js-subject-teachers');
+    const editTeachersList = $('#addEditSubjectModal .js-teachers-list ul');
+
+    teachersList.find('li').each(function() {
+        const listItem = $(`<li data-id="` + $(this).data('id') + `">`).text($(this).text());
+        const deleteIcon = $('<i>').addClass('fas fa-times js-delete-teacher');
+        listItem.append(deleteIcon);
+        editTeachersList.append(listItem);
+    });
+
+    initRemoveTeacherClick();
+
     showModal('addEditSubjectModal');
 }
 
 const saveSubject = function (e) {
+    let method = 'POST';
+    let url = 'api/university/'+ universityId +'/subject';
     const teacherIds = $('#addEditSubjectModal .js-teachers-list li').map(function() {
         return $(this).data('id');
     }).get();
-    console.log(teacherIds);
+
+    const subjectId = $('#addEditSubjectModal').attr('data-subjectid');
+    if (subjectId) {
+        method = 'PUT';
+        url = 'api/university/'+ universityId +'/subject/' + subjectId;
+    }
     $.ajax({
-        url: 'api/university/'+ universityId +'/subject/create',
-        method: 'POST',
+        url: url,
+        method: method,
         data: {
             title: $('#addEditSubjectModal .js-subject-title').val(),
             teachersIds: teacherIds,
@@ -587,39 +611,50 @@ const saveSubject = function (e) {
         },
         success: function (response) {
             drawSingleSubject(response.data);
-            $('.js-save-subject').addClass('hidden');
-            $('.js-add-subject').removeClass('hidden');
+            $('#addEditSubjectModal').removeAttr('data-subjectid');
+            $('#addEditSubjectModal .js-subject-title').val('');
+            $('#addEditSubjectModal .js-teachers-list ul').empty();
+
+            hideModal('addEditSubjectModal');
         },
-        error: function (xhr, status, error) {
-            console.error('Помилка:', error);
+        error: function (response) {
+            if (response.responseJSON.errors) {
+                Object.entries(response.responseJSON.errors).forEach(function([key, errorMessage]) {
+                    const errorParagraph = $('#addEditSubjectModal').find(`p.error-message.${key}-error-message`);
+                    errorParagraph.text(errorMessage);
+                });
+            }
         }
     });
 }
 
 const drawSingleSubject = function (subject) {
-    const tbody = $('#subjects-table tbody');
-    const row = $(`<tr>`);
-
-    row.append($('<td>').text(subject.id));
-    row.append($('<td class="js-single-subject-title">').text(subject.title));
-
-    const teachersList = $('<ul class="js-subject-teachers">');
-    subject.teachers.forEach(teacher => {
-        const listItem = $(`<li class="list-course-item" data-id="` + teacher.id +`">`).text(teacher.user.full_name);
-        teachersList.append(listItem);
-    });
-    row.append($('<td>').append(teachersList));
-
-    const addActionCell = $('<td>');
-    const addActionIcon = $('<i>').addClass('fas fa-edit action-icon js-edit-subject')
-        .attr('title', 'Редагувати')
-        .attr('data-subjectid', subject.id);
-    addActionCell.append(addActionIcon);
-    row.append(addActionCell);
-
-    row.addClass(($('#subjects-table tr').length + 1) % 2 === 0 ? 'row-gray' : 'row-beige');
-
-    tbody.append(row);
+    const existingRow = $('#subjects-table tbody tr[data-id="' + subject.id + '"]');
+    if (existingRow.length > 0) {
+        existingRow.find('.js-single-subject-title').text(subject.title);
+        const teachersList = existingRow.find('.js-subject-teachers');
+        teachersList.empty();
+        subject.teachers.forEach(teacher => {
+            const listItem = $('<li>').addClass('list-course-item').attr('data-id', teacher.id).text(teacher.user.full_name);
+            teachersList.append(listItem);
+        });
+    } else {
+        const newRow = $('<tr>').attr('data-id', subject.id);
+        newRow.append($('<td>').text(subject.id));
+        newRow.append($('<td>').addClass('js-single-subject-title').text(subject.title));
+        const teachersList = $('<ul>').addClass('js-subject-teachers');
+        subject.teachers.forEach(teacher => {
+            const listItem = $('<li>').addClass('list-course-item').attr('data-id', teacher.id).text(teacher.user.full_name);
+            teachersList.append(listItem);
+        });
+        newRow.append($('<td>').append(teachersList));
+        const addActionCell = $('<td>');
+        const addActionIcon = $('<i>').addClass('fas fa-edit action-icon js-edit-subject').attr('title', 'Редагувати').attr('data-subjectid', subject.id);
+        addActionCell.append(addActionIcon);
+        newRow.append(addActionCell);
+        newRow.addClass(($('#subjects-table tbody tr').length + 1) % 2 === 0 ? 'row-gray' : 'row-beige');
+        $('#subjects-table tbody').append(newRow);
+    }
 }
 
 const searchTeachers = function () {
@@ -638,7 +673,7 @@ const searchTeachers = function () {
             });
 
             initTeachersSelectClick(teachersSelect);
-            initRemoveTeacherClick(teachersSelect);
+            initRemoveTeacherClick();
             teachersSelect.removeClass('hidden');
         },
         error: function (xhr, status, error) {
@@ -662,10 +697,10 @@ const initTeachersSelectClick = function (teachersSelect) {
     });
 }
 
-const initRemoveTeacherClick = function (teachersSelect) {
+const initRemoveTeacherClick = function () {
     $('#addEditSubjectModal .js-teachers-list').on('click', '.js-delete-teacher', function() {
         const teacherId = parseInt($(this).parent().data('id'), 10);
-        teachersSelect.find('option').each(function() {
+        $('#addEditSubjectModal .js-teachers-select').find('option').each(function() {
             if ($(this).val() !== teacherId) {
                 $(this).show();
             }

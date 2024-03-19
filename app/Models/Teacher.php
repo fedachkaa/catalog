@@ -32,6 +32,16 @@ class Teacher extends Model implements TeacherInterface
     }
 
     /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function getSubjects()
+    {
+        return $this->belongsToMany(Subject::class, 'teacher_subjects', 'teacher_id', 'subject_id', 'user_id', 'id');
+    }
+
+    // -- Model getters
+
+    /**
      * @return int
      */
     public function getUserId(): int
