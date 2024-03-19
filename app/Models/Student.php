@@ -2,10 +2,11 @@
 
 namespace App\Models;
 
+use App\Models\Interfaces\StudentInterface;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Student extends Model
+class Student extends Model implements StudentInterface
 {
     use HasFactory;
 

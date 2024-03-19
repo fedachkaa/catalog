@@ -3,43 +3,6 @@
  * @var array $user
  */
 ?>
-<style>
-    .modal {
-        display: none; /* Початково вікно приховане */
-        position: fixed;
-        z-index: 1;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        overflow: auto;
-        background-color: rgba(0,0,0,0.5); /* Прозорий чорний колір */
-    }
-
-    .modal-content {
-        background-color: #fefefe;
-        margin: 15% auto;
-        padding: 20px;
-        border: 1px solid #888;
-        width: 80%;
-    }
-
-    .close {
-        color: #aaa;
-        float: right;
-        font-size: 28px;
-        font-weight: bold;
-    }
-
-    .close:hover,
-    .close:focus {
-        color: black;
-        text-decoration: none;
-        cursor: pointer;
-    }
-
-</style>
-
 <div class="js-university-profile">
     <div id="nav">
         <ul class="sidebar_nav">
@@ -61,31 +24,28 @@
                     <span>Факультети</span>
                 </a>
             </li>
-            <li class="sidebar-menu-title">
+            <li class="sidebar-menu-title js-teachers">
                 <a>
                     <i class="fa-solid fa-user-tie"></i>
                     <span>Викладачі</span>
                 </a>
             </li>
-            <li class="sidebar-menu-title">
+            <li class="sidebar-menu-title js-students">
                 <a>
                     <i class="fa-solid fa-user-graduate"></i>
                     <span>Студенти</span>
                 </a>
             </li>
+            <li class="sidebar-menu-title js-subjects">
+                <a>
+                    <i class="fa-solid fa-book-open"></i>
+                    <span>Предмети</span>
+                </a>
+            </li>
         </ul>
     </div>
 
-    <div id="groupStudents" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2 class="modal-title"></h2>
-            <button class="save-btn js-add-student">Додати студента </button>
-            <button class="save-btn js-save-student hidden" data-token="{{ csrf_token() }}">Зберегти</button>
-            <div class="js-students-content">
-            </div>
-        </div>
-    </div>
+    @include('universityAdminProfile.partials.add-student-modal')
 
     <div class="js-user-info admin-profile-content-block">
         @include('userProfile.partials.userInfo-block', ['userData' => $user])
@@ -98,8 +58,24 @@
     <div class="js-faculties-block hidden admin-profile-content-block">
         @include('universityAdminProfile.partials.faculties-block')
     </div>
+    @include('universityAdminProfile.partials.course-info-modal')
+    @include('universityAdminProfile.partials.add-course-modal')
+
+
+    <div class="js-teachers-block hidden admin-profile-content-block">
+        @include('universityAdminProfile.partials.teachers-block')
+    </div>
+    @include('universityAdminProfile.partials.add-teacher-modal')
+
+    <div class="js-students-block hidden admin-profile-content-block">
+        @include('universityAdminProfile.partials.students-block')
+    </div>
+
+    <div class="js-subjects-block hidden admin-profile-content-block">
+        @include('universityAdminProfile.partials.subjects.subjects-block')
+    </div>
 </div>
 
 <script>
-    const universityId = <?= $user['university']['id'] ?? '';?>
+    const universityId = <?= $user['university']['id'] ?? ''; ?>
 </script>

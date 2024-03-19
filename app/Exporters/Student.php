@@ -16,6 +16,8 @@ class Student extends ExporterAbstract
         return [
             'user' => 'user',
             'group' => 'group',
+            'course' => 'course',
+            'faculty' => 'faculty',
         ];
     }
 
@@ -55,5 +57,29 @@ class Student extends ExporterAbstract
         $groupRepository = App::get(\App\Repositories\Group::class);
 
         return $groupRepository->export($student->getGroup());
+    }
+
+    /**
+     * @param StudentModel $student
+     * @return array
+     */
+    protected function expandCourse(StudentModel $student): array
+    {
+        /** @var \App\Repositories\Course $courseRepository */
+        $courseRepository = App::get(\App\Repositories\Course::class);
+
+        return $courseRepository->export($student->getGroup()->getCourse());
+    }
+
+    /**
+     * @param StudentModel $student
+     * @return array
+     */
+    protected function expandFaculty(StudentModel $student) : array
+    {
+        /** @var \App\Repositories\Faculty $facultyRepository */
+        $facultyRepository = App::get(\App\Repositories\Faculty::class);
+
+        return $facultyRepository->export($student->getGroup()->getCourse()->getFaculty());
     }
 }

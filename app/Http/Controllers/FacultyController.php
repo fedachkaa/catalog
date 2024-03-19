@@ -50,7 +50,7 @@ class FacultyController extends Controller
 
         return response()->json([
             'message' => 'Success',
-            'data' => $this->facultyRepository->export($faculty),
+            'data' => $this->facultyRepository->export($faculty, ['courses']),
         ])->setStatusCode(200);
     }
 
@@ -67,7 +67,7 @@ class FacultyController extends Controller
         return response()->json([
             'message' => 'Success',
             'data' => [
-                'faculties' =>$this->facultyRepository->exportAll($faculties),
+                'faculties' =>$this->facultyRepository->exportAll($faculties, ['courses']),
                 ],
         ])->setStatusCode(200);
     }

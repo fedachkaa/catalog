@@ -2,11 +2,12 @@
 
 namespace App\Models;
 
+use App\Models\Interfaces\CourseInterface;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Course extends Model
+class Course extends Model implements CourseInterface
 {
     use HasFactory;
 
