@@ -13,8 +13,10 @@ const mix = require('laravel-mix');
 
  mix.js('resources/js/general.js', 'public/js/general.js');
  mix.js('resources/js/universityAdminProfile.js', 'public/js/universityAdminProfile.js');
- 
- mix.webpackConfig({
+ mix.js('resources/js/universityAdminProfile/teachers.js', 'public/js/universityAdminProfile/teachers.js');
+ mix.js('resources/js/universityAdminProfile/subjects.js', 'public/js/universityAdminProfile/subjects.js');
+
+mix.webpackConfig({
      output: {
          library: ['general', 'universityAdminProfile'],
          libraryTarget: 'umd',
@@ -22,4 +24,3 @@ const mix = require('laravel-mix');
          globalObject: 'this'
      }
  });
- 

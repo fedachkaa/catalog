@@ -1,3 +1,8 @@
+<?php
+/**
+ * @var array $user
+ */
+?>
 @extends('layouts.main')
 
 @section('title', 'Profile | UniSpace')
@@ -5,6 +10,7 @@
 @section('content')
     @switch(auth()->user()->getRoleId())
         @case(\App\Models\UserRole::USER_ROLE_UNIVERSITY_ADMIN)
+{{--            @include('universityAdminProfile.partials.sidebar-template', ['user' => $user])--}}
             @include('universityAdminProfile.profile', ['userData' => $user])
             @push('scripts')
                 <script src="{{ asset('js/universityAdminProfile.js') }}"></script>

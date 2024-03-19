@@ -50,16 +50,20 @@ Route::get('/api/university/{universityId}/faculty/{facultyId}/course/{courseId}
 Route::post('/api/university/{universityId}/faculty/{facultyId}/course/{courseId}/group/{groupId}/students', [StudentController::class, 'saveStudent'])->middleware('universityWithFacultyCourseGroup.get');
 Route::post('/api/university/{universityId}/faculty/{facultyId}/course/{courseId}/group/{groupId}/students-import', [StudentController::class, 'importStudents'])->middleware('universityWithFacultyCourseGroup.get');
 
-Route::get('/api/university/{universityId}/teachers', [TeacherController::class, 'getTeachers'])->middleware('university.get');
+Route::get('/api/university/{universityId}/teachers', [TeacherController::class, 'getTeachersList'])->middleware('university.get');
 Route::post('/api/university/{universityId}/teachers', [TeacherController::class, 'saveTeacher'])->middleware('university.get');
 
 Route::get('/api/university/{universityId}/students', [StudentController::class, 'getStudents'])->middleware('university.get');
 
-Route::get('/api/university/{universityId}/subjects', [SubjectController::class, 'getSubjects'])->middleware('university.get');
+Route::get('/api/university/{universityId}/subjects', [SubjectController::class, 'getSubjectsList'])->middleware('university.get');
 Route::post('/api/university/{universityId}/subject', [SubjectController::class, 'saveSubject'])->middleware('university.get');
 Route::put('/api/university/{universityId}/subject/{subjectId}', [SubjectController::class, 'updateSubject'])->middleware('subject.get');
+Route::get('/university/{universityId}/subjects', [SubjectController::class, 'getSubjects'])->middleware('university.get');
 
 
+Route::get('/api/university/{universityId}/teachers', [TeacherController::class, 'getTeachersList'])->middleware('university.get');
+
+Route::get('/profile/university/{universityId}/teachers', [TeacherController::class, 'getTeachers'])->middleware('university.get');
 
 
 Route::put('/user/api/change-password', [AuthController::class, 'changePassword'])->name('user.changePassword');

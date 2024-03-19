@@ -2216,16 +2216,6 @@ document.addEventListener("DOMContentLoaded", function () {
     getUserData();
   });
 });
-var showResponse = function showResponse(status, message) {
-  var newAlert = $('<div>').addClass('alert');
-  if (status === 'success') {
-    newAlert.addClass('alert-success');
-  } else if (status === 'error') {
-    newAlert.addClass('alert-danger');
-  }
-  newAlert.text(message);
-  $('.js-flash-messages').append(newAlert);
-};
 var toggleTabsSideBar = function toggleTabsSideBar(activeTabClass) {
   $('.sidebar-menu-title').each(function () {
     if ($(this).hasClass(activeTabClass)) {
@@ -2253,7 +2243,6 @@ var getUserData = function getUserData() {
       console.log('Успішно!', response);
     },
     error: function error(xhr, status, _error) {
-      // general.showResponse(response.status, response.message);
       console.error('Помилка:', _error);
     }
   });
@@ -2267,12 +2256,30 @@ var displayUserProfileData = function displayUserProfileData(data) {
   userBlock.removeClass('hidden');
   $('.js-university-info').addClass('hidden');
 };
+var showModal = function showModal(id) {
+  var modal = $('#' + id);
+  modal.css('display', 'block');
+  var closeBtn = modal.find('.close');
+  closeBtn.on('click', function () {
+    modal.css('display', 'none');
+  });
+  $(window).on('click', function (event) {
+    if (event.target === modal[0]) {
+      modal.css('display', 'none');
+    }
+  });
+};
+var hideModal = function hideModal(id) {
+  var modal = $('#' + id);
+  modal.css('display', 'none');
+};
 module.exports = {
-  showResponse: showResponse,
   toggleTabsSideBar: toggleTabsSideBar,
   toggleContentBlock: toggleContentBlock,
   getUserData: getUserData,
-  displayUserProfileData: displayUserProfileData
+  displayUserProfileData: displayUserProfileData,
+  showModal: showModal,
+  hideModal: hideModal
 };
 
 /***/ }),

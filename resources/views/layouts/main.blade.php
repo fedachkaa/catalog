@@ -45,13 +45,6 @@
     </nav>
 
     <div class="container">
-        <div class="js-flash-messages">
-            @if (session()->has('message'))
-            <div class="alert alert-success">
-                {{ session('message') }}
-            </div>
-            @endif
-        </div>
         @yield('content')
         @stack('scripts')
     </div>

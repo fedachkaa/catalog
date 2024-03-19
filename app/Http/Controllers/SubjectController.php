@@ -7,6 +7,9 @@ use App\Models\Subject;
 use App\Models\University;
 use App\Repositories\Interfaces\SubjectRepositoryInterface;
 use App\Repositories\Interfaces\TeacherSubjectRepositoryInterface;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 
 class SubjectController extends Controller
@@ -31,9 +34,20 @@ class SubjectController extends Controller
 
     /**
      * @param University $university
+     * @return Application|Factory|View
+     */
+    public function getSubjects(University $university)
+    {
+        return view('universityAdminProfile.partials.subjects.subjects-block');
+    }
+
+    /**
+     * AJAX Route
+     *
+     * @param University $university
      * @return JsonResponse
      */
-    public function getSubjects(University $university): JsonResponse
+    public function getSubjectsList(University $university): JsonResponse
     {
         $subjects = $this->subjectRepository->getAll(['university_id' => $university->getId()]);
 

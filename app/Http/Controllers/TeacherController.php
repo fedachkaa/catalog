@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Interfaces\UniversityInterface;
 use App\Repositories\Interfaces\TeacherRepositoryInterface;
 use App\Services\TeacherService;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -27,11 +30,22 @@ class TeacherController extends Controller
     }
 
     /**
+     * @param UniversityInterface $university
+     * @return Application|Factory|View
+     */
+    public function getTeachers(UniversityInterface $university): View|Factory|Application
+    {
+        return view('universityAdminProfile.partials.teachers.teachers-block');
+    }
+
+    /**
+     * AJAX Route
+     *
      * @param Request $request
      * @param UniversityInterface $university
      * @return JsonResponse
      */
-    public function getTeachers(Request $request, UniversityInterface $university): JsonResponse
+    public function getTeachersList(Request $request, UniversityInterface $university): JsonResponse
     {
         $searchParams = array_merge($this->getSearchParams($request), ['university_id' => $university->getId()]);
         $teachers = $this->teacherRepository->getAll($searchParams);
