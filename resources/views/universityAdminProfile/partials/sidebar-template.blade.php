@@ -20,19 +20,19 @@
                 </a>
             </li>
             <li class="sidebar-menu-title js-faculties">
-                <a>
+                <a href="/university/<?= $user['university']['id']; ?>/faculties">
                     <i class="fa-solid fa-building-columns"></i>
                     <span>Факультети</span>
                 </a>
             </li>
             <li class="sidebar-menu-title js-teachers">
-                <a href="/profile/university/<?= $user['university']['id']; ?>/teachers">
+                <a href="/university/<?= $user['university']['id']; ?>/teachers">
                     <i class="fa-solid fa-user-tie"></i>
                     <span>Викладачі</span>
                 </a>
             </li>
             <li class="sidebar-menu-title js-students">
-                <a>
+                <a href="/university/<?= $user['university']['id']; ?>/students">
                     <i class="fa-solid fa-user-graduate"></i>
                     <span>Студенти</span>
                 </a>

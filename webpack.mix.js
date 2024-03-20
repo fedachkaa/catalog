@@ -11,10 +11,12 @@ const mix = require('laravel-mix');
  |
  */
 
- mix.js('resources/js/general.js', 'public/js/general.js');
- mix.js('resources/js/universityAdminProfile.js', 'public/js/universityAdminProfile.js');
- mix.js('resources/js/universityAdminProfile/teachers.js', 'public/js/universityAdminProfile/teachers.js');
- mix.js('resources/js/universityAdminProfile/subjects.js', 'public/js/universityAdminProfile/subjects.js');
+mix.js('resources/js/general.js', 'public/js/general.js');
+mix.js('resources/js/universityAdminProfile.js', 'public/js/universityAdminProfile.js');
+mix.js('resources/js/universityAdminProfile/teachers.js', 'public/js/universityAdminProfile/teachers.js');
+mix.js('resources/js/universityAdminProfile/subjects.js', 'public/js/universityAdminProfile/subjects.js');
+mix.js('resources/js/universityAdminProfile/students.js', 'public/js/universityAdminProfile/students.js');
+mix.js('resources/js/universityAdminProfile/faculties.js', 'public/js/universityAdminProfile/faculties.js');
 
 mix.webpackConfig({
      output: {

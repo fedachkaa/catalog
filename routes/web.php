@@ -37,33 +37,35 @@ Route::get('/profile', [UserProfileController::class, 'userProfile'])->name('use
 Route::get('/api/profile', [UserProfileController::class, 'getUserProfile'])->name('user.profile.get');
 Route::get('/profile/api/university', [UserProfileController::class, 'getUniversity'])->name('universityAdmin.university.get');
 
-Route::get('/api/university/{universityId}/faculties', [FacultyController::class, 'getFaculties'])->middleware('university.get');
+Route::get('/university/{universityId}/faculties', [FacultyController::class, 'getFaculties'])->middleware('university.get');
+
+Route::get('/api/university/{universityId}/faculties', [FacultyController::class, 'getFacultiesList'])->middleware('university.get');
 Route::post('/api/university/{universityId}/faculty/create', [FacultyController::class, 'saveFaculty'])->middleware('university.get');
 Route::get('/api/university/{universityId}/faculty/{facultyId}', [FacultyController::class, 'getFaculty'])->middleware('universityWithFaculty.get');
 
-Route::post('/api/university/{universityId}/faculty/{facultyId}/course/create', [CourseController::class, 'saveCourse'])->middleware('universityWithFaculty.get');
+Route::get('/api/university/{universityId}/courses', [CourseController::class, 'getCoursesList'])->middleware('university.get');
+Route::post('/api/university/{universityId}/courses/create', [CourseController::class, 'saveCourse'])->middleware('university.get');
 
-Route::get('/api/university/{universityId}/faculty/{facultyId}/course/{courseId}/groups', [GroupController::class, 'getCourseGroups'])->middleware('universityWithFacultyCourse.get');
-Route::post('/api/university/{universityId}/faculty/{facultyId}/course/{courseId}/group/create', [GroupController::class, 'saveGroup'])->middleware('universityWithFacultyCourse.get');
+Route::get('/api/university/{universityId}/groups', [GroupController::class, 'getGroupsList'])->middleware('university.get');
+Route::post('/api/university/{universityId}/groups/create', [GroupController::class, 'saveGroup'])->middleware('university.get');
+
+Route::post('/api/university/{universityId}/students', [StudentController::class, 'saveStudent'])->middleware('university.get');
 
 Route::get('/api/university/{universityId}/faculty/{facultyId}/course/{courseId}/group/{groupId}/students', [StudentController::class, 'getGroupStudents'])->middleware('universityWithFacultyCourseGroup.get');
 Route::post('/api/university/{universityId}/faculty/{facultyId}/course/{courseId}/group/{groupId}/students', [StudentController::class, 'saveStudent'])->middleware('universityWithFacultyCourseGroup.get');
 Route::post('/api/university/{universityId}/faculty/{facultyId}/course/{courseId}/group/{groupId}/students-import', [StudentController::class, 'importStudents'])->middleware('universityWithFacultyCourseGroup.get');
 
-Route::get('/api/university/{universityId}/teachers', [TeacherController::class, 'getTeachersList'])->middleware('university.get');
-Route::post('/api/university/{universityId}/teachers', [TeacherController::class, 'saveTeacher'])->middleware('university.get');
-
-Route::get('/api/university/{universityId}/students', [StudentController::class, 'getStudents'])->middleware('university.get');
+Route::get('/university/{universityId}/students', [StudentController::class, 'getStudents'])->middleware('university.get');
+Route::get('/api/university/{universityId}/students', [StudentController::class, 'getStudentsList'])->middleware('university.get');
 
 Route::get('/api/university/{universityId}/subjects', [SubjectController::class, 'getSubjectsList'])->middleware('university.get');
 Route::post('/api/university/{universityId}/subject', [SubjectController::class, 'saveSubject'])->middleware('university.get');
 Route::put('/api/university/{universityId}/subject/{subjectId}', [SubjectController::class, 'updateSubject'])->middleware('subject.get');
 Route::get('/university/{universityId}/subjects', [SubjectController::class, 'getSubjects'])->middleware('university.get');
 
-
+Route::get('/university/{universityId}/teachers', [TeacherController::class, 'getTeachers'])->middleware('university.get');
 Route::get('/api/university/{universityId}/teachers', [TeacherController::class, 'getTeachersList'])->middleware('university.get');
-
-Route::get('/profile/university/{universityId}/teachers', [TeacherController::class, 'getTeachers'])->middleware('university.get');
+Route::post('/api/university/{universityId}/teachers', [TeacherController::class, 'saveTeacher'])->middleware('university.get');
 
 
 Route::put('/user/api/change-password', [AuthController::class, 'changePassword'])->name('user.changePassword');
