@@ -115,12 +115,9 @@ class StudentController extends Controller
     /**
      * @param Request $request
      * @param University $university
-     * @param Faculty $faculty
-     * @param Course $course
-     * @param Group $group
      * @return JsonResponse
      */
-    public function importStudents(Request $request, University $university, Faculty $faculty, Course $course, Group $group): JsonResponse
+    public function importStudents(Request $request, University $university): JsonResponse
     {
         if ($request->hasFile('students_file') && $request->file('students_file')->isValid()) {
             $excelFile = $request->file('students_file');
@@ -153,7 +150,7 @@ class StudentController extends Controller
                         }
                     }
                     $rowData['role_id'] = UserRole::USER_ROLE_STUDENT;
-                    $rowData['group_id'] = $group->getId();
+                    $rowData['group_id'] = $request->post('group_id');
 
                     try {
                         $student = $this->studentService->saveStudent($rowData);

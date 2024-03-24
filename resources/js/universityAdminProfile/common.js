@@ -1,4 +1,4 @@
-const searchGroups = function (searchParams, callback = () => {}) {
+const searchGroups = function (searchParams, block, callback = () => {}) {
     let queryString = '';
 
     for (const key in searchParams) {
@@ -12,7 +12,7 @@ const searchGroups = function (searchParams, callback = () => {}) {
         url: '/api/university/' + universityId + '/groups?' + queryString,
         method: 'GET',
         success: function (response) {
-            callback(response.data);
+            callback(response.data, block);
         },
         error: function (xhr, status, error) {
             console.error('Помилка:', error);

@@ -2290,8 +2290,8 @@ module.exports = {
   \*******************************************************/
 /***/ ((module) => {
 
-var searchGroups = function searchGroups(searchParams) {
-  var callback = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : function () {};
+var searchGroups = function searchGroups(searchParams, block) {
+  var callback = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : function () {};
   var queryString = '';
   for (var key in searchParams) {
     if (searchParams.hasOwnProperty(key)) {
@@ -2303,7 +2303,7 @@ var searchGroups = function searchGroups(searchParams) {
     url: '/api/university/' + universityId + '/groups?' + queryString,
     method: 'GET',
     success: function success(response) {
-      callback(response.data);
+      callback(response.data, block);
     },
     error: function error(xhr, status, _error) {
       console.error('Помилка:', _error);

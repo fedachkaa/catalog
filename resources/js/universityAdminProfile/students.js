@@ -80,21 +80,21 @@ const searchStudents = function () {
 }
 
 const addStudent = function (e) {
-    searchFaculties();
+    searchFaculties('addStudentModal');
 
     $('#addStudentModal .js-faculty').on('change', function() {
         const selectedFacultyId = $(this).val();
-        searchCourses(selectedFacultyId);
+        searchCourses(selectedFacultyId, 'addStudentModal');
     });
 
     $('#addStudentModal .js-course').on('change', function () {
-        searchGroups({ courseId: $(this).val() }, fillGroupSelect)
+        searchGroups({ courseId: $(this).val() }, 'addStudentModal', fillGroupSelect);
     });
     showModal('addStudentModal');
 };
 
-const fillGroupSelect = function (groups) {
-    const groupsSelect = $('#addStudentModal').find('.js-group');
+const fillGroupSelect = function (groups, block) {
+    const groupsSelect = $('#' + block).find('.js-group');
     groupsSelect.empty();
     groupsSelect.append($('<option>').attr('value', '').text('Виберіть групу'));
 
@@ -139,23 +139,32 @@ const saveStudent = function (e) {
 }
 
 const importStudents = function (e) {
-    const inputsField = `<div class="js-form-import">
-        <input type="file" class="form-control js-students-file">
-    </div>`;
-    $(inputsField).insertBefore($('#courseInfo').find('.js-new-student-form .js-save-student'));
-    // $(e.target).addClass('hidden'); // add disable class
-    $('.js-import-students-save').removeClass('hidden');
+    searchFaculties('importStudentModal');
+
+    $('#importStudentModal .js-faculty').on('change', function() {
+        const selectedFacultyId = $(this).val();
+        searchCourses(selectedFacultyId, 'importStudentModal');
+    });
+
+    $('#importStudentModal .js-course').on('change', function () {
+        searchGroups({ courseId: $(this).val() }, 'importStudentModal', fillGroupSelect);
+
+    });
+    showModal('importStudentModal');
 }
 
 const importStudentsStore = function (e) {
-    const modal = $('#courseInfo');
+    const modal = $('#importStudentModal');
     let formData = new FormData();
 
+    formData.append('faculty_id', modal.find('.js-faculty').val());
+    formData.append('course_id', modal.find('.js-course').val());
+    formData.append('group_id', modal.find('.js-group').val());
     formData.append('students_file', $('.js-students-file')[0].files[0]);
     formData.append('_token', $(e.target).data('token'));
 
     $.ajax({
-        url: '/api/university/' + universityId + '/faculty/' + modal.data('facultyid') +'/course/' + modal.data('courseid') +'/group/' + modal.data('groupid') + '/students-import',
+        url: '/api/university/' + universityId + '/students-import',
         method: 'POST',
         data: formData,
         contentType: false,
@@ -164,7 +173,6 @@ const importStudentsStore = function (e) {
             modal.find('.js-form-fields').remove();
             modal.find('.js-students-content').append(`<p>` + response.data.user.full_name +`</p>`);
             $(e.target).addClass('hidden');
-            // $('.js-add-student').removeClass('hidden'); remove disable class
         },
         error: function (xhr, status, error) {
             console.error('Помилка:', error);
@@ -172,12 +180,12 @@ const importStudentsStore = function (e) {
     });
 }
 
-const searchFaculties = function () {
+const searchFaculties = function (block) {
     $.ajax({
         url: '/api/university/' + universityId + '/faculties',
         method: 'GET',
         success: function (response) {
-            const facultySelect = $('#addStudentModal').find('.js-faculty');
+            const facultySelect = $('#' + block).find('.js-faculty');
             facultySelect.empty();
             facultySelect.append($('<option>').attr('value', '').text('Виберіть факультет'));
 
@@ -193,12 +201,12 @@ const searchFaculties = function () {
     });
 }
 
-const searchCourses = function (facultyId) {
+const searchCourses = function (facultyId, block) {
     $.ajax({
         url: '/api/university/' + universityId + '/courses?facultyId=' + facultyId,
         method: 'GET',
         success: function (response) {
-            const coursesSelect = $('#addStudentModal').find('.js-course');
+            const coursesSelect = $('#' + block).find('.js-course');
             coursesSelect.empty();
             coursesSelect.append($('<option>').attr('value', '').text('Виберіть курс'));
 

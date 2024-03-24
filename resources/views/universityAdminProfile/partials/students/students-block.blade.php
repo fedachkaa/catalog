@@ -69,7 +69,7 @@
     </div>
 
     @include('universityAdminProfile.partials.students.add-students-modal')
-
+    @include('universityAdminProfile.partials.students.import-students-modal')
 @endsection
 
 @push('scripts')
