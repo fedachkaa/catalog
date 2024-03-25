@@ -2,6 +2,9 @@
 
 namespace App\Providers;
 
+use App\Repositories\Interfaces\CatalogRepositoryInterface;
+use App\Repositories\Interfaces\CatalogSupervisorRepositoryInterface;
+use App\Repositories\Interfaces\CatalogTopicRepositoryInterface;
 use App\Repositories\Interfaces\SubjectRepositoryInterface;
 use App\Repositories\Interfaces\TeacherRepositoryInterface;
 use App\Repositories\Interfaces\TeacherSubjectRepositoryInterface;
@@ -22,6 +25,9 @@ use App\Repositories\UserRole as UserRoleRepository;
 use App\Repositories\Teacher as TeacherRepository;
 use App\Repositories\Subject as SubjectRepository;
 use App\Repositories\TeacherSubject as TeacherSubjectRepository;
+use App\Repositories\Catalog as CatalogRepository;
+use App\Repositories\CatalogTopic as CatalogTopicRepository;
+use App\Repositories\CatalogSupervisor as CatalogSupervisorRepository;
 
 use Illuminate\Support\ServiceProvider;
 
@@ -42,6 +48,9 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(TeacherRepositoryInterface::class, TeacherRepository::class);
         $this->app->bind(SubjectRepositoryInterface::class, SubjectRepository::class);
         $this->app->bind(TeacherSubjectRepositoryInterface::class, TeacherSubjectRepository::class);
+        $this->app->bind(CatalogRepositoryInterface::class, CatalogRepository::class);
+        $this->app->bind(CatalogTopicRepositoryInterface::class, CatalogTopicRepository::class);
+        $this->app->bind(CatalogSupervisorRepositoryInterface::class, CatalogSupervisorRepository::class);
     }
 
     /**
