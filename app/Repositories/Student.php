@@ -108,6 +108,7 @@ class Student extends RepositoryAbstract implements StudentRepositoryInterface
 
         if (
             !empty($filter['groupTitle']) ||
+            !empty($filter['group_id']) ||
             !empty($filter['university_id']) ||
             !empty($filter['faculty_id']) ||
             !empty($filter['course_id']) ||

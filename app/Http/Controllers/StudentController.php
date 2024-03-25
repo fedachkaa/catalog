@@ -3,9 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\PostPutStudentRequest;
-use App\Models\Course;
-use App\Models\Faculty;
-use App\Models\Group;
 use App\Models\University;
 use App\Models\UserRole;
 use App\Repositories\Interfaces\StudentRepositoryInterface;
@@ -62,23 +59,6 @@ class StudentController extends Controller
         return response()->json([
             'message' => 'Success',
             'data' => $this->studentRepository->exportAll($students, ['user', 'faculty', 'course', 'group'])
-        ])->setStatusCode(200);
-    }
-
-    /**
-     * AJAX Route
-     *
-     * @param University $university
-     * @param Faculty $faculty
-     * @param Course $course
-     * @param Group $group
-     * @return JsonResponse
-     */
-    public function getGroupStudents(University $university, Faculty $faculty, Course $course, Group $group): JsonResponse
-    {
-        return response()->json([
-            'message' => 'Success',
-            'data' => $this->studentService->getStudentsByGroup($group),
         ])->setStatusCode(200);
     }
 
@@ -185,12 +165,20 @@ class StudentController extends Controller
             $searchParams['groupTitle'] = $request->query('group');
         }
 
+        if ($request->query('groupId')) {
+            $searchParams['group_id'] = $request->query('groupId');
+        }
+
         if ($request->query('surname')) {
             $searchParams['surname'] = $request->query('surname');
         }
 
         if ($request->query('course')) {
             $searchParams['courseTitle'] = $request->query('course');
+        }
+
+        if ($request->query('courseId')) {
+            $searchParams['course_id'] = $request->query('courseId');
         }
 
         if ($request->query('faculty')) {

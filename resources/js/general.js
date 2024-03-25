@@ -76,6 +76,15 @@ const hideModal = function (id) {
     modal.css('display', 'none');
 }
 
+const clearModal = function (id, attributesToRemove) {
+    const modal = $('#' + id);
+
+    modal.find('input').val('');
+    modal.find('select').val('');
+    modal.find('p.error-message').empty();
+    attributesToRemove.forEach(attr => {
+        modal.removeAttr('data-' + attr);
+    });}
 
 module.exports = {
     toggleTabsSideBar,
@@ -84,4 +93,5 @@ module.exports = {
     displayUserProfileData,
     showModal,
     hideModal,
+    clearModal,
 }

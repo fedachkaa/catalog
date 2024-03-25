@@ -4,5 +4,6 @@
     "/js/universityAdminProfile/teachers.js": "/js/universityAdminProfile/teachers.js",
     "/js/universityAdminProfile/subjects.js": "/js/universityAdminProfile/subjects.js",
     "/js/universityAdminProfile/students.js": "/js/universityAdminProfile/students.js",
-    "/js/universityAdminProfile/faculties.js": "/js/universityAdminProfile/faculties.js"
+    "/js/universityAdminProfile/faculties.js": "/js/universityAdminProfile/faculties.js",
+    "/js/universityAdminProfile/university.js": "/js/universityAdminProfile/university.js"
 }

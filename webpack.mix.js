@@ -17,6 +17,7 @@ mix.js('resources/js/universityAdminProfile/teachers.js', 'public/js/universityA
 mix.js('resources/js/universityAdminProfile/subjects.js', 'public/js/universityAdminProfile/subjects.js');
 mix.js('resources/js/universityAdminProfile/students.js', 'public/js/universityAdminProfile/students.js');
 mix.js('resources/js/universityAdminProfile/faculties.js', 'public/js/universityAdminProfile/faculties.js');
+mix.js('resources/js/universityAdminProfile/university.js', 'public/js/universityAdminProfile/university.js');
 
 mix.webpackConfig({
      output: {

@@ -2273,13 +2273,23 @@ var hideModal = function hideModal(id) {
   var modal = $('#' + id);
   modal.css('display', 'none');
 };
+var clearModal = function clearModal(id, attributesToRemove) {
+  var modal = $('#' + id);
+  modal.find('input').val('');
+  modal.find('select').val('');
+  modal.find('p.error-message').empty();
+  attributesToRemove.forEach(function (attr) {
+    modal.removeAttr('data-' + attr);
+  });
+};
 module.exports = {
   toggleTabsSideBar: toggleTabsSideBar,
   toggleContentBlock: toggleContentBlock,
   getUserData: getUserData,
   displayUserProfileData: displayUserProfileData,
   showModal: showModal,
-  hideModal: hideModal
+  hideModal: hideModal,
+  clearModal: clearModal
 };
 
 /***/ }),

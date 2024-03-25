@@ -8,13 +8,13 @@
     <div id="nav">
         <ul class="sidebar_nav">
             <li class="sidebar-menu-title active-tab js-user-profile">
-                <a>
+                <a href="/profile">
                     <i class="fas fa-user"></i>
                     <span>Особисті дані</span>
                 </a>
             </li>
             <li class="sidebar-menu-title js-university">
-                <a>
+                <a href="/university/<?= $user['university']['id']; ?>">
                     <i class="fa-solid fa-building-columns"></i>
                     <span>Університет</span>
                 </a>

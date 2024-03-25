@@ -1,4 +1,4 @@
-const { showModal, hideModal, toggleTabsSideBar } = require('./../general.js');
+const { showModal, hideModal, clearModal, toggleTabsSideBar } = require('./../general.js');
 const { searchGroups } = require('./common.js');
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', function () {
     getFaculties();
 
     $(document).on('click', '.js-add-faculty', addFaculty);
+    $(document).on('click', '.js-edit-faculty', editFaculty)
     $(document).on('click', '.js-save-faculty', saveFaculty);
 
     $(document).on('click', '.js-add-course', addCourse);
@@ -16,7 +17,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
     $(document).on('click', '.js-add-group', addGroup);
     $(document).on('click', '.js-save-group', saveGroup);
+
+    $(document).on('click', '.js-add-student', openAddStudent);
 });
+
+const openAddStudent = function () {
+    const newWindow = window.open('/university/' + universityId + '/students', '_blank');
+    newWindow.onload = function() {
+        // TODO add open modal with faculty and course and group
+        showModal('addStudentModal');
+    };
+}
 
 const getFaculties = function() {
     $.ajax({
@@ -32,28 +43,45 @@ const getFaculties = function() {
 }
 
 const addFaculty = function(e) {
-    const inputField = `<input type="text" class="form-control js-faculty-title">`;
-    $(inputField).insertBefore('.js-add-faculty');
-    $(e.target).addClass('hidden');
-    $('.js-save-faculty').removeClass('hidden');
+    showModal('addEditFacultyModal');
+}
+
+const editFaculty = function (e) {
+    $('#addEditFacultyModal').attr('data-facultyid', $(e.target).data('facultyid'));
+    const row = $(e.target).closest('tr');
+    $('#addEditFacultyModal .js-faculty-title').val(row.find('.js-single-faculty-title').text());
+    showModal('addEditFacultyModal');
 }
 
 const saveFaculty = function(e) {
+    let method = 'POST';
+    let url = '/api/university/'+ universityId +'/faculty/create';
+
+    const modal = $('#addEditFacultyModal');
+    const facultyId = modal.attr('data-facultyid');
+    if (facultyId) {
+        method = 'PUT';
+        url = '/api/university/'+ universityId +'/faculty/' + facultyId;
+    }
     $.ajax({
-        url: 'api/university/'+ universityId +'/faculty/create',
-        method: 'POST',
+        url: url,
+        method: method,
         data: {
-            university_id: $('.js-faculties-block').data('universityid'),
-            title: $('.js-faculty-title').val(),
+            title: modal.find('.js-faculty-title').val(),
             _token: $(e.target).data('token'),
         },
         success: function (response) {
             drawSingleFaculty(response.data);
-            $('.js-save-faculty').addClass('hidden');
-            $('.js-add-faculty').removeClass('hidden');
+            hideModal('addEditFacultyModal');
+            clearModal('addEditFacultyModal', ['facultyid']);
         },
-        error: function (xhr, status, error) {
-            console.error('Помилка:', error);
+        error: function (response) {
+            if (response.responseJSON.errors) {
+                Object.entries(response.responseJSON.errors).forEach(function([key, errorMessage]) {
+                    const errorParagraph = $('#addEditFacultyModal').find(`p.error-message.${key}-error-message`);
+                    errorParagraph.text(errorMessage);
+                });
+            }
         }
     });
 }
@@ -68,30 +96,40 @@ const displayFacultiesData = function(data) {
 }
 
 const drawSingleFaculty = function (faculty) {
-    const tbody = $('#faculties-table tbody');
-    const row = $(`<tr data-facultyid=` + faculty.id +`>`);
+    const existingRow = $('#faculties-table tbody tr[data-facultyid="' + faculty.id + '"]');
+    if (existingRow.length > 0) {
+        existingRow.find('.js-single-faculty-title').text(faculty.title);
+    } else {
+        const tbody = $('#faculties-table tbody');
+        const row = $(`<tr data-facultyid=` + faculty.id + `>`);
 
-    row.append($('<td>').text(faculty.id));
-    row.append($('<td>').text(faculty.title));
+        row.append($('<td>').text(faculty.id));
+        row.append($('<td class="js-single-faculty-title">').text(faculty.title));
 
-    const coursesList = $('<ul class="js-list-courses">');
-    faculty.courses.forEach(course => {
-        const listItem = $(`<li class="list-course-item js-view-course" data-id="` + course.id +`">`).text(course.course + ' курс');
-        coursesList.append(listItem);
-    });
+        const coursesList = $('<ul class="js-list-courses">');
+        faculty.courses.forEach(course => {
+            const listItem = $(`<li class="list-course-item js-view-course" data-id="` + course.id + `">`).text(course.course + ' курс');
+            coursesList.append(listItem);
+        });
 
-    row.append($('<td>').append(coursesList));
+        row.append($('<td>').append(coursesList));
 
-    const addActionCell = $('<td>');
-    const addActionIcon = $('<i>').addClass('fas fa-plus action-icon js-add-course')
-        .attr('title', 'Додати курс')
-        .attr('data-facultyid', faculty.id);
-    addActionCell.append(addActionIcon);
-    row.append(addActionCell);
+        const addActionCell = $('<td>');
+        const addActionIcon = $('<i>').addClass('fas fa-plus action-icon js-add-course')
+            .attr('title', 'Додати курс')
+            .attr('data-facultyid', faculty.id);
+        const editFaculty = $('<i>').addClass('fas fa-edit action-icon js-edit-faculty')
+            .attr('title', 'Редагувати факультет')
+            .attr('data-facultyid', faculty.id);
 
-    row.addClass(($('#faculties-table tr').length + 1) % 2 === 0 ? 'row-gray' : 'row-beige');
+        addActionCell.append(addActionIcon, editFaculty);
 
-    tbody.append(row);
+        row.append(addActionCell);
+
+        row.addClass(($('#faculties-table tr').length + 1) % 2 === 0 ? 'row-gray' : 'row-beige');
+
+        tbody.append(row);
+    }
 }
 
 const addCourse = function(e) {
@@ -158,7 +196,7 @@ const getCourseGroups = function(e) {
     const courseId = $(e.target).data('id');
     const facultyId = $(e.target).closest('tr').data('facultyid');
 
-    searchGroups({ courseId: courseId }, drawCourseInfo);
+    searchGroups({ courseId: courseId }, 'courseInfo', drawCourseInfo);
 
     $('#courseInfo').attr('data-facultyid', facultyId).attr('data-courseid', courseId);
 
@@ -188,7 +226,7 @@ const getGroupStudents = function (e) {
     const facultyId = $('#courseInfo').data('facultyid');
 
     $.ajax({
-        url: '/api/university/' + universityId + '/faculty/' + facultyId +'/course/' + courseId +'/group/' + groupId + '/students',
+        url: '/api/university/' + universityId + '/students?faculty=' + facultyId +'&courseId=' + courseId +'&groupId=' + groupId,
         method: 'GET',
         success: function (response) {
             const modal =  $('#courseInfo');

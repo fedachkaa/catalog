@@ -4,8 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CreateUniversityRequest;
 use App\Models\University;
+use App\Repositories\Interfaces\UniversityRepositoryInterface;
 use App\Services\UniversityService;
 use App\Services\UserService;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
@@ -18,14 +21,22 @@ class UniversityController extends Controller
     /** @var UserService */
     private $userService;
 
+    /** @var UniversityRepositoryInterface */
+    private $universityRepository;
+
     /**
      * @param UniversityService $universityService
      * @param UserService $userService
+     * @param UniversityRepositoryInterface $universityRepository
      */
-    public function __construct(UniversityService $universityService, UserService $userService)
-    {
+    public function __construct(
+        UniversityService $universityService,
+        UserService $userService,
+        UniversityRepositoryInterface $universityRepository,
+    ){
         $this->universityService = $universityService;
         $this->userService = $userService;
+        $this->universityRepository = $universityRepository;
     }
 
     /**
@@ -62,5 +73,16 @@ class UniversityController extends Controller
         return response()->json([
             'data' => $user->toArray(),
         ])->setStatusCode(200);
+    }
+
+    /**
+     * @param University $university
+     * @return Application|Factory|View
+     */
+    public function getUniversity(University $university): View|Factory|Application
+    {
+        $university = $this->universityRepository->export($university);
+
+        return view('universityAdminProfile.partials.university.university-info-block', compact('university'));
     }
 }

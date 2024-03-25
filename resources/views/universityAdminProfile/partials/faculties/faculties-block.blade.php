@@ -27,6 +27,7 @@
             </div>
         </div>
     </div>
+    @include('universityAdminProfile.partials.faculties.add-edit-faculty-modal')
     @include('universityAdminProfile.partials.faculties.add-course-modal')
     @include('universityAdminProfile.partials.faculties.course-info-modal')
 @endsection
