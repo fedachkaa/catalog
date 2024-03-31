@@ -2,11 +2,11 @@
 
 namespace App\Models;
 
-use App\Models\Interfaces\CatalogSupervisorInterface;
+use App\Models\Interfaces\CatalogGroupInterface;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class CatalogSupervisor extends Model implements CatalogSupervisorInterface
+class CatalogGroup extends Model implements CatalogGroupInterface
 {
     use HasFactory;
 
@@ -15,7 +15,7 @@ class CatalogSupervisor extends Model implements CatalogSupervisorInterface
      */
     protected $fillable = [
         'catalog_id',
-        'teacher_id',
+        'group_id',
     ];
 
     /**
@@ -36,9 +36,9 @@ class CatalogSupervisor extends Model implements CatalogSupervisorInterface
     /**
      * @return Model
      */
-    public function getTeacher(): Model
+    public function getGroup(): Model
     {
-        return $this->belongsTo(Teacher::class, 'teacher_id', 'user_id')->first();
+        return $this->belongsTo(Group::class, 'group_id', 'id')->first();
     }
 
     // --- Model getters
@@ -54,8 +54,8 @@ class CatalogSupervisor extends Model implements CatalogSupervisorInterface
     /**
      * @return int
      */
-    public function getTeacherId(): int
+    public function getGroupId(): int
     {
-        return (int) $this->getAttribute('teacher_id');
+        return (int) $this->getAttribute('group_id');
     }
 }

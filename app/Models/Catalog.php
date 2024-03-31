@@ -17,31 +17,29 @@ class Catalog extends Model implements CatalogInterface
 
     /** @const string[] */
     const AVAILABLE_CATALOG_TYPES = [
-      self::TYPE_CATALOG_COURSE_WORK => 'Course work',
-      self::TYPE_CATALOG_DIPLOMA_WORK => 'Diploma work',
+      self::TYPE_CATALOG_COURSE_WORK => 'Курсова робота',
+      self::TYPE_CATALOG_DIPLOMA_WORK => 'Дипломна робота',
     ];
 
     /**
      * @var string[]
      */
     protected $fillable = [
-        'group_id',
-        'type'
+        'type',
+        'is_active',
+        'created_at',
+        'updated_at',
+        'activated_at',
     ];
-
-    /**
-     * @var bool
-     */
-    public $timestamps = false;
 
     // --- Model relationships
 
     /**
-     * @return Model
+     * @return Collection
      */
-    public function getGroup(): Model
+    public function getGroups(): Collection
     {
-        return $this->belongsTo(Group::class, 'group_id', 'id')->first();
+        return $this->hasMany(CatalogGroup::class, 'catalog_id', 'id')->get();
     }
 
     /**
@@ -71,18 +69,42 @@ class Catalog extends Model implements CatalogInterface
     }
 
     /**
-     * @return int
-     */
-    public function getGroupId(): int
-    {
-        return (int) $this->getAttribute('group_id');
-    }
-
-    /**
      * @return string
      */
     public function getType(): string
     {
         return (string) $this->getAttribute('type');
+    }
+
+    /**
+     * @return int
+     */
+    public function getIsActive(): int
+    {
+        return (int) $this->getAttribute('is_active');
+    }
+
+    /**
+     * @return string
+     */
+    public function getCreatedAt(): string
+    {
+        return (string) $this->getAttribute('created_at');
+    }
+
+    /**
+     * @return string
+     */
+    public function getUpdatedAt(): string
+    {
+        return (string) $this->getAttribute('updated_at');
+    }
+
+    /**
+     * @return string
+     */
+    public function getActivatedAt(): string
+    {
+        return (string) $this->getAttribute('activated_at');
     }
 }

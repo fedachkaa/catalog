@@ -1,5 +1,5 @@
 const { showModal, hideModal, toggleTabsSideBar } = require('./../general.js');
-const { searchGroups } = require('./common');
+const { searchGroups, searchFaculties, searchCourses } = require('./common');
 
 document.addEventListener('DOMContentLoaded', function () {
     toggleTabsSideBar('js-students');
@@ -173,48 +173,6 @@ const importStudentsStore = function (e) {
             modal.find('.js-form-fields').remove();
             modal.find('.js-students-content').append(`<p>` + response.data.user.full_name +`</p>`);
             $(e.target).addClass('hidden');
-        },
-        error: function (xhr, status, error) {
-            console.error('Помилка:', error);
-        }
-    });
-}
-
-const searchFaculties = function (block) {
-    $.ajax({
-        url: '/api/university/' + universityId + '/faculties',
-        method: 'GET',
-        success: function (response) {
-            const facultySelect = $('#' + block).find('.js-faculty');
-            facultySelect.empty();
-            facultySelect.append($('<option>').attr('value', '').text('Виберіть факультет'));
-
-            response.data.faculties.forEach(faculty => {
-                facultySelect.append($('<option>').attr('value', faculty.id).text(faculty.title));
-            });
-
-            facultySelect.trigger('click');
-        },
-        error: function (xhr, status, error) {
-            console.error('Помилка:', error);
-        }
-    });
-}
-
-const searchCourses = function (facultyId, block) {
-    $.ajax({
-        url: '/api/university/' + universityId + '/courses?facultyId=' + facultyId,
-        method: 'GET',
-        success: function (response) {
-            const coursesSelect = $('#' + block).find('.js-course');
-            coursesSelect.empty();
-            coursesSelect.append($('<option>').attr('value', '').text('Виберіть курс'));
-
-            response.data.forEach(course => {
-                coursesSelect.append($('<option>').attr('value', course.id).text(course.course + ' курс'));
-            });
-
-            coursesSelect.trigger('click');
         },
         error: function (xhr, status, error) {
             console.error('Помилка:', error);

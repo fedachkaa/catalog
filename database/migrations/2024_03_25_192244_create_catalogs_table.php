@@ -15,8 +15,10 @@ return new class extends Migration
     {
         Schema::create('catalogs', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('group_id')->constrained('groups')->onUpdate('cascade')->onDelete('cascade');
             $table->enum('type', ['course_work', 'diploma_work']);
+            $table->boolean('is_active')->default(0);
+            $table->timestamps();
+            $table->timestamp('activated_at')->nullable()->default(null);
         });
     }
 

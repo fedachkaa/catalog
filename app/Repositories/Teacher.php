@@ -40,6 +40,10 @@ class Teacher extends RepositoryAbstract implements TeacherRepositoryInterface
             $query = $query->where('user_id', (int) $filters['user_id']);
         }
 
+        if (!empty($filters['faculty_id'])) {
+            $query = $query->where('faculty_id', (int) $filters['faculty_id']);
+        }
+
         return $query->first();
     }
 

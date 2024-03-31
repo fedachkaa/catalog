@@ -76,7 +76,7 @@ const hideModal = function (id) {
     modal.css('display', 'none');
 }
 
-const clearModal = function (id, attributesToRemove) {
+const clearModal = function (id, attributesToRemove = []) {
     const modal = $('#' + id);
 
     modal.find('input').val('');

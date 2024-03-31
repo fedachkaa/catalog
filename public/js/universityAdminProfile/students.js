@@ -2273,7 +2273,8 @@ var hideModal = function hideModal(id) {
   var modal = $('#' + id);
   modal.css('display', 'none');
 };
-var clearModal = function clearModal(id, attributesToRemove) {
+var clearModal = function clearModal(id) {
+  var attributesToRemove = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
   var modal = $('#' + id);
   modal.find('input').val('');
   modal.find('select').val('');
@@ -2300,6 +2301,24 @@ module.exports = {
   \*******************************************************/
 /***/ ((module) => {
 
+var searchFaculties = function searchFaculties(block) {
+  $.ajax({
+    url: '/api/university/' + universityId + '/faculties',
+    method: 'GET',
+    success: function success(response) {
+      var facultySelect = $('#' + block).find('.js-faculty');
+      facultySelect.empty();
+      facultySelect.append($('<option>').attr('value', '').text('Виберіть факультет'));
+      response.data.faculties.forEach(function (faculty) {
+        facultySelect.append($('<option>').attr('value', faculty.id).text(faculty.title));
+      });
+      facultySelect.trigger('click');
+    },
+    error: function error(xhr, status, _error) {
+      console.error('Помилка:', _error);
+    }
+  });
+};
 var searchGroups = function searchGroups(searchParams, block) {
   var callback = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : function () {};
   var queryString = '';
@@ -2315,13 +2334,88 @@ var searchGroups = function searchGroups(searchParams, block) {
     success: function success(response) {
       callback(response.data, block);
     },
-    error: function error(xhr, status, _error) {
-      console.error('Помилка:', _error);
+    error: function error(xhr, status, _error2) {
+      console.error('Помилка:', _error2);
     }
   });
 };
+var searchCourses = function searchCourses(facultyId, block) {
+  $.ajax({
+    url: '/api/university/' + universityId + '/courses?facultyId=' + facultyId,
+    method: 'GET',
+    success: function success(response) {
+      var coursesSelect = $('#' + block).find('.js-course');
+      coursesSelect.empty();
+      coursesSelect.append($('<option>').attr('value', '').text('Виберіть курс'));
+      response.data.forEach(function (course) {
+        coursesSelect.append($('<option>').attr('value', course.id).text(course.course + ' курс'));
+      });
+      coursesSelect.trigger('click');
+    },
+    error: function error(xhr, status, _error3) {
+      console.error('Помилка:', _error3);
+    }
+  });
+};
+var searchTeachers = function searchTeachers(block) {
+  var searchParams = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  var queryString = '';
+  for (var key in searchParams) {
+    if (searchParams.hasOwnProperty(key)) {
+      var value = searchParams[key];
+      queryString += encodeURIComponent(key) + '=' + encodeURIComponent(value) + '&';
+    }
+  }
+  var searchText = $('#' + block + ' .js-teacher-search').val();
+  $.ajax({
+    url: '/api/university/' + universityId + '/teachers?' + queryString + 'searchText=' + searchText,
+    method: 'GET',
+    success: function success(response) {
+      var teachersSelect = $('#' + block).find('.js-teachers-select');
+      teachersSelect.empty();
+      teachersSelect.append($('<option >').attr('value', '').text('Виберіть викладача'));
+      response.data.forEach(function (teacher) {
+        teachersSelect.append($('<option class="js-teacher-item">').attr('value', teacher.user_id).text(teacher.user.full_name));
+      });
+      initTeachersSelectClick(block, teachersSelect);
+      initRemoveTeacherClick(block);
+      teachersSelect.removeClass('hidden');
+    },
+    error: function error(xhr, status, _error4) {
+      console.error('Помилка:', _error4);
+    }
+  });
+};
+var initTeachersSelectClick = function initTeachersSelectClick(block, teachersSelect) {
+  teachersSelect.on('change', function () {
+    var selectedTeacherId = $(this).val();
+    var selectedTeacherName = $(this).find('option:selected').text();
+    var teachersList = $('#' + block + ' .js-teachers-list ul');
+    var listItem = $("<li data-id=\"" + selectedTeacherId + "\">").text(selectedTeacherName);
+    var deleteIcon = $('<i>').addClass('fas fa-times js-delete-teacher');
+    listItem.append(deleteIcon);
+    teachersList.append(listItem);
+    $(this).find('option:selected').hide();
+    $(this).val('');
+  });
+};
+var initRemoveTeacherClick = function initRemoveTeacherClick(block) {
+  $('#' + block + ' .js-teachers-list').on('click', '.js-delete-teacher', function () {
+    var teacherId = parseInt($(this).parent().data('id'), 10);
+    $('#' + block + ' .js-teachers-select').find('option').each(function () {
+      if (parseInt($(this).val(), 10) === teacherId) {
+        $(this).show();
+      }
+    });
+    $(this).parent().remove();
+  });
+};
 module.exports = {
-  searchGroups: searchGroups
+  searchGroups: searchGroups,
+  searchFaculties: searchFaculties,
+  searchCourses: searchCourses,
+  searchTeachers: searchTeachers,
+  initRemoveTeacherClick: initRemoveTeacherClick
 };
 
 /***/ }),
@@ -30528,7 +30622,9 @@ var _require = __webpack_require__(/*! ./../general.js */ "./resources/js/genera
   hideModal = _require.hideModal,
   toggleTabsSideBar = _require.toggleTabsSideBar;
 var _require2 = __webpack_require__(/*! ./common */ "./resources/js/universityAdminProfile/common.js"),
-  searchGroups = _require2.searchGroups;
+  searchGroups = _require2.searchGroups,
+  searchFaculties = _require2.searchFaculties,
+  searchCourses = _require2.searchCourses;
 document.addEventListener('DOMContentLoaded', function () {
   toggleTabsSideBar('js-students');
   getStudents();
@@ -30682,42 +30778,6 @@ var importStudentsStore = function importStudentsStore(e) {
     },
     error: function error(xhr, status, _error2) {
       console.error('Помилка:', _error2);
-    }
-  });
-};
-var searchFaculties = function searchFaculties(block) {
-  $.ajax({
-    url: '/api/university/' + universityId + '/faculties',
-    method: 'GET',
-    success: function success(response) {
-      var facultySelect = $('#' + block).find('.js-faculty');
-      facultySelect.empty();
-      facultySelect.append($('<option>').attr('value', '').text('Виберіть факультет'));
-      response.data.faculties.forEach(function (faculty) {
-        facultySelect.append($('<option>').attr('value', faculty.id).text(faculty.title));
-      });
-      facultySelect.trigger('click');
-    },
-    error: function error(xhr, status, _error3) {
-      console.error('Помилка:', _error3);
-    }
-  });
-};
-var searchCourses = function searchCourses(facultyId, block) {
-  $.ajax({
-    url: '/api/university/' + universityId + '/courses?facultyId=' + facultyId,
-    method: 'GET',
-    success: function success(response) {
-      var coursesSelect = $('#' + block).find('.js-course');
-      coursesSelect.empty();
-      coursesSelect.append($('<option>').attr('value', '').text('Виберіть курс'));
-      response.data.forEach(function (course) {
-        coursesSelect.append($('<option>').attr('value', course.id).text(course.course + ' курс'));
-      });
-      coursesSelect.trigger('click');
-    },
-    error: function error(xhr, status, _error4) {
-      console.error('Помилка:', _error4);
     }
   });
 };

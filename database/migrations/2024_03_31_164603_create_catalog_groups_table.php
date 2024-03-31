@@ -13,12 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('catalog_topics', function (Blueprint $table) {
-            $table->id();
+        Schema::create('catalog_groups', function (Blueprint $table) {
             $table->foreignId('catalog_id')->constrained('catalogs')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignId('teacher_id')->nullable()->constrained('teachers', 'user_id')->onUpdate('cascade')->onDelete('cascade');
-            $table->foreignId('student_id')->nullable()->constrained('students', 'user_id')->onUpdate('cascade')->onDelete('cascade');
-            $table->string('topic', 256);
+            $table->foreignId('group_id')->constrained('groups')->onUpdate('cascade')->onDelete('cascade');
+            $table->primary(['catalog_id', 'group_id']);
         });
     }
 
@@ -29,6 +27,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('catalog_topics');
+        Schema::dropIfExists('catalog_groups');
     }
 };

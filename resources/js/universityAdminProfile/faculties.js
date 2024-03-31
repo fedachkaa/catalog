@@ -90,7 +90,7 @@ const displayFacultiesData = function(data) {
     const tbody = $('#faculties-table tbody');
     tbody.empty();
 
-    data.faculties.forEach((faculty, id) => {
+    data.faculties.forEach(faculty => {
         drawSingleFaculty(faculty);
     });
 }

@@ -36,11 +36,20 @@ class Group extends RepositoryAbstract implements GroupRepositoryInterface
         $query = GroupModel::query();
 
         if (!empty($filters['id'])) {
-            $query = $query->where('id', (int) $filters['id']);
+            $query = $query->where('groups.id', (int) $filters['id']);
         }
 
         if (!empty($filters['title'])) {
             $query = $query->where('title','like','%' . $filters['title'] . '%');
+        }
+
+        if (!empty($filters['course_id'])) {
+            $query = $query->where('course_id', (int)$filters['course_id']);
+        }
+
+        if (!empty($filters['faculty_id'])) {
+            $query = $query->join('courses', 'courses.id', '=', 'groups.course_id');
+            $query = $query->where('courses.faculty_id', '=', (int) $filters['faculty_id']);
         }
 
         return $query->first();

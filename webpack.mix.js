@@ -18,6 +18,8 @@ mix.js('resources/js/universityAdminProfile/subjects.js', 'public/js/universityA
 mix.js('resources/js/universityAdminProfile/students.js', 'public/js/universityAdminProfile/students.js');
 mix.js('resources/js/universityAdminProfile/faculties.js', 'public/js/universityAdminProfile/faculties.js');
 mix.js('resources/js/universityAdminProfile/university.js', 'public/js/universityAdminProfile/university.js');
+mix.js('resources/js/universityAdminProfile/catalogs.js', 'public/js/universityAdminProfile/catalogs.js');
+mix.js('resources/js/universityAdminProfile/edit-catalog.js', 'public/js/universityAdminProfile/edit-catalog.js');
 
 mix.webpackConfig({
      output: {

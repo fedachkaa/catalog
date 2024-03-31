@@ -44,7 +44,7 @@
                 </a>
             </li>
             <li class="sidebar-menu-title js-catalogs">
-                <a href="/university/catalogs">
+                <a href="/university/<?= $user['university']['id']; ?>/catalogs">
                     <i class="fa-solid fa-book-bookmark"></i>
                     <span>Каталоги робіт</span>
                 </a>

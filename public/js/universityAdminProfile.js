@@ -2273,7 +2273,8 @@ var hideModal = function hideModal(id) {
   var modal = $('#' + id);
   modal.css('display', 'none');
 };
-var clearModal = function clearModal(id, attributesToRemove) {
+var clearModal = function clearModal(id) {
+  var attributesToRemove = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
   var modal = $('#' + id);
   modal.find('input').val('');
   modal.find('select').val('');

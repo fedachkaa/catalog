@@ -9,7 +9,7 @@ use App\Repositories\Interfaces\CourseRepositoryInterface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-class CourseController
+class CourseController extends Controller
 {
     /** @var CourseRepositoryInterface */
     private $courseRepository;

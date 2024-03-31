@@ -3,11 +3,10 @@
 namespace App\Models\Interfaces;
 
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
 
 interface CatalogInterface
 {
-    public function getGroup(): Model;
+    public function getGroups(): Collection;
 
     public function getTopics(): Collection;
 
@@ -15,7 +14,13 @@ interface CatalogInterface
 
     public function getId(): int;
 
-    public function getGroupId(): int;
-
     public function getType(): string;
+
+    public function getIsActive(): int;
+
+    public function getCreatedAt(): string;
+
+    public function getUpdatedAt(): string;
+
+    public function getActivatedAt(): string;
 }

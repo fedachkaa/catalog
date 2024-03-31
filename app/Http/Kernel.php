@@ -70,6 +70,8 @@ class Kernel extends HttpKernel
         'universityWithFacultyCourse.get' => \App\Http\Middleware\GetUniversityWithFacultyCourseRequest::class,
         'universityWithFacultyCourseGroup.get' => \App\Http\Middleware\GetUniversityWithFacultyCourseGroupRequest::class,
         'subject.get' => \App\Http\Middleware\SubjectRequest::class,
-        'faculty.get' =>  \App\Http\Middleware\FacultyRequest::class
+        'faculty.get' =>  \App\Http\Middleware\FacultyRequest::class,
+        'catalog.get' => \App\Http\Middleware\GetCatalogRequest::class,
+        'topic.get' => \App\Http\Middleware\GetTopicRequest::class
     ];
 }

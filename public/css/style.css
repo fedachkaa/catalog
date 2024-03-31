@@ -608,6 +608,10 @@ video {
   display: none;
 }
 
+.w-full {
+  width: 100%;
+}
+
 .flex-row {
   flex-direction: row;
 }
@@ -663,6 +667,10 @@ video {
 
 .pl-52 {
   padding-left: 13rem;
+}
+
+.pl-56 {
+  padding-left: 14rem;
 }
 
 .text-center {

@@ -1,4 +1,5 @@
 const { showModal, hideModal, toggleTabsSideBar } = require('./../general.js');
+const { searchTeachers, initRemoveTeacherClick } =  require('./common.js');
 
 document.addEventListener('DOMContentLoaded', function () {
     toggleTabsSideBar('js-subjects');
@@ -33,12 +34,17 @@ const displaySubjectsData = function (data) {
 }
 
 const addSubject = function (e) {
-    $('#addEditSubjectModal .js-search-teacher-btn').on('click', searchTeachers);
+    $('#addEditSubjectModal .js-search-teacher-btn').on('click', function() {
+        searchTeachers('addEditSubjectModal');
+    });
     showModal('addEditSubjectModal');
 }
 
 const editSubject = function (e) {
-    $('#addEditSubjectModal .js-search-teacher-btn').on('click', searchTeachers);
+    $('#addEditSubjectModal .js-search-teacher-btn').on('click', function() {
+        searchTeachers('addEditSubjectModal');
+    });
+
     $('#addEditSubjectModal').attr('data-subjectid', $(e.target).data('subjectid'));
     const row = $(e.target).closest('tr');
 
@@ -54,7 +60,7 @@ const editSubject = function (e) {
         editTeachersList.append(listItem);
     });
 
-    initRemoveTeacherClick();
+    initRemoveTeacherClick('addEditSubjectModal');
 
     showModal('addEditSubjectModal');
 }
@@ -125,56 +131,4 @@ const drawSingleSubject = function (subject) {
         newRow.addClass(($('#subjects-table tbody tr').length + 1) % 2 === 0 ? 'row-gray' : 'row-beige');
         $('#subjects-table tbody').append(newRow);
     }
-}
-
-const initTeachersSelectClick = function (teachersSelect) {
-    teachersSelect.on('change', function() {
-        const selectedTeacherId = $(this).val();
-        const selectedTeacherName = $(this).find('option:selected').text();
-
-        const teachersList = $('#addEditSubjectModal .js-teachers-list ul');
-        const listItem = $(`<li data-id="` + selectedTeacherId + `">`).text(selectedTeacherName);
-        const deleteIcon = $('<i>').addClass('fas fa-times js-delete-teacher');
-        listItem.append(deleteIcon);
-        teachersList.append(listItem);
-
-        $(this).find('option:selected').hide();
-    });
-}
-
-const initRemoveTeacherClick = function () {
-    $('#addEditSubjectModal .js-teachers-list').on('click', '.js-delete-teacher', function() {
-        const teacherId = parseInt($(this).parent().data('id'), 10);
-        $('#addEditSubjectModal .js-teachers-select').find('option').each(function() {
-            if ($(this).val() !== teacherId) {
-                $(this).show();
-            }
-        });
-        $(this).parent().remove();
-    });
-}
-
-const searchTeachers = function () {
-    const searchText = $('#addEditSubjectModal .js-teacher-search').val();
-
-    $.ajax({
-        url: '/api/university/' + universityId +'/teachers?searchText=' + searchText,
-        method: 'GET',
-        success: function (response) {
-            const teachersSelect = $('#addEditSubjectModal').find('.js-teachers-select');
-            teachersSelect.empty();
-            teachersSelect.append($('<option >').attr('value', '').text());
-
-            response.data.forEach(teacher => {
-                teachersSelect.append($('<option class="js-teacher-item">').attr('value', teacher.user_id).text(teacher.user.full_name));
-            });
-
-            initTeachersSelectClick(teachersSelect);
-            initRemoveTeacherClick();
-            teachersSelect.removeClass('hidden');
-        },
-        error: function (xhr, status, error) {
-            console.error('Помилка:', error);
-        }
-    });
 }

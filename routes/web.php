@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\UniversityController;
@@ -63,6 +64,12 @@ Route::get('/university/{universityId}/teachers', [TeacherController::class, 'ge
 Route::get('/api/university/{universityId}/teachers', [TeacherController::class, 'getTeachersList'])->middleware('university.get');
 Route::post('/api/university/{universityId}/teachers', [TeacherController::class, 'saveTeacher'])->middleware('university.get');
 
+Route::get('/university/{universityId}/catalogs', [CatalogController::class, 'getCatalogs'])->middleware('university.get');
+Route::get('/api/university/{universityId}/catalogs', [CatalogController::class, 'getCatalogsList'])->middleware('university.get');
+Route::post('/api/university/{universityId}/catalogs/create', [CatalogController::class, 'saveCatalog'])->middleware('university.get');
+Route::get('/university/{universityId}/catalogs/{catalogId}', [CatalogController::class, 'editCatalog'])->middleware('university.get')->middleware('catalog.get');
+Route::post('/api/university/{universityId}/catalogs/{catalogId}/topic', [CatalogController::class, 'saveCatalogTopic'])->middleware('university.get')->middleware('catalog.get');
+Route::put('/api/university/{universityId}/catalogs/{catalogId}/topic/{topicId}', [CatalogController::class, 'updateCatalogTopic'])->middleware('university.get')->middleware('catalog.get')->middleware('topic.get');
 
 Route::put('/user/api/change-password', [AuthController::class, 'changePassword'])->name('user.changePassword');
 Route::get('forget-password', [AuthController::class, 'showForgetPassword'])->name('forget.password.get');

@@ -96,6 +96,10 @@ class TeacherController extends Controller
             $searchParams['searchText'] = $request->get('searchText');
         }
 
+        if ($request->has('facultyId')) {
+            $searchParams['faculty_id'] = $request->get('facultyId');
+        }
+
         return $searchParams;
     }
 }

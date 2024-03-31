@@ -15,6 +15,7 @@ class CatalogTopic extends Model implements CatalogTopicInterface
      */
     protected $fillable = [
         'catalog_id',
+        'teacher_id',
         'topic',
         'student_id',
     ];
@@ -35,11 +36,19 @@ class CatalogTopic extends Model implements CatalogTopicInterface
     }
 
     /**
-     * @return Model
+     * @return Model|null
      */
-    public function getStudent(): Model
+    public function getStudent(): ?Model
     {
         return $this->belongsTo(Student::class, 'student_id', 'user_id')->first();
+    }
+
+    /**
+     * @return Model
+     */
+    public function getTeacher(): Model
+    {
+        return $this->belongsTo(Teacher::class, 'teacher_id', 'user_id')->first();
     }
 
     // --- Model getters
