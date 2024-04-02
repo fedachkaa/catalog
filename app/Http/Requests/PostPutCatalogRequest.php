@@ -36,6 +36,7 @@ class PostPutCatalogRequest extends FormRequest
 
         return [
             'type' => 'required|in:' . implode(',', array_keys(Catalog::AVAILABLE_CATALOG_TYPES)),
+            'is_active' => 'in:' . implode(',', [Catalog::IS_ACTIVE_FALSE, Catalog::IS_ACTIVE_TRUE]),
             'groupsIds' => [
                 function ($attribute, $value, $fail) use ($groupRepository) {
                     foreach ($value as $groupId) {

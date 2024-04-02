@@ -7,8 +7,11 @@
 - **JS to separate files**
 - **Add spinners while ajax**
 - **Edit catalog**
-- **Draw single catalog**
-- **Add student to catalog**
+- **Add student to topic**
+- **Edit groups**
+- add subject select in teacher modal
+- add event for activation catalog and sent students email
+- add work teacher, course, group select in edit catalog
 
 
 

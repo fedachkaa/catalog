@@ -1,4 +1,4 @@
-const { toggleTabsSideBar, toggleContentBlock } = require('./general.js');
+const { toggleTabsSideBar, toggleContentBlock, showSpinner, hideSpinner } = require('./general.js');
 
 document.addEventListener("DOMContentLoaded", function () {
     $('.js-university').on('click', function () {
@@ -8,14 +8,18 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 const getUniversity = function() {
+    showSpinner();
+
     $.ajax({
         url: '/profile/api/university',
         method: 'GET',
         success: function (response) {
             displayUniversityData(response.data);
+            hideSpinner();
         },
         error: function (xhr, status, error) {
             console.error('Помилка:', error);
+            hideSpinner();
         }
     });
 }

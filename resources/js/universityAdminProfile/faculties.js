@@ -1,4 +1,4 @@
-const { showModal, hideModal, clearModal, toggleTabsSideBar } = require('./../general.js');
+const { showModal, hideModal, clearModal, toggleTabsSideBar, showSpinner, hideSpinner } = require('./../general.js');
 const { searchGroups } = require('./common.js');
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -30,14 +30,18 @@ const openAddStudent = function () {
 }
 
 const getFaculties = function() {
+    showSpinner();
+
     $.ajax({
         url: '/api/university/' + universityId + '/faculties',
         method: 'GET',
         success: function (response) {
             displayFacultiesData(response.data);
+            hideSpinner();
         },
         error: function (xhr, status, error) {
             console.error('Помилка:', error);
+            hideSpinner();
         }
     });
 }
@@ -54,6 +58,8 @@ const editFaculty = function (e) {
 }
 
 const saveFaculty = function(e) {
+    showSpinner();
+
     let method = 'POST';
     let url = '/api/university/'+ universityId +'/faculty/create';
 
@@ -74,6 +80,7 @@ const saveFaculty = function(e) {
             drawSingleFaculty(response.data);
             hideModal('addEditFacultyModal');
             clearModal('addEditFacultyModal', ['facultyid']);
+            hideSpinner();
         },
         error: function (response) {
             if (response.responseJSON.errors) {
@@ -82,6 +89,7 @@ const saveFaculty = function(e) {
                     errorParagraph.text(errorMessage);
                 });
             }
+            hideSpinner();
         }
     });
 }
@@ -138,6 +146,8 @@ const addCourse = function(e) {
 }
 
 const saveCourse = function(e) {
+    showSpinner();
+
     const facultyId =  $('#addCourseModal').data('facultyid');
     $.ajax({
         url: '/api/university/' + universityId + '/courses/create',
@@ -151,9 +161,11 @@ const saveCourse = function(e) {
             const row = $(`#faculties-table tbody tr[data-facultyid="${facultyId}"]`);
             row.find('.js-list-courses').append(`<li class="list-course-item js-view-course" data-id="`+ response.data.id + `">`+ response.data.course + ' курс' +`</li>`);
             hideModal('addCourseModal');
+            hideSpinner();
         },
         error: function (xhr, status, error) {
             console.error('Помилка:', error);
+            hideSpinner();
         }
     });
 };
@@ -166,6 +178,8 @@ const addGroup = function(e) {
 }
 
 const saveGroup = function(e) {
+    showSpinner();
+
     $.ajax({
         url: '/api/university/' + universityId + '/groups/create',
         method: 'POST',
@@ -185,9 +199,11 @@ const saveGroup = function(e) {
             $(e.target).addClass('hidden');
             $('.js-groups-info').find('input.js-group-title').remove();
             $('.js-add-group').removeClass('hidden');
+            hideSpinner();
         },
         error: function (xhr, status, error) {
             console.error('Помилка:', error);
+            hideSpinner();
         }
     });
 }
@@ -221,6 +237,8 @@ const drawCourseInfo = function (groups) {
 }
 
 const getGroupStudents = function (e) {
+    showSpinner();
+
     const groupId = $(e.target).closest('.js-group-item').data('groupid');
     const courseId = $('#courseInfo').data('courseid');
     const facultyId = $('#courseInfo').data('facultyid');
@@ -240,9 +258,11 @@ const getGroupStudents = function (e) {
                 });
             }
             modal.find('.js-group-info').removeClass('hidden');
+            hideSpinner();
         },
         error: function (xhr, status, error) {
             console.error('Помилка:', error);
+            hideSpinner();
         }
     });
 }

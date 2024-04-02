@@ -5,7 +5,7 @@
 @section('content')
     @include('universityAdminProfile.partials.sidebar-template')
 
-    <div class="pl-52">
+    <div class="pl-56">
         <div class="faculties-block js-catalogs-container">
             <button class="add-user-btn js-add-catalog">Додати каталог</button>
 

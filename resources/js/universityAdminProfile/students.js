@@ -1,4 +1,4 @@
-const { showModal, hideModal, toggleTabsSideBar } = require('./../general.js');
+const { showModal, hideModal, toggleTabsSideBar, showSpinner, hideSpinner } = require('./../general.js');
 const { searchGroups, searchFaculties, searchCourses } = require('./common');
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -16,14 +16,18 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 const getStudents = function (query = '') {
+    showSpinner();
+
     $.ajax({
         url: '/api/university/' + universityId +'/students?' + query,
         method: 'GET',
         success: function (response) {
             displayStudentsData(response.data);
+            hideSpinner();
         },
         error: function (xhr, status, error) {
             console.error('Помилка:', error);
+            hideSpinner();
         }
     });
 }
@@ -106,6 +110,8 @@ const fillGroupSelect = function (groups, block) {
 }
 
 const saveStudent = function (e) {
+    showSpinner();
+
     const modal = $('#addStudentModal');
 
     $.ajax({
@@ -126,6 +132,7 @@ const saveStudent = function (e) {
             hideModal('addStudentModal')
             modal.find('input').val('');
             modal.find('select').val('');
+            hideSpinner();
         },
         error: function (response) {
             if (response.responseJSON.errors) {
@@ -134,6 +141,7 @@ const saveStudent = function (e) {
                     errorParagraph.text(errorMessage);
                 });
             }
+            hideSpinner();
         }
     });
 }
@@ -154,6 +162,8 @@ const importStudents = function (e) {
 }
 
 const importStudentsStore = function (e) {
+    showSpinner();
+
     const modal = $('#importStudentModal');
     let formData = new FormData();
 
@@ -173,9 +183,11 @@ const importStudentsStore = function (e) {
             modal.find('.js-form-fields').remove();
             modal.find('.js-students-content').append(`<p>` + response.data.user.full_name +`</p>`);
             $(e.target).addClass('hidden');
+            hideSpinner();
         },
         error: function (xhr, status, error) {
             console.error('Помилка:', error);
+            hideSpinner();
         }
     });
 }

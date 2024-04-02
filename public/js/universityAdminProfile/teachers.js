@@ -2283,6 +2283,12 @@ var clearModal = function clearModal(id) {
     modal.removeAttr('data-' + attr);
   });
 };
+var showSpinner = function showSpinner() {
+  $('#spinner').removeClass('hidden');
+};
+var hideSpinner = function hideSpinner() {
+  $('#spinner').addClass('hidden');
+};
 module.exports = {
   toggleTabsSideBar: toggleTabsSideBar,
   toggleContentBlock: toggleContentBlock,
@@ -2290,7 +2296,9 @@ module.exports = {
   displayUserProfileData: displayUserProfileData,
   showModal: showModal,
   hideModal: hideModal,
-  clearModal: clearModal
+  clearModal: clearModal,
+  showSpinner: showSpinner,
+  hideSpinner: hideSpinner
 };
 
 /***/ }),
@@ -30488,9 +30496,10 @@ var __webpack_exports__ = {};
   \*********************************************************/
 var _require = __webpack_require__(/*! ../general.js */ "./resources/js/general.js"),
   showModal = _require.showModal,
-  hideModal = _require.hideModal;
-var _require2 = __webpack_require__(/*! ../general */ "./resources/js/general.js"),
-  toggleTabsSideBar = _require2.toggleTabsSideBar;
+  hideModal = _require.hideModal,
+  toggleTabsSideBar = _require.toggleTabsSideBar,
+  showSpinner = _require.showSpinner,
+  hideSpinner = _require.hideSpinner;
 document.addEventListener('DOMContentLoaded', function () {
   toggleTabsSideBar('js-teachers');
   getTeachers();
@@ -30498,14 +30507,16 @@ document.addEventListener('DOMContentLoaded', function () {
   $(document).on('click', '.js-save-teacher', saveTeacher);
 });
 var getTeachers = function getTeachers() {
+  showSpinner();
   $.ajax({
     url: '/api/university/' + 1 + '/teachers',
     method: 'GET',
     success: function success(response) {
-      console.log(response);
       displayTeachersData(response.data);
+      hideSpinner();
     },
     error: function error(xhr, status, _error) {
+      hideSpinner();
       console.error('Помилка:', _error);
     }
   });
@@ -30534,10 +30545,12 @@ var displayTeachersData = function displayTeachersData(data) {
   });
 };
 var addTeacher = function addTeacher(e) {
+  showSpinner();
   $.ajax({
     url: '/api/university/' + universityId + '/faculties',
     method: 'GET',
     success: function success(response) {
+      hideSpinner();
       var facultySelect = $('#addTeacherModal').find('.js-faculty');
       facultySelect.empty();
       facultySelect.append($('<option>').attr('value', '').text('Виберіть факультет'));
@@ -30547,11 +30560,13 @@ var addTeacher = function addTeacher(e) {
     },
     error: function error(xhr, status, _error2) {
       console.error('Помилка:', _error2);
+      hideSpinner();
     }
   });
   showModal('addTeacherModal');
 };
 var saveTeacher = function saveTeacher(e) {
+  showSpinner();
   var teacherModal = $('#addTeacherModal');
   $.ajax({
     url: '/api/university/' + universityId + '/teachers',
@@ -30568,6 +30583,7 @@ var saveTeacher = function saveTeacher(e) {
     success: function success(response) {
       var teachersTableBody = $('#teachers-table tbody');
       var newRow = $('<tr>');
+      newRow.append($('<td>').text(response.data.user_id));
       newRow.append($('<td>').text(response.data.user.full_name));
       newRow.append($('<td>').text(response.data.faculty.title));
       newRow.append($('<td>').text('Subjects will be soon ...'));
@@ -30577,9 +30593,11 @@ var saveTeacher = function saveTeacher(e) {
       actionsCell.append(editIcon, deleteIcon);
       newRow.append(actionsCell);
       teachersTableBody.append(newRow);
+      hideSpinner();
       hideModal('addTeacherModal');
     },
     error: function error(xhr, status, _error3) {
+      hideSpinner();
       console.error('Помилка:', _error3);
     }
   });

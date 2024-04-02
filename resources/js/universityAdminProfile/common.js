@@ -1,4 +1,8 @@
+const { showSpinner, hideSpinner} = require("../general");
+
 const searchFaculties = function (block) {
+    showSpinner();
+
     $.ajax({
         url: '/api/university/' + universityId + '/faculties',
         method: 'GET',
@@ -12,14 +16,18 @@ const searchFaculties = function (block) {
             });
 
             facultySelect.trigger('click');
+            hideSpinner();
         },
         error: function (xhr, status, error) {
             console.error('Помилка:', error);
+            hideSpinner();
         }
     });
 }
 
 const searchGroups = function (searchParams, block, callback = () => {}) {
+    showSpinner();
+
     let queryString = '';
 
     for (const key in searchParams) {
@@ -34,14 +42,18 @@ const searchGroups = function (searchParams, block, callback = () => {}) {
         method: 'GET',
         success: function (response) {
             callback(response.data, block);
+            hideSpinner();
         },
         error: function (xhr, status, error) {
             console.error('Помилка:', error);
+            hideSpinner();
         }
     });
 }
 
 const searchCourses = function (facultyId, block) {
+    showSpinner();
+
     $.ajax({
         url: '/api/university/' + universityId + '/courses?facultyId=' + facultyId,
         method: 'GET',
@@ -55,14 +67,18 @@ const searchCourses = function (facultyId, block) {
             });
 
             coursesSelect.trigger('click');
+            hideSpinner();
         },
         error: function (xhr, status, error) {
             console.error('Помилка:', error);
+            hideSpinner();
         }
     });
 }
 
 const searchTeachers = function (block, searchParams = {}) {
+    showSpinner();
+
     let queryString = '';
 
     for (const key in searchParams) {
@@ -89,9 +105,11 @@ const searchTeachers = function (block, searchParams = {}) {
             initTeachersSelectClick(block, teachersSelect);
             initRemoveTeacherClick(block);
             teachersSelect.removeClass('hidden');
+            hideSpinner();
         },
         error: function (xhr, status, error) {
             console.error('Помилка:', error);
+            hideSpinner();
         }
     });
 }

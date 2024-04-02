@@ -2283,6 +2283,12 @@ var clearModal = function clearModal(id) {
     modal.removeAttr('data-' + attr);
   });
 };
+var showSpinner = function showSpinner() {
+  $('#spinner').removeClass('hidden');
+};
+var hideSpinner = function hideSpinner() {
+  $('#spinner').addClass('hidden');
+};
 module.exports = {
   toggleTabsSideBar: toggleTabsSideBar,
   toggleContentBlock: toggleContentBlock,
@@ -2290,7 +2296,9 @@ module.exports = {
   displayUserProfileData: displayUserProfileData,
   showModal: showModal,
   hideModal: hideModal,
-  clearModal: clearModal
+  clearModal: clearModal,
+  showSpinner: showSpinner,
+  hideSpinner: hideSpinner
 };
 
 /***/ }),
@@ -2299,9 +2307,13 @@ module.exports = {
 /*!*******************************************************!*\
   !*** ./resources/js/universityAdminProfile/common.js ***!
   \*******************************************************/
-/***/ ((module) => {
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
+var _require = __webpack_require__(/*! ../general */ "./resources/js/general.js"),
+  showSpinner = _require.showSpinner,
+  hideSpinner = _require.hideSpinner;
 var searchFaculties = function searchFaculties(block) {
+  showSpinner();
   $.ajax({
     url: '/api/university/' + universityId + '/faculties',
     method: 'GET',
@@ -2313,14 +2325,17 @@ var searchFaculties = function searchFaculties(block) {
         facultySelect.append($('<option>').attr('value', faculty.id).text(faculty.title));
       });
       facultySelect.trigger('click');
+      hideSpinner();
     },
     error: function error(xhr, status, _error) {
       console.error('Помилка:', _error);
+      hideSpinner();
     }
   });
 };
 var searchGroups = function searchGroups(searchParams, block) {
   var callback = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : function () {};
+  showSpinner();
   var queryString = '';
   for (var key in searchParams) {
     if (searchParams.hasOwnProperty(key)) {
@@ -2333,13 +2348,16 @@ var searchGroups = function searchGroups(searchParams, block) {
     method: 'GET',
     success: function success(response) {
       callback(response.data, block);
+      hideSpinner();
     },
     error: function error(xhr, status, _error2) {
       console.error('Помилка:', _error2);
+      hideSpinner();
     }
   });
 };
 var searchCourses = function searchCourses(facultyId, block) {
+  showSpinner();
   $.ajax({
     url: '/api/university/' + universityId + '/courses?facultyId=' + facultyId,
     method: 'GET',
@@ -2351,14 +2369,17 @@ var searchCourses = function searchCourses(facultyId, block) {
         coursesSelect.append($('<option>').attr('value', course.id).text(course.course + ' курс'));
       });
       coursesSelect.trigger('click');
+      hideSpinner();
     },
     error: function error(xhr, status, _error3) {
       console.error('Помилка:', _error3);
+      hideSpinner();
     }
   });
 };
 var searchTeachers = function searchTeachers(block) {
   var searchParams = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  showSpinner();
   var queryString = '';
   for (var key in searchParams) {
     if (searchParams.hasOwnProperty(key)) {
@@ -2380,9 +2401,11 @@ var searchTeachers = function searchTeachers(block) {
       initTeachersSelectClick(block, teachersSelect);
       initRemoveTeacherClick(block);
       teachersSelect.removeClass('hidden');
+      hideSpinner();
     },
     error: function error(xhr, status, _error4) {
       console.error('Помилка:', _error4);
+      hideSpinner();
     }
   });
 };
@@ -30620,7 +30643,9 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 var _require = __webpack_require__(/*! ./../general.js */ "./resources/js/general.js"),
   showModal = _require.showModal,
   hideModal = _require.hideModal,
-  toggleTabsSideBar = _require.toggleTabsSideBar;
+  toggleTabsSideBar = _require.toggleTabsSideBar,
+  showSpinner = _require.showSpinner,
+  hideSpinner = _require.hideSpinner;
 var _require2 = __webpack_require__(/*! ./common */ "./resources/js/universityAdminProfile/common.js"),
   searchGroups = _require2.searchGroups,
   searchFaculties = _require2.searchFaculties,
@@ -30636,14 +30661,17 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 var getStudents = function getStudents() {
   var query = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+  showSpinner();
   $.ajax({
     url: '/api/university/' + universityId + '/students?' + query,
     method: 'GET',
     success: function success(response) {
       displayStudentsData(response.data);
+      hideSpinner();
     },
     error: function error(xhr, status, _error) {
       console.error('Помилка:', _error);
+      hideSpinner();
     }
   });
 };
@@ -30711,6 +30739,7 @@ var fillGroupSelect = function fillGroupSelect(groups, block) {
   groupsSelect.trigger('click');
 };
 var saveStudent = function saveStudent(e) {
+  showSpinner();
   var modal = $('#addStudentModal');
   $.ajax({
     url: '/api/university/' + universityId + '/students',
@@ -30730,6 +30759,7 @@ var saveStudent = function saveStudent(e) {
       hideModal('addStudentModal');
       modal.find('input').val('');
       modal.find('select').val('');
+      hideSpinner();
     },
     error: function error(response) {
       if (response.responseJSON.errors) {
@@ -30741,6 +30771,7 @@ var saveStudent = function saveStudent(e) {
           errorParagraph.text(errorMessage);
         });
       }
+      hideSpinner();
     }
   });
 };
@@ -30758,6 +30789,7 @@ var importStudents = function importStudents(e) {
   showModal('importStudentModal');
 };
 var importStudentsStore = function importStudentsStore(e) {
+  showSpinner();
   var modal = $('#importStudentModal');
   var formData = new FormData();
   formData.append('faculty_id', modal.find('.js-faculty').val());
@@ -30775,9 +30807,11 @@ var importStudentsStore = function importStudentsStore(e) {
       modal.find('.js-form-fields').remove();
       modal.find('.js-students-content').append("<p>" + response.data.user.full_name + "</p>");
       $(e.target).addClass('hidden');
+      hideSpinner();
     },
     error: function error(xhr, status, _error2) {
       console.error('Помилка:', _error2);
+      hideSpinner();
     }
   });
 };

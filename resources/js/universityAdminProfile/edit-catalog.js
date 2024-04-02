@@ -1,12 +1,12 @@
-const { showModal, hideModal, clearModal, toggleTabsSideBar } = require('./../general.js');
+const { showModal, hideModal, clearModal, toggleTabsSideBar, showSpinner, hideSpinner } = require('./../general.js');
 
 document.addEventListener('DOMContentLoaded', function () {
     toggleTabsSideBar('js-catalogs');
 
     $(document).on('click', '.js-add-topic', addTopic);
     $(document).on('click', '.js-save-topic', saveTopic);
-    $(document).on('click', '.js-edit-topic', editCatalog);
-
+    $(document).on('click', '.js-edit-topic', editTopic);
+    $(document).on('click', '.js-update-catalog', updateCatalog)
 });
 
 const addTopic = function () {
@@ -14,6 +14,7 @@ const addTopic = function () {
 }
 
 const saveTopic = function (e) {
+    showSpinner();
     const catalogId = $('#addTopicModal').data('catalogid');
     const topicId = $('#addTopicModal').data('topicid');
 
@@ -37,6 +38,7 @@ const saveTopic = function (e) {
             drawSingleTopic(response.data);
             clearModal('addTopicModal', attrToRemove)
             hideModal('addTopicModal');
+            hideSpinner();
         },
         error: function (response) {
             if (response.responseJSON.errors) {
@@ -45,11 +47,12 @@ const saveTopic = function (e) {
                     errorParagraph.text(errorMessage);
                 });
             }
+            hideSpinner();
         }
     });
 }
 
-const editCatalog = function (e) {
+const editTopic = function (e) {
     const topicRow = $(e.target).closest('tr');
     const topicId = topicRow.data('topicid');
 
@@ -93,3 +96,42 @@ const drawSingleTopic = function (topic) {
     }
 }
 
+const updateCatalog = function (e) {
+    showSpinner();
+
+    const groupsIds = $('.js-edit-catalog-block .js-groups-list li').map(function() {
+        return $(this).data('id');
+    }).get();
+
+    const teacherIds = $('.js-edit-catalog-block .js-teachers-list li').map(function() {
+        return $(this).data('id');
+    }).get();
+
+    $.ajax({
+        url: '/api/university/' + universityId + '/catalogs/' + $('.js-edit-catalog-block').data('catalogid'),
+        method: 'PUT',
+        data: {
+            is_active: $('.js-edit-catalog-block .js-is-active').prop('checked') ? 1 : 0,
+            type: $('.js-edit-catalog-block .js-catalog-type').val(),
+            faculty_id: $('.js-edit-catalog-block .js-faculty').val(),
+            course_id: $('.js-edit-catalog-block .js-course').val(),
+            groupsIds: groupsIds,
+            teachersIds: teacherIds,
+            _token: $(e.target).data('token'),
+        },
+        success: function (response) {
+            hideSpinner();
+            window.location.reload();
+        },
+        error: function (response) {
+            hideSpinner();
+
+            if (response.responseJSON.errors) {
+                Object.entries(response.responseJSON.errors).forEach(function([key, errorMessage]) {
+                    const errorParagraph = $('#addTopicModal').find(`p.error-message.${key}-error-message`);
+                    errorParagraph.text(errorMessage);
+                });
+            }
+        }
+    });
+}

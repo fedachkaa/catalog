@@ -1,5 +1,4 @@
-const { showModal, hideModal } = require('../general.js');
-const {toggleTabsSideBar} = require("../general");
+const { showModal, hideModal, toggleTabsSideBar, showSpinner, hideSpinner} = require('../general.js');
 
 document.addEventListener('DOMContentLoaded', function () {
     toggleTabsSideBar('js-teachers');
@@ -10,14 +9,17 @@ document.addEventListener('DOMContentLoaded', function () {
 })
 
 const getTeachers = function () {
+    showSpinner();
+
     $.ajax({
         url: '/api/university/' + 1 +'/teachers',
         method: 'GET',
         success: function (response) {
-            console.log(response);
             displayTeachersData(response.data);
+            hideSpinner();
         },
         error: function (xhr, status, error) {
+            hideSpinner();
             console.error('Помилка:', error);
         }
     });
@@ -52,10 +54,14 @@ const displayTeachersData = function (data) {
 }
 
 const addTeacher = function (e) {
+    showSpinner();
+
     $.ajax({
         url: '/api/university/' + universityId +'/faculties',
         method: 'GET',
         success: function (response) {
+            hideSpinner();
+
             const facultySelect = $('#addTeacherModal').find('.js-faculty');
             facultySelect.empty();
             facultySelect.append($('<option>').attr('value', '').text('Виберіть факультет'));
@@ -66,6 +72,7 @@ const addTeacher = function (e) {
         },
         error: function (xhr, status, error) {
             console.error('Помилка:', error);
+            hideSpinner();
         }
     });
 
@@ -73,6 +80,8 @@ const addTeacher = function (e) {
 };
 
 const saveTeacher = function (e) {
+    showSpinner();
+
     const teacherModal = $('#addTeacherModal');
 
     $.ajax({
@@ -91,6 +100,7 @@ const saveTeacher = function (e) {
             const teachersTableBody = $('#teachers-table tbody');
 
             const newRow = $('<tr>');
+            newRow.append($('<td>').text(response.data.user_id));
             newRow.append($('<td>').text(response.data.user.full_name));
             newRow.append($('<td>').text(response.data.faculty.title));
             newRow.append($('<td>').text('Subjects will be soon ...'));
@@ -102,9 +112,11 @@ const saveTeacher = function (e) {
 
             teachersTableBody.append(newRow);
 
+            hideSpinner();
             hideModal('addTeacherModal');
         },
         error: function (xhr, status, error) {
+            hideSpinner();
             console.error('Помилка:', error);
         }
     });

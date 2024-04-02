@@ -1,4 +1,4 @@
-const { showModal, hideModal, toggleTabsSideBar } = require('./../general.js');
+const { showModal, hideModal, toggleTabsSideBar, showSpinner, hideSpinner } = require('./../general.js');
 const { searchTeachers, initRemoveTeacherClick } =  require('./common.js');
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -12,14 +12,18 @@ document.addEventListener('DOMContentLoaded', function () {
 })
 
 const getSubjects = function () {
+    showSpinner();
+
     $.ajax({
         url: '/api/university/' + universityId +'/subjects',
         method: 'GET',
         success: function (response) {
             displaySubjectsData(response.data);
+            hideSpinner();
         },
         error: function (xhr, status, error) {
             console.error('Помилка:', error);
+            hideSpinner();
         }
     });
 }
@@ -66,6 +70,8 @@ const editSubject = function (e) {
 }
 
 const saveSubject = function (e) {
+    showSpinner();
+
     let method = 'POST';
     let url = '/api/university/'+ universityId +'/subject';
     const teacherIds = $('#addEditSubjectModal .js-teachers-list li').map(function() {
@@ -92,6 +98,7 @@ const saveSubject = function (e) {
             $('#addEditSubjectModal .js-teachers-list ul').empty();
 
             hideModal('addEditSubjectModal');
+            hideSpinner();
         },
         error: function (response) {
             if (response.responseJSON.errors) {
@@ -100,6 +107,7 @@ const saveSubject = function (e) {
                     errorParagraph.text(errorMessage);
                 });
             }
+            hideSpinner();
         }
     });
 }

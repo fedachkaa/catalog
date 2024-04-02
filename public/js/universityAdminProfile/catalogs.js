@@ -2283,6 +2283,12 @@ var clearModal = function clearModal(id) {
     modal.removeAttr('data-' + attr);
   });
 };
+var showSpinner = function showSpinner() {
+  $('#spinner').removeClass('hidden');
+};
+var hideSpinner = function hideSpinner() {
+  $('#spinner').addClass('hidden');
+};
 module.exports = {
   toggleTabsSideBar: toggleTabsSideBar,
   toggleContentBlock: toggleContentBlock,
@@ -2290,7 +2296,9 @@ module.exports = {
   displayUserProfileData: displayUserProfileData,
   showModal: showModal,
   hideModal: hideModal,
-  clearModal: clearModal
+  clearModal: clearModal,
+  showSpinner: showSpinner,
+  hideSpinner: hideSpinner
 };
 
 /***/ }),
@@ -2299,9 +2307,13 @@ module.exports = {
 /*!*******************************************************!*\
   !*** ./resources/js/universityAdminProfile/common.js ***!
   \*******************************************************/
-/***/ ((module) => {
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
+var _require = __webpack_require__(/*! ../general */ "./resources/js/general.js"),
+  showSpinner = _require.showSpinner,
+  hideSpinner = _require.hideSpinner;
 var searchFaculties = function searchFaculties(block) {
+  showSpinner();
   $.ajax({
     url: '/api/university/' + universityId + '/faculties',
     method: 'GET',
@@ -2313,14 +2325,17 @@ var searchFaculties = function searchFaculties(block) {
         facultySelect.append($('<option>').attr('value', faculty.id).text(faculty.title));
       });
       facultySelect.trigger('click');
+      hideSpinner();
     },
     error: function error(xhr, status, _error) {
       console.error('Помилка:', _error);
+      hideSpinner();
     }
   });
 };
 var searchGroups = function searchGroups(searchParams, block) {
   var callback = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : function () {};
+  showSpinner();
   var queryString = '';
   for (var key in searchParams) {
     if (searchParams.hasOwnProperty(key)) {
@@ -2333,13 +2348,16 @@ var searchGroups = function searchGroups(searchParams, block) {
     method: 'GET',
     success: function success(response) {
       callback(response.data, block);
+      hideSpinner();
     },
     error: function error(xhr, status, _error2) {
       console.error('Помилка:', _error2);
+      hideSpinner();
     }
   });
 };
 var searchCourses = function searchCourses(facultyId, block) {
+  showSpinner();
   $.ajax({
     url: '/api/university/' + universityId + '/courses?facultyId=' + facultyId,
     method: 'GET',
@@ -2351,14 +2369,17 @@ var searchCourses = function searchCourses(facultyId, block) {
         coursesSelect.append($('<option>').attr('value', course.id).text(course.course + ' курс'));
       });
       coursesSelect.trigger('click');
+      hideSpinner();
     },
     error: function error(xhr, status, _error3) {
       console.error('Помилка:', _error3);
+      hideSpinner();
     }
   });
 };
 var searchTeachers = function searchTeachers(block) {
   var searchParams = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  showSpinner();
   var queryString = '';
   for (var key in searchParams) {
     if (searchParams.hasOwnProperty(key)) {
@@ -2380,9 +2401,11 @@ var searchTeachers = function searchTeachers(block) {
       initTeachersSelectClick(block, teachersSelect);
       initRemoveTeacherClick(block);
       teachersSelect.removeClass('hidden');
+      hideSpinner();
     },
     error: function error(xhr, status, _error4) {
       console.error('Помилка:', _error4);
+      hideSpinner();
     }
   });
 };
@@ -30719,7 +30742,7 @@ var saveCatalog = function saveCatalog(e) {
       _token: $(e.target).data('token')
     },
     success: function success(response) {
-      // drawSingleSubject(response.data);
+      drawSingleCatalog(response.data);
       clearModal('addCatalogModal');
       hideModal('addCatalogModal');
     },

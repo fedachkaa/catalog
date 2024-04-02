@@ -114,7 +114,7 @@ const saveCatalog = function (e) {
             _token: $(e.target).data('token'),
         },
         success: function (response) {
-            // drawSingleSubject(response.data);
+            drawSingleCatalog(response.data);
             clearModal('addCatalogModal')
             hideModal('addCatalogModal');
         },
@@ -178,6 +178,3 @@ const initRemoveGroupClick = function () {
 const editCatalog = function (e) {
     window.open('/university/' + universityId + '/catalogs/' + $(e.target).closest('tr').data('catalogid'), '_blank');
 }
-
-
-

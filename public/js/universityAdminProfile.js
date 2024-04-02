@@ -2283,6 +2283,12 @@ var clearModal = function clearModal(id) {
     modal.removeAttr('data-' + attr);
   });
 };
+var showSpinner = function showSpinner() {
+  $('#spinner').removeClass('hidden');
+};
+var hideSpinner = function hideSpinner() {
+  $('#spinner').addClass('hidden');
+};
 module.exports = {
   toggleTabsSideBar: toggleTabsSideBar,
   toggleContentBlock: toggleContentBlock,
@@ -2290,7 +2296,9 @@ module.exports = {
   displayUserProfileData: displayUserProfileData,
   showModal: showModal,
   hideModal: hideModal,
-  clearModal: clearModal
+  clearModal: clearModal,
+  showSpinner: showSpinner,
+  hideSpinner: hideSpinner
 };
 
 /***/ }),
@@ -30488,7 +30496,9 @@ var __webpack_exports__ = {};
   \************************************************/
 var _require = __webpack_require__(/*! ./general.js */ "./resources/js/general.js"),
   toggleTabsSideBar = _require.toggleTabsSideBar,
-  toggleContentBlock = _require.toggleContentBlock;
+  toggleContentBlock = _require.toggleContentBlock,
+  showSpinner = _require.showSpinner,
+  hideSpinner = _require.hideSpinner;
 document.addEventListener("DOMContentLoaded", function () {
   $('.js-university').on('click', function () {
     toggleTabsSideBar('js-university');
@@ -30496,14 +30506,17 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 var getUniversity = function getUniversity() {
+  showSpinner();
   $.ajax({
     url: '/profile/api/university',
     method: 'GET',
     success: function success(response) {
       displayUniversityData(response.data);
+      hideSpinner();
     },
     error: function error(xhr, status, _error) {
       console.error('Помилка:', _error);
+      hideSpinner();
     }
   });
 };

@@ -234,3 +234,7 @@
 .search-tool-button {
     @apply text-right;
 }
+
+.form-checkbox {
+    @apply w-6 h-6 text-blue-600 bg-gray-100 border-gray-300 rounded me-2;
+}

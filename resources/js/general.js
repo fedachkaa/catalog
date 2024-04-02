@@ -84,8 +84,16 @@ const clearModal = function (id, attributesToRemove = []) {
     modal.find('p.error-message').empty();
     attributesToRemove.forEach(attr => {
         modal.removeAttr('data-' + attr);
-    });}
+    });
+}
 
+const showSpinner = function () {
+    $('#spinner').removeClass('hidden');
+}
+const hideSpinner = function () {
+    $('#spinner').addClass('hidden');
+
+}
 module.exports = {
     toggleTabsSideBar,
     toggleContentBlock,
@@ -94,4 +102,6 @@ module.exports = {
     showModal,
     hideModal,
     clearModal,
+    showSpinner,
+    hideSpinner,
 }

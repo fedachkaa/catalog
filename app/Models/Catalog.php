@@ -21,6 +21,10 @@ class Catalog extends Model implements CatalogInterface
       self::TYPE_CATALOG_DIPLOMA_WORK => 'Дипломна робота',
     ];
 
+    /** @var int */
+    const IS_ACTIVE_TRUE = 1;
+    const IS_ACTIVE_FALSE = 0;
+
     /**
      * @var string[]
      */

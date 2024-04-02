@@ -7,11 +7,10 @@ use App\Http\Requests\PostPutTopicRequest;
 use App\Models\Catalog;
 use App\Models\CatalogTopic;
 use App\Models\University;
-use App\Repositories\Interfaces\CatalogGroupRepositoryInterface;
 use App\Repositories\Interfaces\CatalogRepositoryInterface;
-use App\Repositories\Interfaces\CatalogSupervisorRepositoryInterface;
 use App\Repositories\Interfaces\CatalogTopicRepositoryInterface;
 use App\Repositories\Interfaces\FacultyRepositoryInterface;
+use App\Services\CatalogService;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -24,11 +23,6 @@ class CatalogController extends Controller
     /** @var CatalogRepositoryInterface */
     private $catalogRepository;
 
-    /** @var CatalogGroupRepositoryInterface */
-    private $catalogGroupRepository;
-
-    /** @var CatalogSupervisorRepositoryInterface */
-    private $catalogSupervisorRepository;
 
     /** @var CatalogTopicRepositoryInterface */
     private $catalogTopicRepository;
@@ -36,25 +30,25 @@ class CatalogController extends Controller
     /** @var FacultyRepositoryInterface */
     private $facultyRepository;
 
+    /** @var CatalogService */
+    private $catalogService;
+
     /**
      * @param CatalogRepositoryInterface $catalogRepository
-     * @param CatalogGroupRepositoryInterface $catalogGroupRepository
-     * @param CatalogSupervisorRepositoryInterface $catalogSupervisorRepository ,
      * @param CatalogTopicRepositoryInterface $catalogTopicRepository
      * @param FacultyRepositoryInterface $facultyRepository
+     * @param CatalogService $catalogService
      */
     public function __construct(
         CatalogRepositoryInterface $catalogRepository,
-        CatalogGroupRepositoryInterface $catalogGroupRepository,
-        CatalogSupervisorRepositoryInterface $catalogSupervisorRepository,
         CatalogTopicRepositoryInterface $catalogTopicRepository,
-        FacultyRepositoryInterface $facultyRepository
+        FacultyRepositoryInterface $facultyRepository,
+        CatalogService $catalogService
     ){
         $this->catalogRepository = $catalogRepository;
-        $this->catalogGroupRepository = $catalogGroupRepository;
-        $this->catalogSupervisorRepository = $catalogSupervisorRepository;
         $this->catalogTopicRepository = $catalogTopicRepository;
         $this->facultyRepository = $facultyRepository;
+        $this->catalogService = $catalogService;
     }
 
     /**
@@ -98,23 +92,8 @@ class CatalogController extends Controller
 
             $catalog->saveOrFail();
 
-            foreach ($request->post('groupsIds') as $groupId) {
-                $catalogGroup = $this->catalogGroupRepository->getNew([
-                    'catalog_id' => $catalog->getId(),
-                    'group_id' => (int) $groupId,
-                ]);
-
-                $catalogGroup->saveOrFail();
-            }
-
-            foreach ($request->post('teachersIds') as $teacherId) {
-                $catalogSupervisor = $this->catalogSupervisorRepository->getNew([
-                    'catalog_id' => $catalog->getId(),
-                    'teacher_id' => (int) $teacherId,
-                ]);
-
-                $catalogSupervisor->saveOrFail();
-            }
+            $this->catalogService->saveCatalogGroups($catalog, $request->post('groupsIds'));
+            $this->catalogService->saveCatalogTeachers($catalog, $request->post('teachersIds'));
         } catch (\Throwable $e) {
             DB::rollBack();
 
@@ -198,6 +177,32 @@ class CatalogController extends Controller
         return response()->json([
             'message' => 'Success',
             'data' => $this->catalogTopicRepository->export($catalogTopic, ['teacher', 'student']),
+        ])->setStatusCode(200);
+    }
+
+    /**
+     * @param PostPutCatalogRequest $request
+     * @param University $university
+     * @param Catalog $catalog
+     * @return JsonResponse
+     */
+    public function updateCatalog(PostPutCatalogRequest $request, University $university, Catalog $catalog): JsonResponse
+    {
+        DB::beginTransaction();
+        try {
+            $this->catalogService->updateCatalog($catalog, $request->all());
+        } catch (\Throwable $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'message' => 'Internal serve error',
+                'error' => $e->getMessage()
+            ])->setStatusCode(500);
+        }
+        DB::commit();
+
+        return response()->json([
+            'message' => 'Success',
         ])->setStatusCode(200);
     }
 }

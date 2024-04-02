@@ -44,6 +44,8 @@
         </ul>
     </nav>
 
+    @include('general.spinner')
+
     <div class="container">
         @yield('content')
         @stack('scripts')
