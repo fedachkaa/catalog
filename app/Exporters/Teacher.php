@@ -67,6 +67,6 @@ class Teacher extends ExporterAbstract
         /** @var \App\Repositories\Subject $subjectRepository */
         $subjectRepository = App::get(\App\Repositories\Subject::class);
 
-        return $subjectRepository->exportAll($teacher->getSubjects()->get());
+        return $subjectRepository->exportAll($teacher->getSubjects());
     }
 }

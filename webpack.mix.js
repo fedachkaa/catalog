@@ -21,6 +21,8 @@ mix.js('resources/js/universityAdminProfile/university.js', 'public/js/universit
 mix.js('resources/js/universityAdminProfile/catalogs.js', 'public/js/universityAdminProfile/catalogs.js');
 mix.js('resources/js/universityAdminProfile/edit-catalog.js', 'public/js/universityAdminProfile/edit-catalog.js');
 
+mix.js('resources/js/teacher/subjects.js', 'public/js/teacher/subjects.js');
+
 mix.webpackConfig({
      output: {
          library: ['general', 'universityAdminProfile'],

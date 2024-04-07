@@ -28,5 +28,9 @@
         <div class="form-group">
             <button type="submit" class="btn save-btn">Увійти</button>
         </div>
+
+        <div class="reset-link">
+            <a href="{{ route('forget.password.get') }}" target="_blank" class="js-reset-password">Забули пароль?</a>
+        </div>
     </form>
 @endsection

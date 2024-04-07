@@ -59,7 +59,14 @@ class User extends ExporterAbstract
         /** @var \App\Repositories\University $universityRepository */
         $universityRepository = App::get(\App\Repositories\University::class);
 
-        return $universityRepository->export($user->getUniversity());
-
+        if ($user->isUniversityAdmin()) {
+            return $universityRepository->export($user->getUniversityAdmin());
+        } else if ($user->isTeacher()) {
+            return $universityRepository->export($user->getTeacher()->getFaculty()->getUniversity());
+        } else if ($user->isStudent()) {
+            // TODO change
+        } else {
+            return [];
+        }
     }
 }

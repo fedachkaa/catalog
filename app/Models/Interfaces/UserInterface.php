@@ -8,7 +8,7 @@ interface UserInterface
 {
     public function getUserRole(): Model;
 
-    public function getUniversity(): ?Model;
+    public function getUniversityAdmin(): ?Model;
 
     public function getId(): int;
 

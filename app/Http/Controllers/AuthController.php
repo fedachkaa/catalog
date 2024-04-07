@@ -146,9 +146,8 @@ class AuthController extends Controller
 
         DB::table('password_resets')->where(['email' => $request->post('email')])->delete();
 
-        if (auth()->user()->getId() === $user->getId()) {
+        if (auth()->user() && auth()->user()->getId() === $user->getId()) {
             return redirect('/profile')->with('message', 'Пароль успішно змінено!');
-
         }
 
         return redirect('/login')->with('message', 'Пароль успішно змінено!');
