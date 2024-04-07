@@ -7,6 +7,10 @@ use App\Models\Subject;
 use App\Models\University;
 use App\Repositories\Interfaces\SubjectRepositoryInterface;
 use App\Repositories\Interfaces\TeacherSubjectRepositoryInterface;
+use Illuminate\Http\Request;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 
 class SubjectController extends Controller
@@ -31,11 +35,24 @@ class SubjectController extends Controller
 
     /**
      * @param University $university
+     * @return Application|Factory|View
+     */
+    public function getSubjects(University $university)
+    {
+        return view('universityAdminProfile.partials.subjects.subjects-block');
+    }
+
+    /**
+     * AJAX Route
+     *
+     * @param Request $request
+     * @param University $university
      * @return JsonResponse
      */
-    public function getSubjects(University $university): JsonResponse
+    public function getSubjectsList(Request $request, University $university): JsonResponse
     {
-        $subjects = $this->subjectRepository->getAll(['university_id' => $university->getId()]);
+        $searchParams = array_merge($this->getSearchParams($request), ['university_id' => $university->getId()]);
+        $subjects = $this->subjectRepository->getAll($searchParams);
 
         return response()->json([
             'message' => 'Success',
@@ -117,5 +134,20 @@ class SubjectController extends Controller
             'message' => 'Success',
             'data' => $this->subjectRepository->export($subject, ['teachers']),
         ])->setStatusCode(200);
+    }
+
+    /**
+     * @param Request $request
+     * @return array
+     */
+    private function getSearchParams(Request $request): array
+    {
+        $searchParams = [];
+
+        if ($request->has('searchText')) {
+            $searchParams['searchText'] = $request->get('searchText');
+        }
+
+        return $searchParams;
     }
 }

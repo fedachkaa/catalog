@@ -1,3 +1,8 @@
+<?php
+/**
+ * @var array $user
+ */
+?>
 @extends('layouts.main')
 
 @section('title', 'Profile | UniSpace')

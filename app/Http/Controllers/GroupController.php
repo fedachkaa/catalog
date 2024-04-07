@@ -2,8 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Course;
-use App\Models\Faculty;
+use App\Http\Requests\PostPutGroupRequest;
 use App\Models\Group;
 use App\Models\University;
 use App\Repositories\Interfaces\GroupRepositoryInterface;
@@ -24,20 +23,34 @@ class GroupController
     }
 
     /**
-     * AJAX Route
-     *
      * @param Request $request
      * @param University $university
-     * @param Faculty $faculty
-     * @param Course $course
      * @return JsonResponse
      */
-    public function saveGroup(Request $request, University $university, Faculty $faculty, Course $course): JsonResponse
+    public function getGroupsList(Request $request, University $university): JsonResponse
+    {
+        $searchParams = array_merge($this->getSearchParams($request), ['university_id' => $university->getId()]);
+        $groups = $this->groupRepository->getAll($searchParams);
+
+        return response()->json([
+            'message' => 'Success',
+            'data' => $this->groupRepository->exportAll($groups),
+        ])->setStatusCode(200);
+    }
+
+    /**
+     * AJAX Route
+     *
+     * @param PostPutGroupRequest $request
+     * @param University $university
+     * @return JsonResponse
+     */
+    public function saveGroup(PostPutGroupRequest $request, University $university): JsonResponse
     {
         try {
             /** @var Group $group */
             $group = $this->groupRepository->getNew([
-                'course_id' => $course->getId(),
+                'course_id' => $request->post('course_id'),
                 'title' => $request->post('title'),
             ]);
             $group->saveOrFail();
@@ -55,21 +68,17 @@ class GroupController
     }
 
     /**
-     * AJAX Route
-     *
-     * @param University $university
-     * @param Faculty $faculty
-     * @param Course $course
-     * @return JsonResponse
+     * @param Request $request
+     * @return array
      */
-    public function getCourseGroups(University $university, Faculty $faculty, Course $course): JsonResponse
+    private function getSearchParams(Request $request): array
     {
-        $groups = $this->groupRepository->getAll([
-            'course_id' => $course->getId(),
-        ]);
-        return response()->json([
-            'message' => 'Success',
-            'data' => $this->groupRepository->exportAll($groups),
-        ])->setStatusCode(200);
+        $searchParams = [];
+
+        if ($request->query('courseId')) {
+            $searchParams['course_id'] = $request->query('courseId');
+        }
+
+        return $searchParams;
     }
 }

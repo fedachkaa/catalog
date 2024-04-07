@@ -54,7 +54,7 @@ class Student extends RepositoryAbstract implements StudentRepositoryInterface
     {
         $query = StudentModel::query();
 
-        $query = $query->join('groups', 'groups.id', '=', 'students.group_id');
+        $query = $this->prepareJoins($query, $filters);
 
         if (!empty($filters['id'])) {
             $query = $query->where('id', (int) $filters['id']);
@@ -73,12 +73,53 @@ class Student extends RepositoryAbstract implements StudentRepositoryInterface
         }
 
         if (!empty($filters['university_id'])) {
-            $query = $query->join('courses', 'courses.id', '=', 'groups.course_id')
-                ->join('faculties', 'faculties.id', '=', 'courses.faculty_id')
-                ->join('universities', 'universities.id', '=', 'faculties.university_id');
-
             $query = $query->where('universities.id', $filters['university_id']);
         }
+
+        if (!empty($filters['surname'])) {
+            $query = $query->where('users.last_name', 'LIKE', '%' . $filters['surname'] . '%');
+        }
+
+        if (!empty($filters['email'])) {
+            $query = $query->where('users.email', 'LIKE', '%' . $filters['email'] . '%');
+        }
+
+        if (!empty($filters['faculty_id'])) {
+            $query = $query->where('courses.faculty_id', '=', (int) $filters['faculty_id']);
+        }
+
+        if (!empty($filters['courseTitle'])) {
+            $query = $query->where('courses.course', 'LIKE', '%' . $filters['courseTitle'] . '%');
+        }
+
         return $query->get();
+    }
+
+    /**
+     * @param Builder $query
+     * @param array $filter
+     * @return Builder
+     */
+    private function prepareJoins(Builder $query, array $filter): Builder
+    {
+        if (!empty($filter['surname']) || !empty($filter['email'])) {
+            $query = $query->join('users', 'users.id', '=', 'students.user_id');
+        }
+
+        if (
+            !empty($filter['groupTitle']) ||
+            !empty($filter['group_id']) ||
+            !empty($filter['university_id']) ||
+            !empty($filter['faculty_id']) ||
+            !empty($filter['course_id']) ||
+            !empty($filter['courseTitle'])
+        ) {
+            $query = $query->join('groups', 'groups.id', '=', 'students.group_id')
+                ->join('courses', 'courses.id', '=', 'groups.course_id')
+                ->join('faculties', 'faculties.id', '=', 'courses.faculty_id')
+                ->join('universities', 'universities.id', '=', 'faculties.university_id');
+        }
+
+        return $query;
     }
 }

@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Course;
-use App\Models\Faculty;
-use App\Models\Group;
+use App\Http\Requests\PostPutStudentRequest;
 use App\Models\University;
 use App\Models\UserRole;
 use App\Repositories\Interfaces\StudentRepositoryInterface;
 use App\Services\StudentService;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -35,9 +36,21 @@ class StudentController extends Controller
 
     /**
      * @param University $university
+     * @return Application|Factory|View
+     */
+    public function getStudents(University $university)
+    {
+        return view('universityAdminProfile.partials.students.students-block');
+    }
+
+    /**
+     * AJAX Route
+     *
+     * @param Request $request
+     * @param University $university
      * @return JsonResponse
      */
-    public function getStudents(Request $request, University $university): JsonResponse
+    public function getStudentsList(Request $request, University $university): JsonResponse
     {
         $searchParams = array_merge(['university_id' => $university->getId()], $this->getSearchParams($request));
 
@@ -52,32 +65,11 @@ class StudentController extends Controller
     /**
      * AJAX Route
      *
+     * @param PostPutStudentRequest $request
      * @param University $university
-     * @param Faculty $faculty
-     * @param Course $course
-     * @param Group $group
      * @return JsonResponse
      */
-    public function getGroupStudents(University $university, Faculty $faculty, Course $course, Group $group): JsonResponse
-    {
-        return response()->json([
-            'message' => 'Success',
-            'data' => $this->studentService->getStudentsByGroup($group),
-        ])->setStatusCode(200);
-    }
-
-    /**
-     * AJAX Route
-     *
-     * @param Request $request
-     * @param University $university
-     * @param Faculty $faculty
-     * @param Course $course
-     * @param Group $group
-     * @return JsonResponse
-     * @throws \Exception
-     */
-    public function saveStudent(Request $request, University $university, Faculty $faculty, Course $course, Group $group): JsonResponse
+    public function saveStudent(PostPutStudentRequest $request, University $university): JsonResponse
     {
         try {
             $student = $this->studentService->saveStudent([
@@ -85,7 +77,7 @@ class StudentController extends Controller
                 'last_name' => $request->post('last_name'),
                 'email' => $request->post('email'),
                 'phone_number' => $request->post('phone_number'),
-                'group_id' => $group->getId(),
+                'group_id' => $request->post('group_id'),
             ]);
         } catch (\Throwable $e) {
             return response()->json([
@@ -96,19 +88,16 @@ class StudentController extends Controller
 
         return response()->json([
             'message' => 'Success',
-            'data' => $this->studentRepository->export($student, ['user']),
+            'data' => $this->studentRepository->export($student, ['user', 'faculty', 'course', 'group']),
         ])->setStatusCode(200);
     }
 
     /**
      * @param Request $request
      * @param University $university
-     * @param Faculty $faculty
-     * @param Course $course
-     * @param Group $group
      * @return JsonResponse
      */
-    public function importStudents(Request $request, University $university, Faculty $faculty, Course $course, Group $group): JsonResponse
+    public function importStudents(Request $request, University $university): JsonResponse
     {
         if ($request->hasFile('students_file') && $request->file('students_file')->isValid()) {
             $excelFile = $request->file('students_file');
@@ -141,7 +130,7 @@ class StudentController extends Controller
                         }
                     }
                     $rowData['role_id'] = UserRole::USER_ROLE_STUDENT;
-                    $rowData['group_id'] = $group->getId();
+                    $rowData['group_id'] = $request->post('group_id');
 
                     try {
                         $student = $this->studentService->saveStudent($rowData);
@@ -174,6 +163,30 @@ class StudentController extends Controller
         $searchParams = [];
         if ($request->query('group')) {
             $searchParams['groupTitle'] = $request->query('group');
+        }
+
+        if ($request->query('groupId')) {
+            $searchParams['group_id'] = $request->query('groupId');
+        }
+
+        if ($request->query('surname')) {
+            $searchParams['surname'] = $request->query('surname');
+        }
+
+        if ($request->query('course')) {
+            $searchParams['courseTitle'] = $request->query('course');
+        }
+
+        if ($request->query('courseId')) {
+            $searchParams['course_id'] = $request->query('courseId');
+        }
+
+        if ($request->query('faculty')) {
+            $searchParams['faculty_id'] = $request->query('faculty_id');
+        }
+
+        if ($request->query('email')) {
+            $searchParams['email'] = $request->query('email');
         }
 
         return $searchParams;

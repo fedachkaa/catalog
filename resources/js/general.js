@@ -8,19 +8,6 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 });
 
-
-const showResponse = function (status, message) {
-    const newAlert = $('<div>').addClass('alert');
-
-    if (status === 'success') {
-        newAlert.addClass('alert-success');
-    } else if (status === 'error') {
-        newAlert.addClass('alert-danger');
-    }
-    newAlert.text(message);
-    $('.js-flash-messages').append(newAlert);
-}
-
 const toggleTabsSideBar = function(activeTabClass) {
     $('.sidebar-menu-title').each(function () {
         if ($(this).hasClass(activeTabClass)) {
@@ -50,7 +37,6 @@ const getUserData = function() {
             console.log('Успішно!', response);
         },
         error: function (xhr, status, error) {
-            // general.showResponse(response.status, response.message);
             console.error('Помилка:', error);
         }
     });
@@ -68,10 +54,54 @@ const displayUserProfileData = function(data) {
     $('.js-university-info').addClass('hidden');
 }
 
+const showModal = function (id) {
+    var modal = $('#' + id);
+    modal.css('display', 'block');
+
+    var closeBtn = modal.find('.close');
+
+    closeBtn.on('click', function() {
+        modal.css('display', 'none');
+    });
+
+    $(window).on('click', function(event) {
+        if (event.target === modal[0]) {
+            modal.css('display', 'none');
+        }
+    });
+}
+
+const hideModal = function (id) {
+    var modal = $('#' + id);
+    modal.css('display', 'none');
+}
+
+const clearModal = function (id, attributesToRemove = []) {
+    const modal = $('#' + id);
+
+    modal.find('input').val('');
+    modal.find('select').val('');
+    modal.find('p.error-message').empty();
+    attributesToRemove.forEach(attr => {
+        modal.removeAttr('data-' + attr);
+    });
+}
+
+const showSpinner = function () {
+    $('#spinner').removeClass('hidden');
+}
+const hideSpinner = function () {
+    $('#spinner').addClass('hidden');
+
+}
 module.exports = {
-    showResponse,
     toggleTabsSideBar,
     toggleContentBlock,
     getUserData,
     displayUserProfileData,
+    showModal,
+    hideModal,
+    clearModal,
+    showSpinner,
+    hideSpinner,
 }
