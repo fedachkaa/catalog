@@ -55,7 +55,7 @@ class Catalog extends ExporterAbstract
 
         $groups = [];
         /** @var \App\Models\CatalogGroup $group */
-        foreach ($catalog->getGroups() as $group) {
+        foreach ($catalog->getGroups()->get() as $group) {
             $groups[] = $groupRepository->export($group->getGroup());
         }
 
@@ -73,7 +73,7 @@ class Catalog extends ExporterAbstract
 
         $teachers = [];
         /** @var \App\Models\CatalogSupervisor $teacher */
-        foreach ($catalog->getSupervisors() as $teacher) {
+        foreach ($catalog->getSupervisors()->get() as $teacher) {
             $teachers[] = $teacherRepository->export($teacher->getTeacher(), ['user']);
         }
 

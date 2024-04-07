@@ -3,14 +3,15 @@
 namespace App\Models\Interfaces;
 
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 interface CatalogInterface
 {
-    public function getGroups(): Collection;
+    public function getGroups(): HasMany;
 
     public function getTopics(): Collection;
 
-    public function getSupervisors(): Collection;
+    public function getSupervisors(): HasMany;
 
     public function getId(): int;
 

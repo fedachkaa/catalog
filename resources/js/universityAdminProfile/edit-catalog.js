@@ -1,4 +1,6 @@
 const { showModal, hideModal, clearModal, toggleTabsSideBar, showSpinner, hideSpinner } = require('./../general.js');
+const { searchGroups, searchTeachers} = require('./common.js');
+const { initGroupSelectClick, initRemoveGroupClick } = require('./catalogs.js');
 
 document.addEventListener('DOMContentLoaded', function () {
     toggleTabsSideBar('js-catalogs');
@@ -7,6 +9,9 @@ document.addEventListener('DOMContentLoaded', function () {
     $(document).on('click', '.js-save-topic', saveTopic);
     $(document).on('click', '.js-edit-topic', editTopic);
     $(document).on('click', '.js-update-catalog', updateCatalog)
+
+    searchGroups({ courseId: $('.js-course').data('courseid') }, 'js-edit-catalog-block', initGroups);
+    searchTeachers('.js-edit-catalog-block', { facultyId:  $('.js-faculty').data('facultyid') }, initTeachers);
 });
 
 const addTopic = function () {
@@ -100,11 +105,11 @@ const updateCatalog = function (e) {
     showSpinner();
 
     const groupsIds = $('.js-edit-catalog-block .js-groups-list li').map(function() {
-        return $(this).data('id');
+        return $(this).data('groupid');
     }).get();
 
     const teacherIds = $('.js-edit-catalog-block .js-teachers-list li').map(function() {
-        return $(this).data('id');
+        return $(this).data('teacherid');
     }).get();
 
     $.ajax({
@@ -112,14 +117,11 @@ const updateCatalog = function (e) {
         method: 'PUT',
         data: {
             is_active: $('.js-edit-catalog-block .js-is-active').prop('checked') ? 1 : 0,
-            type: $('.js-edit-catalog-block .js-catalog-type').val(),
-            faculty_id: $('.js-edit-catalog-block .js-faculty').val(),
-            course_id: $('.js-edit-catalog-block .js-course').val(),
             groupsIds: groupsIds,
             teachersIds: teacherIds,
             _token: $(e.target).data('token'),
         },
-        success: function (response) {
+        success: function () {
             hideSpinner();
             window.location.reload();
         },
@@ -134,4 +136,29 @@ const updateCatalog = function (e) {
             }
         }
     });
+}
+
+const initGroups = function (groups) {
+    const groupsSelect =  $('.js-groups');
+    groupsSelect.empty();
+    groupsSelect.append($('<option>').attr('value', '').text('Виберіть групу'));
+
+    groups.forEach(group => {
+        groupsSelect.append($('<option>').attr('value', group.id).text(group.title));
+    });
+
+    $('.js-groups-list').find('li').each(function () {
+        const groupId = $(this).data('groupid');
+        $('.js-groups').find('option[value="' + groupId + '"]').hide();
+    });
+
+    initGroupSelectClick(groupsSelect, $('.js-groups-list ul'));
+    initRemoveGroupClick(groupsSelect, $('.js-groups-list ul'));
+}
+
+const initTeachers = function () {
+    $('.js-teachers-list').find('li').each(function () {
+        const teacherId = $(this).data('teacherid');
+        $('.js-teachers-select').find('option[value="' + teacherId + '"]').hide();
+    })
 }

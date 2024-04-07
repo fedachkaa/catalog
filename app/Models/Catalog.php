@@ -6,6 +6,7 @@ use App\Models\Interfaces\CatalogInterface;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Catalog extends Model implements CatalogInterface
 {
@@ -39,11 +40,11 @@ class Catalog extends Model implements CatalogInterface
     // --- Model relationships
 
     /**
-     * @return Collection
+     * @return HasMany
      */
-    public function getGroups(): Collection
+    public function getGroups(): HasMany
     {
-        return $this->hasMany(CatalogGroup::class, 'catalog_id', 'id')->get();
+        return $this->hasMany(CatalogGroup::class, 'catalog_id', 'id');
     }
 
     /**
@@ -55,11 +56,11 @@ class Catalog extends Model implements CatalogInterface
     }
 
     /**
-     * @return Collection
+     * @return HasMany
      */
-    public function getSupervisors(): Collection
+    public function getSupervisors(): HasMany
     {
-        return $this->hasMany(CatalogSupervisor::class, 'catalog_id', 'id')->get();
+        return $this->hasMany(CatalogSupervisor::class, 'catalog_id', 'id');
     }
 
     // --- Model getters

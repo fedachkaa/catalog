@@ -2303,6 +2303,184 @@ module.exports = {
 
 /***/ }),
 
+/***/ "./resources/js/universityAdminProfile/catalogs.js":
+/*!*********************************************************!*\
+  !*** ./resources/js/universityAdminProfile/catalogs.js ***!
+  \*********************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
+function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+var _require = __webpack_require__(/*! ./../general.js */ "./resources/js/general.js"),
+  showModal = _require.showModal,
+  hideModal = _require.hideModal,
+  clearModal = _require.clearModal,
+  toggleTabsSideBar = _require.toggleTabsSideBar;
+var _require2 = __webpack_require__(/*! ./common.js */ "./resources/js/universityAdminProfile/common.js"),
+  searchGroups = _require2.searchGroups,
+  searchFaculties = _require2.searchFaculties,
+  searchCourses = _require2.searchCourses,
+  searchTeachers = _require2.searchTeachers;
+document.addEventListener('DOMContentLoaded', function () {
+  toggleTabsSideBar('js-catalogs');
+  getCatalogs();
+  $(document).on('click', '.js-add-catalog', addCatalog);
+  $(document).on('click', '.js-save-catalog', saveCatalog);
+  $(document).on('click', '.js-edit-catalog', editCatalog);
+});
+var getCatalogs = function getCatalogs() {
+  $.ajax({
+    url: '/api/university/' + universityId + '/catalogs',
+    method: 'GET',
+    success: function success(response) {
+      if (response.data.length !== 0) {
+        displayCatalogsData(response.data);
+      }
+    },
+    error: function error(xhr, status, _error) {
+      console.error('Помилка:', _error);
+    }
+  });
+};
+var displayCatalogsData = function displayCatalogsData(data) {
+  var tbody = $('#catalogs-table tbody');
+  tbody.empty();
+  data.forEach(function (catalog) {
+    drawSingleCatalog(catalog);
+  });
+};
+var drawSingleCatalog = function drawSingleCatalog(catalog) {
+  var tbody = $('#catalogs-table tbody');
+  var row = $("<tr data-catalogid=" + catalog.id + ">");
+  row.append($('<td>').text(catalog.id));
+  row.append($('<td class="js-single-catalog-type">').text(catalog.typeTitle));
+  row.append($('<td class="js-single-catalog-faculty">').text(catalog.faculty.title));
+  row.append($('<td class="js-single-catalog-course">').text(catalog.course.course + ' курс'));
+  var groupsList = $('<ul class="js-list-groups">');
+  catalog.groups.forEach(function (group) {
+    var listItem = $("<li class=\"list-group-item\" data-id=\"" + group.id + "\">").text(group.title);
+    groupsList.append(listItem);
+  });
+  row.append($('<td>').append(groupsList));
+  var teachersList = $('<ul class="js-list-teachers">');
+  catalog.supervisors.forEach(function (supervisor) {
+    var listItem = $("<li class=\"list-supervisor-item\" data-id=\"" + supervisor.user_id + "\">").text(supervisor.user.full_name);
+    teachersList.append(listItem);
+  });
+  row.append($('<td>').append(teachersList));
+  row.append($('<td class="js-single-catalog-created-at">').text(catalog.created_at));
+  var addActionCell = $('<td>');
+  var editActionIcon = $('<i>').addClass('fas fa-edit action-icon js-edit-catalog').attr('title', 'Редагувати');
+  addActionCell.append(editActionIcon);
+  row.append(addActionCell);
+  row.addClass(($('#catalogs-table tr').length + 1) % 2 === 0 ? 'row-gray' : 'row-beige');
+  tbody.append(row);
+};
+var addCatalog = function addCatalog() {
+  searchFaculties('addCatalogModal');
+  $('#addCatalogModal .js-faculty').on('change', function () {
+    var selectedFacultyId = $(this).val();
+    searchCourses(selectedFacultyId, 'addCatalogModal');
+  });
+  $('#addCatalogModal .js-course').on('change', function () {
+    searchGroups({
+      courseId: $(this).val()
+    }, 'addCatalogModal', fillGroupSelect);
+  });
+  $('#addCatalogModal .js-search-supervisor-btn').on('click', function () {
+    searchTeachers('#addCatalogModal', {
+      facultyId: $('#addCatalogModal .js-faculty').val(),
+      searchText: $('#addCatalogModal .js-teacher-search').val()
+    });
+  });
+  showModal('addCatalogModal');
+};
+var saveCatalog = function saveCatalog(e) {
+  var groupsIds = $('#addCatalogModal .js-groups-list li').map(function () {
+    return $(this).data('id');
+  }).get();
+  var teacherIds = $('#addCatalogModal .js-teachers-list li').map(function () {
+    return $(this).data('id');
+  }).get();
+  $.ajax({
+    url: '/api/university/' + universityId + '/catalogs/create',
+    method: 'POST',
+    data: {
+      type: $('#addCatalogModal .js-catalog-type').val(),
+      faculty_id: $('#addCatalogModal .js-faculty').val(),
+      course_id: $('#addCatalogModal .js-course').val(),
+      groupsIds: groupsIds,
+      teachersIds: teacherIds,
+      _token: $(e.target).data('token')
+    },
+    success: function success(response) {
+      drawSingleCatalog(response.data);
+      clearModal('addCatalogModal');
+      hideModal('addCatalogModal');
+    },
+    error: function error(response) {
+      if (response.responseJSON.errors) {
+        Object.entries(response.responseJSON.errors).forEach(function (_ref) {
+          var _ref2 = _slicedToArray(_ref, 2),
+            key = _ref2[0],
+            errorMessage = _ref2[1];
+          var errorParagraph = $('#addCatalogModal').find("p.error-message.".concat(key, "-error-message"));
+          errorParagraph.text(errorMessage);
+        });
+      }
+    }
+  });
+};
+var fillGroupSelect = function fillGroupSelect(groups, block) {
+  var groupsSelect = $('#' + block).find('.js-group');
+  groupsSelect.empty();
+  groupsSelect.append($('<option>').attr('value', '').text('Виберіть групу'));
+  groups.forEach(function (group) {
+    groupsSelect.append($('<option>').attr('value', group.id).text(group.title));
+  });
+  initGroupSelectClick(groupsSelect, $('#addCatalogModal .js-groups-list ul'));
+  initRemoveGroupClick(groupsSelect, $('#addCatalogModal .js-groups-list'));
+};
+var initGroupSelectClick = function initGroupSelectClick(groupsSelect, groupsList) {
+  groupsSelect.on('change', function () {
+    var selectedGroupId = $(this).val();
+    if (selectedGroupId === '') {
+      return;
+    }
+    var selectedGroupTitle = $(this).find('option:selected').text();
+    var listItem = $("<li data-groupid=\"" + selectedGroupId + "\">").text(selectedGroupTitle);
+    var deleteIcon = $('<i>').addClass('fas fa-times js-delete-group');
+    listItem.append(deleteIcon);
+    groupsList.append(listItem);
+    $(this).find('option:selected').hide();
+    $(this).val('');
+  });
+};
+var initRemoveGroupClick = function initRemoveGroupClick(groupsSelect, groupsList) {
+  groupsList.on('click', '.js-delete-group', function () {
+    var groupId = parseInt($(this).parent().data('groupid'), 10);
+    groupsSelect.find('option').each(function () {
+      if (parseInt($(this).val(), 10) === groupId) {
+        $(this).show();
+      }
+    });
+    $(this).parent().remove();
+  });
+};
+var editCatalog = function editCatalog(e) {
+  window.open('/university/' + universityId + '/catalogs/' + $(e.target).closest('tr').data('catalogid'), '_blank');
+};
+module.exports = {
+  initGroupSelectClick: initGroupSelectClick,
+  initRemoveGroupClick: initRemoveGroupClick
+};
+
+/***/ }),
+
 /***/ "./resources/js/universityAdminProfile/common.js":
 /*!*******************************************************!*\
   !*** ./resources/js/universityAdminProfile/common.js ***!
@@ -2379,6 +2557,7 @@ var searchCourses = function searchCourses(facultyId, block) {
 };
 var searchTeachers = function searchTeachers(block) {
   var searchParams = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  var callback = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : function () {};
   showSpinner();
   var queryString = '';
   for (var key in searchParams) {
@@ -2387,12 +2566,11 @@ var searchTeachers = function searchTeachers(block) {
       queryString += encodeURIComponent(key) + '=' + encodeURIComponent(value) + '&';
     }
   }
-  var searchText = $('#' + block + ' .js-teacher-search').val();
   $.ajax({
-    url: '/api/university/' + universityId + '/teachers?' + queryString + 'searchText=' + searchText,
+    url: '/api/university/' + universityId + '/teachers?' + queryString,
     method: 'GET',
     success: function success(response) {
-      var teachersSelect = $('#' + block).find('.js-teachers-select');
+      var teachersSelect = $(block).find('.js-teachers-select');
       teachersSelect.empty();
       teachersSelect.append($('<option >').attr('value', '').text('Виберіть викладача'));
       response.data.forEach(function (teacher) {
@@ -2402,6 +2580,7 @@ var searchTeachers = function searchTeachers(block) {
       initRemoveTeacherClick(block);
       teachersSelect.removeClass('hidden');
       hideSpinner();
+      callback();
     },
     error: function error(xhr, status, _error4) {
       console.error('Помилка:', _error4);
@@ -2413,8 +2592,8 @@ var initTeachersSelectClick = function initTeachersSelectClick(block, teachersSe
   teachersSelect.on('change', function () {
     var selectedTeacherId = $(this).val();
     var selectedTeacherName = $(this).find('option:selected').text();
-    var teachersList = $('#' + block + ' .js-teachers-list ul');
-    var listItem = $("<li data-id=\"" + selectedTeacherId + "\">").text(selectedTeacherName);
+    var teachersList = $(block + ' .js-teachers-list ul');
+    var listItem = $("<li data-teacherid=\"" + selectedTeacherId + "\">").text(selectedTeacherName);
     var deleteIcon = $('<i>').addClass('fas fa-times js-delete-teacher');
     listItem.append(deleteIcon);
     teachersList.append(listItem);
@@ -2423,9 +2602,9 @@ var initTeachersSelectClick = function initTeachersSelectClick(block, teachersSe
   });
 };
 var initRemoveTeacherClick = function initRemoveTeacherClick(block) {
-  $('#' + block + ' .js-teachers-list').on('click', '.js-delete-teacher', function () {
-    var teacherId = parseInt($(this).parent().data('id'), 10);
-    $('#' + block + ' .js-teachers-select').find('option').each(function () {
+  $(block + ' .js-teachers-list').on('click', '.js-delete-teacher', function () {
+    var teacherId = parseInt($(this).parent().data('teacherid'), 10);
+    $(block + ' .js-teachers-select').find('option').each(function () {
       if (parseInt($(this).val(), 10) === teacherId) {
         $(this).show();
       }
@@ -30628,179 +30807,12 @@ process.umask = function() { return 0; };
 /******/ 	})();
 /******/ 	
 /************************************************************************/
-var __webpack_exports__ = {};
-// This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
-(() => {
-/*!*********************************************************!*\
-  !*** ./resources/js/universityAdminProfile/catalogs.js ***!
-  \*********************************************************/
-function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
-function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
-function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
-function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
-function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
-function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
-var _require = __webpack_require__(/*! ./../general.js */ "./resources/js/general.js"),
-  showModal = _require.showModal,
-  hideModal = _require.hideModal,
-  clearModal = _require.clearModal,
-  toggleTabsSideBar = _require.toggleTabsSideBar;
-var _require2 = __webpack_require__(/*! ./common.js */ "./resources/js/universityAdminProfile/common.js"),
-  searchGroups = _require2.searchGroups,
-  searchFaculties = _require2.searchFaculties,
-  searchCourses = _require2.searchCourses,
-  searchTeachers = _require2.searchTeachers;
-document.addEventListener('DOMContentLoaded', function () {
-  toggleTabsSideBar('js-catalogs');
-  getCatalogs();
-  $(document).on('click', '.js-add-catalog', addCatalog);
-  $(document).on('click', '.js-save-catalog', saveCatalog);
-  $(document).on('click', '.js-edit-catalog', editCatalog);
-});
-var getCatalogs = function getCatalogs() {
-  $.ajax({
-    url: '/api/university/' + universityId + '/catalogs',
-    method: 'GET',
-    success: function success(response) {
-      if (response.data.length !== 0) {
-        displayCatalogsData(response.data);
-      }
-    },
-    error: function error(xhr, status, _error) {
-      console.error('Помилка:', _error);
-    }
-  });
-};
-var displayCatalogsData = function displayCatalogsData(data) {
-  var tbody = $('#catalogs-table tbody');
-  tbody.empty();
-  data.forEach(function (catalog) {
-    drawSingleCatalog(catalog);
-  });
-};
-var drawSingleCatalog = function drawSingleCatalog(catalog) {
-  var tbody = $('#catalogs-table tbody');
-  var row = $("<tr data-catalogid=" + catalog.id + ">");
-  row.append($('<td>').text(catalog.id));
-  row.append($('<td class="js-single-catalog-type">').text(catalog.typeTitle));
-  row.append($('<td class="js-single-catalog-faculty">').text(catalog.faculty.title));
-  row.append($('<td class="js-single-catalog-course">').text(catalog.course.course + ' курс'));
-  var groupsList = $('<ul class="js-list-groups">');
-  catalog.groups.forEach(function (group) {
-    var listItem = $("<li class=\"list-group-item\" data-id=\"" + group.id + "\">").text(group.title);
-    groupsList.append(listItem);
-  });
-  row.append($('<td>').append(groupsList));
-  var teachersList = $('<ul class="js-list-teachers">');
-  catalog.supervisors.forEach(function (supervisor) {
-    var listItem = $("<li class=\"list-supervisor-item\" data-id=\"" + supervisor.user_id + "\">").text(supervisor.user.full_name);
-    teachersList.append(listItem);
-  });
-  row.append($('<td>').append(teachersList));
-  row.append($('<td class="js-single-catalog-created-at">').text(catalog.created_at));
-  var addActionCell = $('<td>');
-  var editActionIcon = $('<i>').addClass('fas fa-edit action-icon js-edit-catalog').attr('title', 'Редагувати');
-  addActionCell.append(editActionIcon);
-  row.append(addActionCell);
-  row.addClass(($('#catalogs-table tr').length + 1) % 2 === 0 ? 'row-gray' : 'row-beige');
-  tbody.append(row);
-};
-var addCatalog = function addCatalog() {
-  searchFaculties('addCatalogModal');
-  $('#addCatalogModal .js-faculty').on('change', function () {
-    var selectedFacultyId = $(this).val();
-    searchCourses(selectedFacultyId, 'addCatalogModal');
-  });
-  $('#addCatalogModal .js-course').on('change', function () {
-    searchGroups({
-      courseId: $(this).val()
-    }, 'addCatalogModal', fillGroupSelect);
-  });
-  $('#addCatalogModal .js-search-supervisor-btn').on('click', function () {
-    searchTeachers('addCatalogModal', {
-      facultyId: $('#addCatalogModal .js-faculty').val()
-    });
-  });
-  showModal('addCatalogModal');
-};
-var saveCatalog = function saveCatalog(e) {
-  var groupsIds = $('#addCatalogModal .js-groups-list li').map(function () {
-    return $(this).data('id');
-  }).get();
-  var teacherIds = $('#addCatalogModal .js-teachers-list li').map(function () {
-    return $(this).data('id');
-  }).get();
-  $.ajax({
-    url: '/api/university/' + universityId + '/catalogs/create',
-    method: 'POST',
-    data: {
-      type: $('#addCatalogModal .js-catalog-type').val(),
-      faculty_id: $('#addCatalogModal .js-faculty').val(),
-      course_id: $('#addCatalogModal .js-course').val(),
-      groupsIds: groupsIds,
-      teachersIds: teacherIds,
-      _token: $(e.target).data('token')
-    },
-    success: function success(response) {
-      drawSingleCatalog(response.data);
-      clearModal('addCatalogModal');
-      hideModal('addCatalogModal');
-    },
-    error: function error(response) {
-      if (response.responseJSON.errors) {
-        Object.entries(response.responseJSON.errors).forEach(function (_ref) {
-          var _ref2 = _slicedToArray(_ref, 2),
-            key = _ref2[0],
-            errorMessage = _ref2[1];
-          var errorParagraph = $('#addCatalogModal').find("p.error-message.".concat(key, "-error-message"));
-          errorParagraph.text(errorMessage);
-        });
-      }
-    }
-  });
-};
-var fillGroupSelect = function fillGroupSelect(groups, block) {
-  var groupsSelect = $('#' + block).find('.js-group');
-  groupsSelect.empty();
-  groupsSelect.append($('<option>').attr('value', '').text('Виберіть групу'));
-  groups.forEach(function (group) {
-    groupsSelect.append($('<option>').attr('value', group.id).text(group.title));
-  });
-  initGroupSelectClick(groupsSelect);
-  initRemoveGroupClick();
-};
-var initGroupSelectClick = function initGroupSelectClick(groupsSelect) {
-  groupsSelect.on('change', function () {
-    var selectedGroupId = $(this).val();
-    if (selectedGroupId === '') {
-      return;
-    }
-    var selectedGroupTitle = $(this).find('option:selected').text();
-    var groupsList = $('#addCatalogModal .js-groups-list ul');
-    var listItem = $("<li data-id=\"" + selectedGroupId + "\">").text(selectedGroupTitle);
-    var deleteIcon = $('<i>').addClass('fas fa-times js-delete-group');
-    listItem.append(deleteIcon);
-    groupsList.append(listItem);
-    $(this).find('option:selected').hide();
-    $(this).val('');
-  });
-};
-var initRemoveGroupClick = function initRemoveGroupClick() {
-  $('#addCatalogModal .js-groups-list').on('click', '.js-delete-group', function () {
-    var groupId = parseInt($(this).parent().data('id'), 10);
-    $('#addCatalogModal .js-group').find('option').each(function () {
-      if (parseInt($(this).val(), 10) === groupId) {
-        $(this).show();
-      }
-    });
-    $(this).parent().remove();
-  });
-};
-var editCatalog = function editCatalog(e) {
-  window.open('/university/' + universityId + '/catalogs/' + $(e.target).closest('tr').data('catalogid'), '_blank');
-};
-})();
-
+/******/ 	
+/******/ 	// startup
+/******/ 	// Load entry module and return exports
+/******/ 	// This entry module is referenced by other modules so it can't be inlined
+/******/ 	var __webpack_exports__ = __webpack_require__("./resources/js/universityAdminProfile/catalogs.js");
+/******/ 	
 /******/ 	return __webpack_exports__;
 /******/ })()
 ;

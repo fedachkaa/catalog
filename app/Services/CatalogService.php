@@ -55,12 +55,6 @@ class CatalogService
             }
         }
 
-        if (!empty($data['type'])) {
-            $catalog->update([
-                'type' => $data['type']
-            ]);
-        }
-
         if (isset($data['groupsIds'])) {
             $this->saveCatalogGroups($catalog, $data['groupsIds']);
         }
@@ -80,7 +74,7 @@ class CatalogService
      */
     public function saveCatalogGroups(Catalog $catalog, array $groupIds): Catalog
     {
-        $catalog->getGroups()->detach();
+        $catalog->getGroups()->delete();
 
         foreach ($groupIds as $groupId) {
             $catalogGroup = $this->catalogGroupRepository->getNew([
@@ -102,7 +96,7 @@ class CatalogService
      */
     public function saveCatalogTeachers(Catalog $catalog, array $teachersIds): Catalog
     {
-        $catalog->getSupervisors()->detach();
+        $catalog->getSupervisors()->delete();
 
         foreach ($teachersIds as $teacherId) {
             $catalogTeacher = $this->catalogSupervisorRepository->getNew([

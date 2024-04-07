@@ -55,6 +55,10 @@ class Subject extends RepositoryAbstract implements SubjectRepositoryInterface
             $query = $query->where('university_id', (int) $filters['university_id']);
         }
 
+        if (!empty($filters['searchText'])) {
+            $query = $query->where('title', 'LIKE',  '%' . $filters['searchText'] . '%');
+        }
+
         return $query->get();
     }
 }

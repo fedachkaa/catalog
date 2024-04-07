@@ -76,7 +76,7 @@ const searchCourses = function (facultyId, block) {
     });
 }
 
-const searchTeachers = function (block, searchParams = {}) {
+const searchTeachers = function (block, searchParams = {}, callback = () => {}) {
     showSpinner();
 
     let queryString = '';
@@ -88,13 +88,11 @@ const searchTeachers = function (block, searchParams = {}) {
         }
     }
 
-    const searchText = $('#' + block + ' .js-teacher-search').val();
-
     $.ajax({
-        url: '/api/university/' + universityId +'/teachers?' + queryString + 'searchText=' + searchText,
+        url: '/api/university/' + universityId +'/teachers?' + queryString,
         method: 'GET',
         success: function (response) {
-            const teachersSelect = $('#' + block).find('.js-teachers-select');
+            const teachersSelect = $(block).find('.js-teachers-select');
             teachersSelect.empty();
             teachersSelect.append($('<option >').attr('value', '').text('Виберіть викладача'));
 
@@ -106,6 +104,7 @@ const searchTeachers = function (block, searchParams = {}) {
             initRemoveTeacherClick(block);
             teachersSelect.removeClass('hidden');
             hideSpinner();
+            callback();
         },
         error: function (xhr, status, error) {
             console.error('Помилка:', error);
@@ -119,8 +118,8 @@ const initTeachersSelectClick = function (block, teachersSelect) {
         const selectedTeacherId = $(this).val();
         const selectedTeacherName = $(this).find('option:selected').text();
 
-        const teachersList = $('#' + block + ' .js-teachers-list ul');
-        const listItem = $(`<li data-id="` + selectedTeacherId + `">`).text(selectedTeacherName);
+        const teachersList = $(block + ' .js-teachers-list ul');
+        const listItem = $(`<li data-teacherid="` + selectedTeacherId + `">`).text(selectedTeacherName);
         const deleteIcon = $('<i>').addClass('fas fa-times js-delete-teacher');
         listItem.append(deleteIcon);
         teachersList.append(listItem);
@@ -131,9 +130,9 @@ const initTeachersSelectClick = function (block, teachersSelect) {
 }
 
 const initRemoveTeacherClick = function (block) {
-    $('#' + block + ' .js-teachers-list').on('click', '.js-delete-teacher', function() {
-        const teacherId = parseInt($(this).parent().data('id'), 10);
-        $('#' + block + ' .js-teachers-select').find('option').each(function() {
+    $(block + ' .js-teachers-list').on('click', '.js-delete-teacher', function() {
+        const teacherId = parseInt($(this).parent().data('teacherid'), 10);
+        $(block + ' .js-teachers-select').find('option').each(function() {
             if (parseInt($(this).val(), 10) === teacherId) {
                 $(this).show();
             }

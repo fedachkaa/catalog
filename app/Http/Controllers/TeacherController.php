@@ -70,6 +70,7 @@ class TeacherController extends Controller
                 'email' => $request->post('email'),
                 'phone_number' => $request->post('phone_number'),
                 'faculty_id' => $request->post('faculty_id'),
+                'subjectsIds' => $request->post('subjectsIds'),
             ]);
         } catch (\Throwable $e) {
             return response()->json([
@@ -80,7 +81,7 @@ class TeacherController extends Controller
 
         return response()->json([
             'message' => 'Success',
-            'data' => $this->teacherRepository->export($teacher, ['user', 'faculty']),
+            'data' => $this->teacherRepository->export($teacher, ['user', 'faculty', 'subjects']),
         ])->setStatusCode(200);
     }
 

@@ -22,12 +22,7 @@
         <h2 class="title">Редагування каталогу</h2>
         <div class="flex flex-row w-full items-center mb-4">
             <div class="flex flex-col w-full">
-                <label>Тип каталогу:</label>
-                <select class="form-control js-catalog-type">
-                    <?php foreach (\App\Models\Catalog::AVAILABLE_CATALOG_TYPES as $key => $value): ?>
-                    <option value="<?= $key; ?>" <?= $catalogData['type'] === $key ? 'selected' : ''; ?>><?= $value; ?></option>
-                    <?php endforeach; ?>
-                </select>
+                <h1>Тип каталогу: <span class="font-bold"><?= \App\Models\Catalog::AVAILABLE_CATALOG_TYPES[$catalogData['type']]; ?></span></h1>
             </div>
             <div class="flex flex-row w-full">
                 <input type="checkbox" class="js-is-active form-checkbox" <?= $catalogData['is_active'] ? 'checked' : ''; ?>>
@@ -36,19 +31,13 @@
         </div>
 
         <div class="flex flex-row w-full mb-4">
-            <div class="flex flex-col w-full">
-                <label>Факультет:</label>
-                <select class="form-control js-faculty">
-                    <?php foreach ($faculties as $faculty): ?>
-                        <option value="<?= $faculty['id']; ?>" <?= $catalogData['faculty']['id'] === $faculty['id'] ? 'selected' : ''; ?>><?= $faculty['title']; ?></option>
-                    <?php endforeach; ?>
-                </select>
+            <div class="flex flex-col w-full js-faculty" data-facultyid="<?= $catalogData['faculty']['id']; ?>">
+                <h1>Факультет: <span class="font-bold"><?= $catalogData['faculty']['title']; ?></span></h1>
             </div>
-            <div class="flex flex-col w-full">
-                <label>Курс:</label>
-                <select class="form-control js-course">
-                    <option value="<?= $catalogData['course']['id']; ?>"><?= $catalogData['course']['course'] . ' курс'; ?></option>
-                </select>
+        </div>
+        <div class="flex flex-row w-full mb-4">
+            <div class="flex flex-col w-full js-course" data-courseid="<?= $catalogData['course']['id']; ?>">
+                <h1>Курс: <span class="font-bold"><?= $catalogData['course']['course'] . ' курс'; ?></span></h1>
             </div>
         </div>
 
@@ -72,12 +61,12 @@
             <div class="flex flex-col w-full">
                 <div class="flex flex-col w-full">
                     <label>Наукові керівники:</label>
-                    <select class="form-control js-teachers"></select>
+                    <select class="form-control js-teachers-select"></select>
                 </div>
                 <div class="js-teachers-list">
                     <ul>
                         <?php foreach ($catalogData['supervisors'] as $supervisor) : ?>
-                        <li data-userid="<?= $supervisor['user_id']; ?>">
+                        <li data-teacherid="<?= $supervisor['user_id']; ?>">
                             <?= $supervisor['user']['full_name']; ?>
                             <i class="fas fa-times js-delete-teacher"></i>
                         </li>

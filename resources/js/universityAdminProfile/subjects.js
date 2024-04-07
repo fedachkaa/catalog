@@ -39,14 +39,14 @@ const displaySubjectsData = function (data) {
 
 const addSubject = function (e) {
     $('#addEditSubjectModal .js-search-teacher-btn').on('click', function() {
-        searchTeachers('addEditSubjectModal');
+        searchTeachers('#addEditSubjectModal', { searchText: $('#addEditSubjectModal .js-teacher-search').val() });
     });
     showModal('addEditSubjectModal');
 }
 
 const editSubject = function (e) {
     $('#addEditSubjectModal .js-search-teacher-btn').on('click', function() {
-        searchTeachers('addEditSubjectModal');
+        searchTeachers('#addEditSubjectModal', { searchText: $('#addEditSubjectModal .js-teacher-search').val() });
     });
 
     $('#addEditSubjectModal').attr('data-subjectid', $(e.target).data('subjectid'));

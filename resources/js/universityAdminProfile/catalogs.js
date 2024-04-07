@@ -1,5 +1,5 @@
 const { showModal, hideModal, clearModal, toggleTabsSideBar } = require('./../general.js');
-const { searchGroups, searchFaculties, searchCourses, searchTeachers} = require('./common.js');
+const { searchGroups, searchFaculties, searchCourses, searchTeachers } = require('./common.js');
 
 document.addEventListener('DOMContentLoaded', function () {
     toggleTabsSideBar('js-catalogs');
@@ -87,7 +87,7 @@ const addCatalog = function () {
     });
 
     $('#addCatalogModal .js-search-supervisor-btn').on('click', function () {
-        searchTeachers('addCatalogModal', { facultyId:  $('#addCatalogModal .js-faculty').val() });
+        searchTeachers('#addCatalogModal', { facultyId:  $('#addCatalogModal .js-faculty').val(), searchText: $('#addCatalogModal .js-teacher-search').val()});
     });
 
     showModal('addCatalogModal');
@@ -138,11 +138,11 @@ const fillGroupSelect = function (groups, block) {
         groupsSelect.append($('<option>').attr('value', group.id).text(group.title));
     });
 
-    initGroupSelectClick(groupsSelect);
-    initRemoveGroupClick();
+    initGroupSelectClick(groupsSelect, $('#addCatalogModal .js-groups-list ul'));
+    initRemoveGroupClick(groupsSelect, $('#addCatalogModal .js-groups-list'));
 }
 
-const initGroupSelectClick = function (groupsSelect) {
+const initGroupSelectClick = function (groupsSelect, groupsList) {
     groupsSelect.on('change', function() {
         const selectedGroupId = $(this).val();
 
@@ -152,8 +152,7 @@ const initGroupSelectClick = function (groupsSelect) {
 
         const selectedGroupTitle = $(this).find('option:selected').text();
 
-        const groupsList = $('#addCatalogModal .js-groups-list ul');
-        const listItem = $(`<li data-id="` + selectedGroupId + `">`).text(selectedGroupTitle);
+        const listItem = $(`<li data-groupid="` + selectedGroupId + `">`).text(selectedGroupTitle);
         const deleteIcon = $('<i>').addClass('fas fa-times js-delete-group');
         listItem.append(deleteIcon);
         groupsList.append(listItem);
@@ -163,10 +162,10 @@ const initGroupSelectClick = function (groupsSelect) {
     });
 }
 
-const initRemoveGroupClick = function () {
-    $('#addCatalogModal .js-groups-list').on('click', '.js-delete-group', function() {
-        const groupId = parseInt($(this).parent().data('id'), 10);
-        $('#addCatalogModal .js-group').find('option').each(function() {
+const initRemoveGroupClick = function (groupsSelect, groupsList) {
+    groupsList.on('click', '.js-delete-group', function () {
+        const groupId = parseInt($(this).parent().data('groupid'), 10);
+        groupsSelect.find('option').each(function () {
             if (parseInt($(this).val(), 10) === groupId) {
                 $(this).show();
             }
@@ -178,3 +177,8 @@ const initRemoveGroupClick = function () {
 const editCatalog = function (e) {
     window.open('/university/' + universityId + '/catalogs/' + $(e.target).closest('tr').data('catalogid'), '_blank');
 }
+
+module.exports = {
+    initGroupSelectClick,
+    initRemoveGroupClick,
+};
