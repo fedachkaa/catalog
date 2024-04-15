@@ -10,6 +10,9 @@ class CatalogGroup extends Model implements CatalogGroupInterface
 {
     use HasFactory;
 
+    /** @const string */
+    const TABLE_NAME = 'catalog_groups';
+
     /**
      * @var string[]
      */

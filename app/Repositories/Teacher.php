@@ -64,15 +64,15 @@ class Teacher extends RepositoryAbstract implements TeacherRepositoryInterface
         }
 
         if (!empty($filters['university_id'])) {
-            $query = $query->join('faculties', 'faculties.id', '=', 'teachers.faculty_id');
+            $query = $query->join(\App\Models\Faculty::TABLE_NAME, \App\Models\Faculty::TABLE_NAME . '.id', '=', TeacherModel::TABLE_NAME . '.faculty_id');
 
-            $query = $query->where('faculties.university_id', (int) $filters['university_id']);
+            $query = $query->where(\App\Models\Faculty::TABLE_NAME . '.university_id', (int) $filters['university_id']);
         }
 
         if (!empty($filters['searchText'])) {
-            $query = $query->join('users', 'users.id', '=', 'teachers.user_id');
-            $query->where('users.first_name', 'LIKE', '%' . $filters['searchText'] . '%')
-                ->orWhere('users.last_name', 'LIKE', '%' . $filters['searchText'] . '%');
+            $query = $query->join(\App\Models\User::TABLE_NAME, \App\Models\User::TABLE_NAME . '.id', '=', TeacherModel::TABLE_NAME . '.user_id');
+            $query->where(\App\Models\User::TABLE_NAME . '.first_name', 'LIKE', '%' . $filters['searchText'] . '%')
+                ->orWhere(\App\Models\User::TABLE_NAME . '.last_name', 'LIKE', '%' . $filters['searchText'] . '%');
         }
 
         return $query->get();

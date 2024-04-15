@@ -11,6 +11,9 @@ class Group extends Model implements GroupInterface
 {
     use HasFactory;
 
+    /** @const string */
+    const TABLE_NAME = 'groups';
+
     /**
      * @var string[]
      */

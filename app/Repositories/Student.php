@@ -69,27 +69,27 @@ class Student extends RepositoryAbstract implements StudentRepositoryInterface
         }
 
         if (!empty($filters['groupTitle'])) {
-            $query = $query->where('groups.title', 'LIKE', '%' . $filters['groupTitle'] . '%');
+            $query = $query->where(\App\Models\Group::TABLE_NAME . '.title', 'LIKE', '%' . $filters['groupTitle'] . '%');
         }
 
         if (!empty($filters['university_id'])) {
-            $query = $query->where('universities.id', $filters['university_id']);
+            $query = $query->where(\App\Models\University::TABLE_NAME . '.id', $filters['university_id']);
         }
 
         if (!empty($filters['surname'])) {
-            $query = $query->where('users.last_name', 'LIKE', '%' . $filters['surname'] . '%');
+            $query = $query->where(\App\Models\User::TABLE_NAME . '.last_name', 'LIKE', '%' . $filters['surname'] . '%');
         }
 
         if (!empty($filters['email'])) {
-            $query = $query->where('users.email', 'LIKE', '%' . $filters['email'] . '%');
+            $query = $query->where(\App\Models\User::TABLE_NAME . '.email', 'LIKE', '%' . $filters['email'] . '%');
         }
 
         if (!empty($filters['faculty_id'])) {
-            $query = $query->where('courses.faculty_id', '=', (int) $filters['faculty_id']);
+            $query = $query->where(\App\Models\Course::TABLE_NAME . '.faculty_id', '=', (int) $filters['faculty_id']);
         }
 
         if (!empty($filters['courseTitle'])) {
-            $query = $query->where('courses.course', 'LIKE', '%' . $filters['courseTitle'] . '%');
+            $query = $query->where(\App\Models\Course::TABLE_NAME . '.course', 'LIKE', '%' . $filters['courseTitle'] . '%');
         }
 
         return $query->get();
@@ -103,7 +103,7 @@ class Student extends RepositoryAbstract implements StudentRepositoryInterface
     private function prepareJoins(Builder $query, array $filter): Builder
     {
         if (!empty($filter['surname']) || !empty($filter['email'])) {
-            $query = $query->join('users', 'users.id', '=', 'students.user_id');
+            $query = $query->join(\App\Models\User::TABLE_NAME, \App\Models\User::TABLE_NAME. '.id', '=', StudentModel::TABLE_NAME . '.user_id');
         }
 
         if (
@@ -114,10 +114,10 @@ class Student extends RepositoryAbstract implements StudentRepositoryInterface
             !empty($filter['course_id']) ||
             !empty($filter['courseTitle'])
         ) {
-            $query = $query->join('groups', 'groups.id', '=', 'students.group_id')
-                ->join('courses', 'courses.id', '=', 'groups.course_id')
-                ->join('faculties', 'faculties.id', '=', 'courses.faculty_id')
-                ->join('universities', 'universities.id', '=', 'faculties.university_id');
+            $query = $query->join(\App\Models\Group::TABLE_NAME, \App\Models\Group::TABLE_NAME . '.id', '=', StudentModel::TABLE_NAME . '.group_id')
+                ->join(\App\Models\Course::TABLE_NAME, \App\Models\Course::TABLE_NAME . '.id', '=', \App\Models\Group::TABLE_NAME . '.course_id')
+                ->join(\App\Models\Faculty::TABLE_NAME, \App\Models\Faculty::TABLE_NAME . '.id', '=', \App\Models\Course::TABLE_NAME . '.faculty_id')
+                ->join(\App\Models\University::TABLE_NAME, \App\Models\University::TABLE_NAME . '.id', '=', \App\Models\Faculty::TABLE_NAME . '.university_id');
         }
 
         return $query;

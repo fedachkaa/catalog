@@ -10,6 +10,9 @@ class CatalogTopic extends Model implements CatalogTopicInterface
 {
     use HasFactory;
 
+    /** @const string */
+    const TABLE_NAME = 'catalog_topics';
+
     /**
      * @var string[]
      */

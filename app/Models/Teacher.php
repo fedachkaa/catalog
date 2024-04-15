@@ -8,6 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Teacher extends Model implements TeacherInterface
 {
+    /** @const string */
+    const TABLE_NAME = 'teachers';
+
     /** @var array */
     protected $fillable = [
         'user_id',

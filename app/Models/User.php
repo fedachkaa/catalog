@@ -14,6 +14,9 @@ class User extends Authenticatable implements UserInterface
 {
     use HasApiTokens, HasFactory, Notifiable;
 
+    /** @const string */
+    const TABLE_NAME = 'users';
+
     /**
      * @var array<int, string>
      */

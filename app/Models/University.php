@@ -8,6 +8,9 @@ use Illuminate\Database\Eloquent\Collection;
 
 class University extends Model implements UniversityInterface
 {
+    /** @const string */
+    const TABLE_NAME = 'universities';
+
     /** @const string  */
     const ACCREDITATION_LEVEL_FIRST = 'I';
     const ACCREDITATION_LEVEL_SECOND = 'II';
