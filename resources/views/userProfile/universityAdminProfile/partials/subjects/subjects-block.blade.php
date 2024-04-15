@@ -3,7 +3,7 @@
 @section('title', 'Subjects | UniSpace')
 
 @section('content')
-    @include('universityAdminProfile.partials.sidebar-template')
+    @include('userProfile.universityAdminProfile.partials.sidebar-template')
 
     <div class="pl-48">
         <div class="faculties-block">
@@ -26,7 +26,7 @@
         </div>
     </div>
 
-    @include('universityAdminProfile.partials.subjects.add-edit-subject-modal');
+    @include('userProfile.universityAdminProfile.partials.subjects.add-edit-subject-modal');
 @endsection
 
 @push('scripts')

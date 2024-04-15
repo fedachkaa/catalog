@@ -10,18 +10,15 @@
 @section('content')
     @switch(auth()->user()->getRoleId())
         @case(\App\Models\UserRole::USER_ROLE_UNIVERSITY_ADMIN)
-            @include('universityAdminProfile.profile', ['userData' => $user])
-            @push('scripts')
-                <script src="{{ asset('js/universityAdminProfile.js') }}"></script>
-            @endpush
+            @include('userProfile.universityAdminProfile.profile', ['userData' => $user])
             @break
 
         @case(\App\Models\UserRole::USER_ROLE_STUDENT)
-            @include('userProfile.partials.studentProfile')
+            @include('userProfile.userProfile.studentProfile.profile')
             @break
 
         @case(\App\Models\UserRole::USER_ROLE_TEACHER)
-            @include('teacherProfile.profile', ['userData' => $user])
+            @include('userProfile.teacherProfile.profile', ['userData' => $user])
             @break
 
         @case(\App\Models\UserRole::USER_ROLE_ADMIN)
@@ -34,7 +31,7 @@
 @endsection
 
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
+    document.addEventListener("DOMContentLoaded", function () {
         initClearErrors();
         initLockPasswordBlock();
 

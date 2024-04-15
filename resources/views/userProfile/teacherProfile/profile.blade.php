@@ -4,9 +4,9 @@
  */
 ?>
 
-@include('teacherProfile.partials.sidebar-template')
+@include('userProfile.teacherProfile.partials.sidebar-template')
 
-@include('userProfile.partials.userInfo-block', ['userData' => $user])
+@include('general.password--block', ['userData' => $user])
 
 <script>
     const universityId = <?= $user['university']['id'] ?? ''; ?>

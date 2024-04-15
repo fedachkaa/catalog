@@ -3,7 +3,7 @@
 @section('title', 'Teachers | UniSpace')
 
 @section('content')
-    @include('universityAdminProfile.partials.sidebar-template')
+    @include('userProfile.universityAdminProfile.partials.sidebar-template')
 
     <div class="pl-52">
         <div class="faculties-block js-faculties-container">
@@ -27,7 +27,7 @@
         </div>
     </div>
 
-    @include('universityAdminProfile.partials.teachers.add-teacher-modal')
+    @include('userProfile.universityAdminProfile.partials.teachers.add-teacher-modal')
 @endsection
 
 @push('scripts')

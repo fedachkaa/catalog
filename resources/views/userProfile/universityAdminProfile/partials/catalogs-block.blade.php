@@ -3,5 +3,5 @@
 @section('title', 'Catalogs | UniSpace')
 
 @section('content')
-    @include('universityAdminProfile.partials.sidebar-template')
+    @include('userProfile.universityAdminProfile.partials.sidebar-template')
 @endsection

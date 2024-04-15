@@ -57,9 +57,9 @@ class CatalogController extends Controller
     public function getCatalogs(University $university): View|Factory|Application
     {
         if (auth()->user()->isUniversityAdmin()) {
-            return view('universityAdminProfile.partials.catalogs.catalogs-block');
+            return view('userProfile.universityAdminProfile.partials.catalogs.catalogs-block');
         } else if (auth()->user()->isTeacher()) {
-            return view('teacherProfile.partials.catalogs.catalog-block');
+            return view('userProfile.teacherProfile.partials.catalogs.catalog-block');
         } else {
             return view('404NotFound');
         }
@@ -132,9 +132,9 @@ class CatalogController extends Controller
         $catalogData = $this->catalogRepository->export($catalog, ['topics', 'groups', 'supervisors', 'faculty', 'course']);
 
         if (auth()->user()->isUniversityAdmin()) {
-            return view('universityAdminProfile.partials.catalogs.edit-catalog', compact('catalogData'));
+            return view('userProfile.universityAdminProfile.partials.catalogs.edit-catalog', compact('catalogData'));
         } else if (auth()->user()->isTeacher()) {
-            return view('teacherProfile.partials.catalogs.view-catalog', compact('catalogData'));
+            return view('userProfile.teacherProfile.partials.catalogs.view-catalog', compact('catalogData'));
         } else {
             return view('404NotFound');
         }

@@ -10,6 +10,7 @@ use App\Http\Controllers\FacultyController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\GroupController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -24,8 +25,12 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
-})->name('home');
+    if (Auth::check()) {
+        return redirect()->route('user.profile');
+    } else {
+        return redirect()->route('login');
+    }
+});
 
 Route::get('/university/create', [UniversityController::class, 'create'])->name('university.create');
 Route::post('/university/create', [UniversityController::class, 'store'])->name('university.store');

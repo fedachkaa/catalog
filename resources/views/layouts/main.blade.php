@@ -15,33 +15,10 @@
 <body>
     <nav class="nav">
         <div>
-            <a href="{{ route('home') }}" class="text-2xl font-bold">
+            <a href="#" class="text-2xl font-bold">
                 Unispace
             </a>
         </div>
-        <ul class="menu">
-            <li><a href="{{ route('home') }}">Головна</a></li>
-            <li><a href="#">Про нас</a></li>
-            @if (auth()->user())
-            <li class="sub-menu"><a href="#">{{ auth()->user()->getFirstName() }}</a>
-                <ul>
-                    <li><a href="{{ route('user.profile') }}">
-                            <span>Профіль</span>
-                            <i class="fa fa-user"></i>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{{ route('logout') }}">
-                            <span>Вийти</span>
-                            <i class="fa-solid fa-right-from-bracket"></i>
-                        </a>
-                    </li>
-                </ul>
-            </li>
-            @else
-            <li><a href="{{ route('login') }}">Увійти</a></li>
-            @endif
-        </ul>
     </nav>
 
     @include('general.spinner')

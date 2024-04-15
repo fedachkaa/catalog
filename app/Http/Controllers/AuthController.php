@@ -53,7 +53,7 @@ class AuthController extends Controller
                 return redirect()->route('admin');
             }
 
-            return redirect()->route('home');
+            return redirect()->route('user.profile');
         }
 
         return back()->withErrors([

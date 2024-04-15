@@ -3,7 +3,7 @@
 @section('title', 'Catalogs | UniSpace')
 
 @section('content')
-    @include('universityAdminProfile.partials.sidebar-template')
+    @include('userProfile.universityAdminProfile.partials.sidebar-template')
 
     <div class="pl-56">
         <div class="faculties-block js-catalogs-container">
@@ -15,7 +15,7 @@
         </div>
     </div>
 
-    @include('universityAdminProfile.partials.catalogs.add-catalog-modal')
+    @include('userProfile.universityAdminProfile.partials.catalogs.add-catalog-modal')
 @endsection
 
 @push('scripts')

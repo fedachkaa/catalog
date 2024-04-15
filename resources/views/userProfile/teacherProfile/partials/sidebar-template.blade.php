@@ -31,6 +31,12 @@
                     <span>Каталоги робіт</span>
                 </a>
             </li>
+            <li class="sidebar-menu-title">
+                <a href="{{ route('logout') }}">
+                    <span>Вийти</span>
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                </a>
+            </li>
         </ul>
     </div>
 </div>

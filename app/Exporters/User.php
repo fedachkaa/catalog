@@ -64,7 +64,7 @@ class User extends ExporterAbstract
         } else if ($user->isTeacher()) {
             return $universityRepository->export($user->getTeacher()->getFaculty()->getUniversity());
         } else if ($user->isStudent()) {
-            // TODO change
+            return $universityRepository->export($user->getStudent()->getGroup()->getCourse()->getFaculty()->getUniversity());
         } else {
             return [];
         }

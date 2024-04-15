@@ -3,7 +3,7 @@
 @section('title', 'Students | UniSpace')
 
 @section('content')
-    @include('universityAdminProfile.partials.sidebar-template')
+    @include('userProfile.universityAdminProfile.partials.sidebar-template')
 
     <div class="pl-52">
         <div class="flex flex-row gap-1">
@@ -23,8 +23,8 @@
         </div>
     </div>
 
-    @include('universityAdminProfile.partials.students.add-students-modal')
-    @include('universityAdminProfile.partials.students.import-students-modal')
+    @include('userProfile.universityAdminProfile.partials.students.add-students-modal')
+    @include('userProfile.universityAdminProfile.partials.students.import-students-modal')
 @endsection
 
 @push('scripts')

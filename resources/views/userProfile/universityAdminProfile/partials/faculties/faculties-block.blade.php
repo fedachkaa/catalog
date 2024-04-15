@@ -3,7 +3,7 @@
 @section('title', 'Faculties | UniSpace')
 
 @section('content')
-    @include('universityAdminProfile.partials.sidebar-template')
+    @include('userProfile.universityAdminProfile.partials.sidebar-template')
 
     <div class="pl-52">
         <div class="faculties-block js-faculties-container">
@@ -27,9 +27,9 @@
             </div>
         </div>
     </div>
-    @include('universityAdminProfile.partials.faculties.add-edit-faculty-modal')
-    @include('universityAdminProfile.partials.faculties.add-course-modal')
-    @include('universityAdminProfile.partials.faculties.course-info-modal')
+    @include('userProfile.universityAdminProfile.partials.faculties.add-edit-faculty-modal')
+    @include('userProfile.universityAdminProfile.partials.faculties.add-course-modal')
+    @include('userProfile.universityAdminProfile.partials.faculties.course-info-modal')
 @endsection
 
 @push('scripts')

@@ -8,7 +8,7 @@
 @section('title', 'University | UniSpace')
 
 @section('content')
-    @include('universityAdminProfile.partials.sidebar-template')
+    @include('userProfile.universityAdminProfile.partials.sidebar-template')
 
     <div class="pl-52">
         <div class="js-university-name text-3xl"><?= $university['name']; ?></div>
