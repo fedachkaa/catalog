@@ -1,31 +1,16 @@
 const { showModal, hideModal, clearModal, toggleTabsSideBar } = require('./../general.js');
 const { searchGroups, searchFaculties, searchCourses, searchTeachers } = require('./common.js');
+const { getCatalogs, drawCatalogCommonDataRow } = require('../common/catalogs.js');
 
 document.addEventListener('DOMContentLoaded', function () {
     toggleTabsSideBar('js-catalogs');
 
-    getCatalogs();
+    getCatalogs(displayCatalogsData);
 
     $(document).on('click', '.js-add-catalog', addCatalog);
     $(document).on('click', '.js-save-catalog', saveCatalog);
     $(document).on('click', '.js-edit-catalog', editCatalog);
-
 });
-
-const getCatalogs = function () {
-    $.ajax({
-        url: '/api/university/' + universityId + '/catalogs',
-        method: 'GET',
-        success: function (response) {
-            if (response.data.length !== 0) {
-                displayCatalogsData(response.data);
-            }
-        },
-        error: function (xhr, status, error) {
-            console.error('Помилка:', error);
-        }
-    });
-}
 
 const displayCatalogsData = function(data) {
     const tbody = $('#catalogs-table tbody');
@@ -38,39 +23,12 @@ const displayCatalogsData = function(data) {
 
 const drawSingleCatalog = function (catalog) {
     const tbody = $('#catalogs-table tbody');
-    const row = $(`<tr data-catalogid=` + catalog.id + `>`);
-
-    row.append($('<td>').text(catalog.id));
-    row.append($('<td class="js-single-catalog-type">').text(catalog.typeTitle));
-    row.append($('<td class="js-single-catalog-faculty">').text(catalog.faculty.title));
-    row.append($('<td class="js-single-catalog-course">').text(catalog.course.course + ' курс'));
-
-    const groupsList = $('<ul class="js-list-groups">');
-    catalog.groups.forEach(group => {
-        const listItem = $(`<li class="list-group-item" data-id="` + group.id + `">`).text(group.title);
-        groupsList.append(listItem);
-    });
-    row.append($('<td>').append(groupsList));
-
-    const teachersList = $('<ul class="js-list-teachers">');
-    catalog.supervisors.forEach(supervisor => {
-        const listItem = $(`<li class="list-supervisor-item" data-id="` + supervisor.user_id + `">`).text(supervisor.user.full_name);
-        teachersList.append(listItem);
-    });
-    row.append($('<td>').append(teachersList));
-
-    row.append($('<td class="js-single-catalog-created-at">').text(catalog.created_at));
-
+    const row = drawCatalogCommonDataRow(catalog);
     const addActionCell = $('<td>');
     const editActionIcon = $('<i>').addClass('fas fa-edit action-icon js-edit-catalog')
         .attr('title', 'Редагувати');
-
     addActionCell.append(editActionIcon);
-
     row.append(addActionCell);
-
-    row.addClass(($('#catalogs-table tr').length + 1) % 2 === 0 ? 'row-gray' : 'row-beige');
-
     tbody.append(row);
 }
 

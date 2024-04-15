@@ -1,5 +1,6 @@
 <?php
 /**
+ * @var array $user
  * @var array $catalogData
  */
 ?>
@@ -13,9 +14,9 @@
             <input type="text" class="form-control js-topic">
             <p class="error-message topic-error-message"></p>
             <label>Науковий керівник</label>
-            <select class="form-control js-teacher">
+            <select class="form-control js-teacher" <?= $user['role_id'] === \App\Models\UserRole::USER_ROLE_TEACHER ? 'disabled' : ''; ?>>
                 <?php foreach ($catalogData['supervisors'] as $supervisor) : ?>
-                    <option value="<?= $supervisor['user_id']; ?>"><?= $supervisor['user']['full_name']; ?></option>
+                    <option value="<?= $supervisor['user_id']; ?>" <?= $user['id'] === $supervisor['user_id'] ? 'selected' : ''; ?>><?= $supervisor['user']['full_name']; ?></option>
                 <?php endforeach; ?>
             </select>
             <p class="error-message teacher_id-error-message"></p>

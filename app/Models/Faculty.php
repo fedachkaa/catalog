@@ -11,6 +11,9 @@ class Faculty extends Model implements FacultyInterface
 {
     use HasFactory;
 
+    /** @const string */
+    const TABLE_NAME = 'faculties';
+
     /**
      * @var array<int, string>
      */

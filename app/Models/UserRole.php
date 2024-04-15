@@ -11,6 +11,9 @@ class UserRole extends Model implements UserRoleInterface
 {
     use HasFactory;
 
+    /** @const string */
+    const TABLE_NAME = 'user_roles';
+
     /** @const int  */
     const USER_ROLE_ADMIN = 1;
     const USER_ROLE_UNIVERSITY_ADMIN = 2;

@@ -48,8 +48,8 @@ class Group extends RepositoryAbstract implements GroupRepositoryInterface
         }
 
         if (!empty($filters['faculty_id'])) {
-            $query = $query->join('courses', 'courses.id', '=', 'groups.course_id');
-            $query = $query->where('courses.faculty_id', '=', (int) $filters['faculty_id']);
+            $query = $query->join(\App\Models\Course::TABLE_NAME, \App\Models\Course::TABLE_NAME . '.id', '=', GroupModel::TABLE_NAME . '.course_id');
+            $query = $query->where(\App\Models\Course::TABLE_NAME . '.faculty_id', '=', (int) $filters['faculty_id']);
         }
 
         return $query->first();

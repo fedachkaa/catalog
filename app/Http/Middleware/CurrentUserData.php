@@ -24,11 +24,16 @@ class CurrentUserData
     {
         $user = auth()->user();
 
+        if (!$user) {
+            View::share('user', []);
+            return $next($request);
+        }
+
         /** @var UserRepository $userRepository */
         $userRepository = App::get(UserRepository::class);
 
         $expands = match ($user->getRoleId()) {
-            UserRole::USER_ROLE_UNIVERSITY_ADMIN => ['university'],
+            UserRole::USER_ROLE_UNIVERSITY_ADMIN, UserRole::USER_ROLE_TEACHER => ['university'],
             default => [],
         };
 

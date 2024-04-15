@@ -41,7 +41,7 @@ class UserProfileController extends Controller
     public function getUserProfile(): JsonResponse
     {
         return response()->json([
-            'data' => $this->userRepository->export(auth()->user()),
+            'data' => $this->userRepository->export(auth()->user(), ['university']),
         ])->setStatusCode(200);
     }
 }

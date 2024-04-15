@@ -13,6 +13,9 @@ class Catalog extends Model implements CatalogInterface
     use HasFactory;
 
     /** @const string */
+    const TABLE_NAME = 'catalogs';
+
+    /** @const string */
     const TYPE_CATALOG_COURSE_WORK = 'course_work';
     const TYPE_CATALOG_DIPLOMA_WORK = 'diploma_work';
 

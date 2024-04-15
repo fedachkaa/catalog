@@ -55,8 +55,8 @@ class Faculty extends RepositoryAbstract implements FacultyRepositoryInterface
         $query = FacultyModel::query();
 
         if (!empty($filters['admin_id'])) {
-            $query = $query->join('universities', 'faculties' . '.university_id', '=', 'universities.id');
-            $query = $query->where('universities.admin_id', (int) $filters['admin_id']);
+            $query = $query->join(\App\Models\University::TABLE_NAME, FacultyModel::TABLE_NAME . '.university_id', '=', \App\Models\University::TABLE_NAME . '.id');
+            $query = $query->where(\App\Models\University::TABLE_NAME . '.admin_id', (int) $filters['admin_id']);
         }
 
         if (!empty($filters['university_id'])) {

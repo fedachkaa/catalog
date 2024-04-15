@@ -39,7 +39,13 @@ class SubjectController extends Controller
      */
     public function getSubjects(University $university)
     {
-        return view('universityAdminProfile.partials.subjects.subjects-block');
+        if (auth()->user()->isUniversityAdmin()) {
+            return view('universityAdminProfile.partials.subjects.subjects-block');
+        } else if (auth()->user()->isTeacher()) {
+            $subjectsData = $this->subjectRepository->exportAll(auth()->user()->getTeacher()->getSubjects());
+
+            return view('teacherProfile.partials.subjects.subjects-block', compact('subjectsData'));
+        }
     }
 
     /**

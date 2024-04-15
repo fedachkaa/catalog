@@ -10,6 +10,9 @@ class CatalogSupervisor extends Model implements CatalogSupervisorInterface
 {
     use HasFactory;
 
+    /** @const string */
+    const TABLE_NAME = 'catalog_supervisors';
+
     /**
      * @var string[]
      */

@@ -14,6 +14,9 @@ class User extends Authenticatable implements UserInterface
 {
     use HasApiTokens, HasFactory, Notifiable;
 
+    /** @const string */
+    const TABLE_NAME = 'users';
+
     /**
      * @var array<int, string>
      */
@@ -59,9 +62,25 @@ class User extends Authenticatable implements UserInterface
     /**
      * @return Model|null
      */
-    public function getUniversity(): ?Model
+    public function getUniversityAdmin(): ?Model
     {
        return $this->hasOne(University::class, 'admin_id', 'id')->first();
+    }
+
+    /**
+     * @return Model|null
+     */
+    public function getTeacher() : ?Model
+    {
+        return $this->hasOne(Teacher::class, 'user_id', 'id')->first();
+    }
+
+    /**
+     * @return Model|null
+     */
+    public function getStudent() : ?Model
+    {
+        return $this->hasOne(Student::class, 'user_id', 'id')->first();
     }
 
     // --- Model getters
@@ -137,4 +156,30 @@ class User extends Authenticatable implements UserInterface
     {
         return (string) $this->getAttribute('updated_at');
     }
+
+    /**
+     * @return bool
+     */
+    public function isTeacher(): bool
+    {
+        return $this->getRoleId() === UserRole::USER_ROLE_TEACHER;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isStudent(): bool
+    {
+        return $this->getRoleId() === UserRole::USER_ROLE_STUDENT;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isUniversityAdmin(): bool
+    {
+        return $this->getRoleId() === UserRole::USER_ROLE_UNIVERSITY_ADMIN;
+    }
+
+
 }

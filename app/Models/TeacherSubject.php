@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class TeacherSubject extends Model implements TeacherSubjectInterface
 {
+    /** @const string */
+    const TABLE_NAME = 'teacher_subjects';
+
     /**
      * @var string[]
      */

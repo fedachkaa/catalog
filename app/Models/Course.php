@@ -11,6 +11,9 @@ class Course extends Model implements CourseInterface
 {
     use HasFactory;
 
+    /** @const string */
+    const TABLE_NAME = 'courses';
+
     /**
      * @var string[]
      */

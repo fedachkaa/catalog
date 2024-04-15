@@ -21,9 +21,13 @@ mix.js('resources/js/universityAdminProfile/university.js', 'public/js/universit
 mix.js('resources/js/universityAdminProfile/catalogs.js', 'public/js/universityAdminProfile/catalogs.js');
 mix.js('resources/js/universityAdminProfile/edit-catalog.js', 'public/js/universityAdminProfile/edit-catalog.js');
 
+mix.js('resources/js/teacher/subjects.js', 'public/js/teacher/subjects.js');
+mix.js('resources/js/teacher/students.js', 'public/js/teacher/students.js');
+mix.js('resources/js/teacher/catalogs.js', 'public/js/teacher/catalogs.js');
+
 mix.webpackConfig({
      output: {
-         library: ['general', 'universityAdminProfile'],
+         library: ['general', 'universityAdminProfile', 'teacher'],
          libraryTarget: 'umd',
          umdNamedDefine: true,
          globalObject: 'this'

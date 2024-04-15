@@ -40,7 +40,13 @@ class StudentController extends Controller
      */
     public function getStudents(University $university)
     {
-        return view('universityAdminProfile.partials.students.students-block');
+        if (auth()->user()->isUniversityAdmin()) {
+            return view('universityAdminProfile.partials.students.students-block');
+        } else if (auth()->user()->isTeacher()) {
+            return view('teacherProfile.partials.students.students-block');
+        } else {
+            return view('404NotFound');
+        }
     }
 
     /**

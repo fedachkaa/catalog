@@ -21,7 +21,7 @@
             @break
 
         @case(\App\Models\UserRole::USER_ROLE_TEACHER)
-            @include('userProfile.partials.teacherProfile')
+            @include('teacherProfile.profile', ['userData' => $user])
             @break
 
         @case(\App\Models\UserRole::USER_ROLE_ADMIN)

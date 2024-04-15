@@ -6,7 +6,7 @@
 	else if(typeof exports === 'object')
 		exports["general"] = factory();
 	else
-		root["general"] = root["general"] || {}, root["general"]["universityAdminProfile"] = factory();
+		root["general"] = root["general"] || {}, root["general"]["universityAdminProfile"] = root["general"]["universityAdminProfile"] || {}, root["general"]["universityAdminProfile"]["teacher"] = factory();
 })(this, () => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
@@ -30643,8 +30643,6 @@ var _require = __webpack_require__(/*! ../general.js */ "./resources/js/general.
   hideSpinner = _require.hideSpinner;
 var _require2 = __webpack_require__(/*! ./common.js */ "./resources/js/universityAdminProfile/common.js"),
   searchFaculties = _require2.searchFaculties;
-var _require3 = __webpack_require__(/*! ./common */ "./resources/js/universityAdminProfile/common.js"),
-  searchTeachers = _require3.searchTeachers;
 document.addEventListener('DOMContentLoaded', function () {
   toggleTabsSideBar('js-teachers');
   getTeachers();

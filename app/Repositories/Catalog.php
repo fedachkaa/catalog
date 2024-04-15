@@ -70,6 +70,11 @@ class Catalog extends RepositoryAbstract implements CatalogRepositoryInterface
             $query = $query->where('type', $filters['type']);
         }
 
+        if (!empty($filters['teacher_id'])) {
+            $query = $query->join(\App\Models\CatalogSupervisor::TABLE_NAME, CatalogModel::TABLE_NAME . '.id', '=', \App\Models\CatalogSupervisor::TABLE_NAME . '.catalog_id');
+            $query = $query->where(\App\Models\CatalogSupervisor::TABLE_NAME . '.teacher_id', (int) $filters['teacher_id']);
+        }
+
         return $query->get();
     }
 }

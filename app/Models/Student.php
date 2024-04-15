@@ -10,6 +10,9 @@ class Student extends Model implements StudentInterface
 {
     use HasFactory;
 
+    /** @const string */
+    const TABLE_NAME = 'students';
+
     /**
      * @var string[]
      */
