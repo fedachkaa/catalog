@@ -23,6 +23,7 @@ mix.js('resources/js/universityAdminProfile/edit-catalog.js', 'public/js/univers
 
 mix.js('resources/js/teacher/subjects.js', 'public/js/teacher/subjects.js');
 mix.js('resources/js/teacher/students.js', 'public/js/teacher/students.js');
+mix.js('resources/js/teacher/catalogs.js', 'public/js/teacher/catalogs.js');
 
 mix.webpackConfig({
      output: {

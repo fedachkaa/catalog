@@ -23,7 +23,6 @@ class CatalogController extends Controller
     /** @var CatalogRepositoryInterface */
     private $catalogRepository;
 
-
     /** @var CatalogTopicRepositoryInterface */
     private $catalogTopicRepository;
 
@@ -57,7 +56,13 @@ class CatalogController extends Controller
      */
     public function getCatalogs(University $university): View|Factory|Application
     {
-        return view('universityAdminProfile.partials.catalogs.catalogs-block');
+        if (auth()->user()->isUniversityAdmin()) {
+            return view('universityAdminProfile.partials.catalogs.catalogs-block');
+        } else if (auth()->user()->isTeacher()) {
+            return view('teacherProfile.partials.catalogs.catalog-block');
+        } else {
+            return view('404NotFound');
+        }
     }
 
     /**
@@ -67,7 +72,13 @@ class CatalogController extends Controller
      */
     public function getCatalogsList(Request $request, University $university): JsonResponse
     {
-        $catalogs = $this->catalogRepository->getAll(['university_id' => $university->getId()]);
+        $searchParams = ['university_id' => $university->getId()];
+
+        if (auth()->user()->isTeacher()) {
+            $searchParams['teacher_id'] = auth()->user()->getId();
+        }
+
+        $catalogs = $this->catalogRepository->getAll($searchParams);
 
         return response()->json([
             'message' => 'Success',
@@ -119,9 +130,14 @@ class CatalogController extends Controller
     public function editCatalog(University $university, Catalog $catalog): View|Factory|Application
     {
         $catalogData = $this->catalogRepository->export($catalog, ['topics', 'groups', 'supervisors', 'faculty', 'course']);
-        $faculties = $this->facultyRepository->exportAll($this->facultyRepository->getAll(['university_id' => $university->getId()]));
 
-        return view('universityAdminProfile.partials.catalogs.edit-catalog', compact('catalogData', 'faculties'));
+        if (auth()->user()->isUniversityAdmin()) {
+            return view('universityAdminProfile.partials.catalogs.edit-catalog', compact('catalogData'));
+        } else if (auth()->user()->isTeacher()) {
+            return view('teacherProfile.partials.catalogs.view-catalog', compact('catalogData'));
+        } else {
+            return view('404NotFound');
+        }
     }
 
     /**

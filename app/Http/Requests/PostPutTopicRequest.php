@@ -18,7 +18,11 @@ class PostPutTopicRequest extends FormRequest
      */
     public function authorize()
     {
-        return in_array(auth()->user()->getRoleId(), [UserRole::USER_ROLE_UNIVERSITY_ADMIN, UserRole::USER_ROLE_ADMIN]);
+        return in_array(auth()->user()->getRoleId(), [
+            UserRole::USER_ROLE_UNIVERSITY_ADMIN,
+            UserRole::USER_ROLE_TEACHER,
+            UserRole::USER_ROLE_ADMIN,
+        ]);
     }
 
     /**
