@@ -33,5 +33,5 @@
 @endsection
 
 @push('scripts')
-    <script src="{{ asset('js/subjects/subjects.js')}}"></script>
+    <script src="{{ asset('js/teacher/subjects.js')}}"></script>
 @endpush

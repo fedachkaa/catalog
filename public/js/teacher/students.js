@@ -2202,6 +2202,80 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
 /***/ }),
 
+/***/ "./resources/js/common/students.js":
+/*!*****************************************!*\
+  !*** ./resources/js/common/students.js ***!
+  \*****************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+var _require = __webpack_require__(/*! ../general */ "./resources/js/general.js"),
+  showSpinner = _require.showSpinner,
+  hideSpinner = _require.hideSpinner;
+var getStudents = function getStudents() {
+  var query = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+  showSpinner();
+  $.ajax({
+    url: '/api/university/' + universityId + '/students?' + query,
+    method: 'GET',
+    success: function success(response) {
+      displayStudentsData(response.data);
+      hideSpinner();
+    },
+    error: function error(xhr, status, _error) {
+      console.error('Помилка:', _error);
+      hideSpinner();
+    }
+  });
+};
+var searchStudents = function searchStudents() {
+  var query = '';
+  var surnameInput = $('.search-tool input[name="surname"]').val();
+  if (surnameInput) {
+    query += '&surname=' + surnameInput;
+  }
+  var facultyInput = $('.search-tool input[name="faculty"]').val();
+  if (facultyInput) {
+    query += '&faculty=' + facultyInput;
+  }
+  var courseInput = $('.search-tool input[name="course"]').val();
+  if (courseInput) {
+    query += '&course=' + courseInput;
+  }
+  var groupInput = $('.search-tool input[name="group"]').val();
+  if (groupInput) {
+    query += '&group=' + groupInput;
+  }
+  var emailInput = $('.search-tool input[name="email"]').val();
+  if (emailInput) {
+    query += '&email=' + emailInput;
+  }
+  getStudents(query);
+};
+var displayStudentsData = function displayStudentsData(data) {
+  var tbody = $('#students-table tbody');
+  tbody.empty();
+  data.forEach(function (student) {
+    drawSingleStudent(student);
+  });
+};
+var drawSingleStudent = function drawSingleStudent(student) {
+  var row = $('<tr>');
+  row.append($('<td>').text(student.user_id));
+  row.append($('<td>').text(student.user.full_name));
+  row.append($('<td>').text(student.faculty.title));
+  row.append($('<td>').text(student.course.course + ' курс'));
+  row.append($('<td>').text(student.group.title));
+  row.addClass(($('#students-table tbody tr').length + 1) % 2 === 0 ? 'row-gray' : 'row-beige');
+  $('#students-table tbody').append(row);
+};
+module.exports = {
+  getStudents: getStudents,
+  searchStudents: searchStudents,
+  drawSingleStudent: drawSingleStudent
+};
+
+/***/ }),
+
 /***/ "./resources/js/general.js":
 /*!*********************************!*\
   !*** ./resources/js/general.js ***!
@@ -30492,12 +30566,17 @@ var __webpack_exports__ = {};
 // This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
 (() => {
 /*!******************************************!*\
-  !*** ./resources/js/teacher/subjects.js ***!
+  !*** ./resources/js/teacher/students.js ***!
   \******************************************/
 var _require = __webpack_require__(/*! ./../general.js */ "./resources/js/general.js"),
   toggleTabsSideBar = _require.toggleTabsSideBar;
+var _require2 = __webpack_require__(/*! ../common/students.js */ "./resources/js/common/students.js"),
+  searchStudents = _require2.searchStudents,
+  getStudents = _require2.getStudents;
 document.addEventListener('DOMContentLoaded', function () {
-  toggleTabsSideBar('js-subjects');
+  toggleTabsSideBar('js-students');
+  getStudents('teacherId=' + teacherId);
+  $(document).on('click', '.js-search-students', searchStudents);
 });
 })();
 

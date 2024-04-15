@@ -14,7 +14,7 @@
                 </a>
             </li>
             <li class="sidebar-menu-title js-subjects">
-                <a href="/university/<?= $user['university']['id']; ?>/subjects?teacherid=<?= $user['id']; ?>">
+                <a href="/university/<?= $user['university']['id']; ?>/subjects">
                     <i class="fa-solid fa-book-open"></i>
                     <span>Мої предмети</span>
                 </a>
@@ -36,5 +36,6 @@
 </div>
 
 <script>
-    const universityId = <?= $user['university']['id'] ?? ''; ?>
+    const universityId = <?= $user['university']['id'] ?? ''; ?>;
+    const teacherId = <?= $user['id'] ?? ''; ?>;
 </script>

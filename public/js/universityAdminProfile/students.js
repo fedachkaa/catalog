@@ -6,7 +6,7 @@
 	else if(typeof exports === 'object')
 		exports["general"] = factory();
 	else
-		root["general"] = root["general"] || {}, root["general"]["universityAdminProfile"] = factory();
+		root["general"] = root["general"] || {}, root["general"]["universityAdminProfile"] = root["general"]["universityAdminProfile"] || {}, root["general"]["universityAdminProfile"]["teacher"] = factory();
 })(this, () => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
@@ -2199,6 +2199,80 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 //     cluster: process.env.MIX_PUSHER_APP_CLUSTER,
 //     forceTLS: true
 // });
+
+/***/ }),
+
+/***/ "./resources/js/common/students.js":
+/*!*****************************************!*\
+  !*** ./resources/js/common/students.js ***!
+  \*****************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+var _require = __webpack_require__(/*! ../general */ "./resources/js/general.js"),
+  showSpinner = _require.showSpinner,
+  hideSpinner = _require.hideSpinner;
+var getStudents = function getStudents() {
+  var query = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+  showSpinner();
+  $.ajax({
+    url: '/api/university/' + universityId + '/students?' + query,
+    method: 'GET',
+    success: function success(response) {
+      displayStudentsData(response.data);
+      hideSpinner();
+    },
+    error: function error(xhr, status, _error) {
+      console.error('Помилка:', _error);
+      hideSpinner();
+    }
+  });
+};
+var searchStudents = function searchStudents() {
+  var query = '';
+  var surnameInput = $('.search-tool input[name="surname"]').val();
+  if (surnameInput) {
+    query += '&surname=' + surnameInput;
+  }
+  var facultyInput = $('.search-tool input[name="faculty"]').val();
+  if (facultyInput) {
+    query += '&faculty=' + facultyInput;
+  }
+  var courseInput = $('.search-tool input[name="course"]').val();
+  if (courseInput) {
+    query += '&course=' + courseInput;
+  }
+  var groupInput = $('.search-tool input[name="group"]').val();
+  if (groupInput) {
+    query += '&group=' + groupInput;
+  }
+  var emailInput = $('.search-tool input[name="email"]').val();
+  if (emailInput) {
+    query += '&email=' + emailInput;
+  }
+  getStudents(query);
+};
+var displayStudentsData = function displayStudentsData(data) {
+  var tbody = $('#students-table tbody');
+  tbody.empty();
+  data.forEach(function (student) {
+    drawSingleStudent(student);
+  });
+};
+var drawSingleStudent = function drawSingleStudent(student) {
+  var row = $('<tr>');
+  row.append($('<td>').text(student.user_id));
+  row.append($('<td>').text(student.user.full_name));
+  row.append($('<td>').text(student.faculty.title));
+  row.append($('<td>').text(student.course.course + ' курс'));
+  row.append($('<td>').text(student.group.title));
+  row.addClass(($('#students-table tbody tr').length + 1) % 2 === 0 ? 'row-gray' : 'row-beige');
+  $('#students-table tbody').append(row);
+};
+module.exports = {
+  getStudents: getStudents,
+  searchStudents: searchStudents,
+  drawSingleStudent: drawSingleStudent
+};
 
 /***/ }),
 
@@ -30651,6 +30725,10 @@ var _require2 = __webpack_require__(/*! ./common */ "./resources/js/universityAd
   searchGroups = _require2.searchGroups,
   searchFaculties = _require2.searchFaculties,
   searchCourses = _require2.searchCourses;
+var _require3 = __webpack_require__(/*! ../common/students.js */ "./resources/js/common/students.js"),
+  searchStudents = _require3.searchStudents,
+  getStudents = _require3.getStudents,
+  drawSingleStudent = _require3.drawSingleStudent;
 document.addEventListener('DOMContentLoaded', function () {
   toggleTabsSideBar('js-students');
   getStudents();
@@ -30660,63 +30738,6 @@ document.addEventListener('DOMContentLoaded', function () {
   $(document).on('click', '.js-import-students', importStudents);
   $(document).on('click', '.js-import-students-save', importStudentsStore);
 });
-var getStudents = function getStudents() {
-  var query = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-  showSpinner();
-  $.ajax({
-    url: '/api/university/' + universityId + '/students?' + query,
-    method: 'GET',
-    success: function success(response) {
-      displayStudentsData(response.data);
-      hideSpinner();
-    },
-    error: function error(xhr, status, _error) {
-      console.error('Помилка:', _error);
-      hideSpinner();
-    }
-  });
-};
-var displayStudentsData = function displayStudentsData(data) {
-  var tbody = $('#students-table tbody');
-  tbody.empty();
-  data.forEach(function (student) {
-    drawSingleStudent(student);
-  });
-};
-var drawSingleStudent = function drawSingleStudent(student) {
-  var row = $('<tr>');
-  row.append($('<td>').text(student.user_id));
-  row.append($('<td>').text(student.user.full_name));
-  row.append($('<td>').text(student.faculty.title));
-  row.append($('<td>').text(student.course.course + ' курс'));
-  row.append($('<td>').text(student.group.title));
-  row.addClass(($('#students-table tbody tr').length + 1) % 2 === 0 ? 'row-gray' : 'row-beige');
-  $('#students-table tbody').append(row);
-};
-var searchStudents = function searchStudents() {
-  var query = '';
-  var surnameInput = $('.search-tool input[name="surname"]').val();
-  if (surnameInput) {
-    query += '&surname=' + surnameInput;
-  }
-  var facultyInput = $('.search-tool input[name="faculty"]').val();
-  if (facultyInput) {
-    query += '&faculty=' + facultyInput;
-  }
-  var courseInput = $('.search-tool input[name="course"]').val();
-  if (courseInput) {
-    query += '&course=' + courseInput;
-  }
-  var groupInput = $('.search-tool input[name="group"]').val();
-  if (groupInput) {
-    query += '&group=' + groupInput;
-  }
-  var emailInput = $('.search-tool input[name="email"]').val();
-  if (emailInput) {
-    query += '&email=' + emailInput;
-  }
-  getStudents(query);
-};
 var addStudent = function addStudent(e) {
   searchFaculties('addStudentModal');
   $('#addStudentModal .js-faculty').on('change', function () {
@@ -30810,8 +30831,8 @@ var importStudentsStore = function importStudentsStore(e) {
       $(e.target).addClass('hidden');
       hideSpinner();
     },
-    error: function error(xhr, status, _error2) {
-      console.error('Помилка:', _error2);
+    error: function error(xhr, status, _error) {
+      console.error('Помилка:', _error);
       hideSpinner();
     }
   });
