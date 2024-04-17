@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Interfaces\StudentInterface;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -37,6 +38,14 @@ class Student extends Model implements StudentInterface
     public function getGroup(): Model
     {
         return $this->belongsTo(Group::class, 'group_id', 'id')->first();
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getTopicRequests(): Collection
+    {
+        return  $this->hasMany(TopicRequest::class, 'student_id', 'user_id')->get();
     }
 
     // --- Model getters

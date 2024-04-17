@@ -6,7 +6,7 @@
 	else if(typeof exports === 'object')
 		exports["general"] = factory();
 	else
-		root["general"] = root["general"] || {}, root["general"]["universityAdminProfile"] = root["general"]["universityAdminProfile"] || {}, root["general"]["universityAdminProfile"]["teacher"] = factory();
+		root["general"] = root["general"] || {}, root["general"]["universityAdminProfile"] = root["general"]["universityAdminProfile"] || {}, root["general"]["universityAdminProfile"]["teacher"] = root["general"]["universityAdminProfile"]["teacher"] || {}, root["general"]["universityAdminProfile"]["teacher"]["student"] = factory();
 })(this, () => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
@@ -2221,9 +2221,13 @@ var _require = __webpack_require__(/*! ../general */ "./resources/js/general.js"
   hideModal = _require.hideModal,
   hideSpinner = _require.hideSpinner;
 var getCatalogs = function getCatalogs() {
-  var callback = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : function () {};
+  var searchParams = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+  var callback = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : function () {};
+  var queryString = Object.keys(searchParams).map(function (key) {
+    return key + '=' + encodeURIComponent(searchParams[key]);
+  }).join('&');
   $.ajax({
-    url: '/api/university/' + universityId + '/catalogs',
+    url: '/api/university/' + universityId + '/catalogs?' + queryString,
     method: 'GET',
     success: function success(response) {
       if (response.data.length !== 0) {
@@ -30648,7 +30652,9 @@ var _require2 = __webpack_require__(/*! ../common/catalogs.js */ "./resources/js
   editTopic = _require2.editTopic;
 document.addEventListener('DOMContentLoaded', function () {
   toggleTabsSideBar('js-catalogs');
-  getCatalogs(displayCatalogsData);
+  getCatalogs({
+    teacherId: teacherId
+  }, displayCatalogsData);
   $(document).on('click', '.js-view-catalog', viewCatalog);
   $(document).on('click', '.js-add-topic', addTopic);
   $(document).on('click', '.js-save-topic', saveTopic);

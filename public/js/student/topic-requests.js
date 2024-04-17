@@ -30491,13 +30491,13 @@ process.umask = function() { return 0; };
 var __webpack_exports__ = {};
 // This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
 (() => {
-/*!******************************************!*\
-  !*** ./resources/js/teacher/subjects.js ***!
-  \******************************************/
+/*!************************************************!*\
+  !*** ./resources/js/student/topic-requests.js ***!
+  \************************************************/
 var _require = __webpack_require__(/*! ./../general.js */ "./resources/js/general.js"),
   toggleTabsSideBar = _require.toggleTabsSideBar;
 document.addEventListener('DOMContentLoaded', function () {
-  toggleTabsSideBar('js-subjects');
+  toggleTabsSideBar('js-topic-requests');
 });
 })();
 

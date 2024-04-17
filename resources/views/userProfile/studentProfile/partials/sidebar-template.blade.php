@@ -19,8 +19,8 @@
                     <span>Каталоги робіт</span>
                 </a>
             </li>
-            <li class="sidebar-menu-title js-requests">
-                <a href="/student/<?= $user['id']; ?>/requests">
+            <li class="sidebar-menu-title js-topic-requests">
+                <a href="/student/topic-requests">
                     <i class="fas fa-square-check"></i>
                     <span>Мої запити</span>
                 </a>

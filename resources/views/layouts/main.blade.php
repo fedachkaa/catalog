@@ -15,7 +15,7 @@
 <body>
     <nav class="nav">
         <div>
-            <a href="#" class="text-2xl font-bold">
+            <a href="#" class="text-2xl font-bold text-center my-3">
                 Unispace
             </a>
         </div>

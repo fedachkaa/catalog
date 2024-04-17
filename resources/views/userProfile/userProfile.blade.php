@@ -14,7 +14,7 @@
             @break
 
         @case(\App\Models\UserRole::USER_ROLE_STUDENT)
-            @include('userProfile.userProfile.studentProfile.profile')
+            @include('userProfile.studentProfile.profile')
             @break
 
         @case(\App\Models\UserRole::USER_ROLE_TEACHER)

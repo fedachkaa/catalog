@@ -60,6 +60,8 @@ class CatalogController extends Controller
             return view('userProfile.universityAdminProfile.partials.catalogs.catalogs-block');
         } else if (auth()->user()->isTeacher()) {
             return view('userProfile.teacherProfile.partials.catalogs.catalog-block');
+        } else if (auth()->user()->isStudent()) {
+            return view('userProfile.studentProfile.partials.catalogs.catalog-block');
         } else {
             return view('404NotFound');
         }
@@ -72,11 +74,7 @@ class CatalogController extends Controller
      */
     public function getCatalogsList(Request $request, University $university): JsonResponse
     {
-        $searchParams = ['university_id' => $university->getId()];
-
-        if (auth()->user()->isTeacher()) {
-            $searchParams['teacher_id'] = auth()->user()->getId();
-        }
+        $searchParams = array_merge($this->getSearchParams($request),  ['university_id' => $university->getId()]);
 
         $catalogs = $this->catalogRepository->getAll($searchParams);
 
@@ -135,6 +133,8 @@ class CatalogController extends Controller
             return view('userProfile.universityAdminProfile.partials.catalogs.edit-catalog', compact('catalogData'));
         } else if (auth()->user()->isTeacher()) {
             return view('userProfile.teacherProfile.partials.catalogs.view-catalog', compact('catalogData'));
+        } else if (auth()->user()->isStudent())  {
+            return view('userProfile.studentProfile.partials.catalogs.view-catalog', compact('catalogData'));
         } else {
             return view('404NotFound');
         }
@@ -220,5 +220,49 @@ class CatalogController extends Controller
         return response()->json([
             'message' => 'Success',
         ])->setStatusCode(200);
+    }
+
+    /**
+     * @param University $university
+     * @param Catalog $catalog
+     * @param CatalogTopic $catalogTopic
+     * @return JsonResponse
+     */
+    public function sendRequestTopic(University $university, Catalog $catalog, CatalogTopic $catalogTopic): JsonResponse
+    {
+        DB::beginTransaction();
+        try {
+            $this->catalogService->sendRequestTopic($catalogTopic, auth()->user()->getStudent());
+        } catch (\Throwable $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'message' => 'Internal serve error',
+                'error' => $e->getMessage()
+            ])->setStatusCode(500);
+        }
+        DB::commit();
+
+        return response()->json([
+            'message' => 'Success',
+        ])->setStatusCode(200);
+    }
+
+    /**
+     * @param Request $request
+     * @return array
+     */
+    private function getSearchParams(Request $request): array
+    {
+        $searchParams = [];
+        if ($request->has('teacherId')) {
+            $searchParams['teacher_id'] = $request->get('teacherId');
+        }
+
+        if ($request->has('studentId')) {
+            $searchParams['student_id'] = $request->get('studentId');
+        }
+
+        return $searchParams;
     }
 }

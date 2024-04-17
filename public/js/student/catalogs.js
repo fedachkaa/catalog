@@ -2202,6 +2202,154 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
 /***/ }),
 
+/***/ "./resources/js/common/catalogs.js":
+/*!*****************************************!*\
+  !*** ./resources/js/common/catalogs.js ***!
+  \*****************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
+function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+var _require = __webpack_require__(/*! ../general */ "./resources/js/general.js"),
+  showModal = _require.showModal,
+  showSpinner = _require.showSpinner,
+  clearModal = _require.clearModal,
+  hideModal = _require.hideModal,
+  hideSpinner = _require.hideSpinner;
+var getCatalogs = function getCatalogs() {
+  var searchParams = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+  var callback = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : function () {};
+  var queryString = Object.keys(searchParams).map(function (key) {
+    return key + '=' + encodeURIComponent(searchParams[key]);
+  }).join('&');
+  $.ajax({
+    url: '/api/university/' + universityId + '/catalogs?' + queryString,
+    method: 'GET',
+    success: function success(response) {
+      if (response.data.length !== 0) {
+        callback(response.data);
+      }
+    },
+    error: function error(xhr, status, _error) {
+      console.error('Помилка:', _error);
+    }
+  });
+};
+var drawCatalogCommonDataRow = function drawCatalogCommonDataRow(catalog) {
+  var row = $("<tr data-catalogid=" + catalog.id + ">");
+  row.append($('<td>').text(catalog.id));
+  row.append($('<td class="js-single-catalog-type">').text(catalog.typeTitle));
+  row.append($('<td class="js-single-catalog-faculty">').text(catalog.faculty.title));
+  row.append($('<td class="js-single-catalog-course">').text(catalog.course.course + ' курс'));
+  var groupsList = $('<ul class="js-list-groups">');
+  catalog.groups.forEach(function (group) {
+    var listItem = $("<li class=\"list-group-item\" data-id=\"" + group.id + "\">").text(group.title);
+    groupsList.append(listItem);
+  });
+  row.append($('<td>').append(groupsList));
+  var teachersList = $('<ul class="js-list-teachers">');
+  catalog.supervisors.forEach(function (supervisor) {
+    var listItem = $("<li class=\"list-supervisor-item\" data-id=\"" + supervisor.user_id + "\">").text(supervisor.user.full_name);
+    teachersList.append(listItem);
+  });
+  row.append($('<td>').append(teachersList));
+  row.append($('<td class="js-single-catalog-created-at">').text(catalog.created_at));
+  row.addClass(($('#catalogs-table tr').length + 1) % 2 === 0 ? 'row-gray' : 'row-beige');
+  return row;
+};
+var addTopic = function addTopic() {
+  showModal('addTopicModal');
+};
+var saveTopic = function saveTopic(e) {
+  showSpinner();
+  var catalogId = $('#addTopicModal').data('catalogid');
+  var topicId = $('#addTopicModal').data('topicid');
+  var method = 'POST';
+  var url = '/api/university/' + universityId + '/catalogs/' + catalogId + '/topic';
+  var attrToRemove = [];
+  if (topicId) {
+    method = 'PUT';
+    url = '/api/university/' + universityId + '/catalogs/' + catalogId + '/topic/' + topicId;
+    attrToRemove = ['topicid'];
+  }
+  $.ajax({
+    url: url,
+    method: method,
+    data: {
+      topic: $('#addTopicModal .js-topic').val(),
+      teacher_id: $('#addTopicModal .js-teacher').val(),
+      _token: $(e.target).data('token')
+    },
+    success: function success(response) {
+      drawSingleTopic(response.data);
+      clearModal('addTopicModal', attrToRemove);
+      hideModal('addTopicModal');
+      hideSpinner();
+    },
+    error: function error(response) {
+      if (response.responseJSON.errors) {
+        Object.entries(response.responseJSON.errors).forEach(function (_ref) {
+          var _ref2 = _slicedToArray(_ref, 2),
+            key = _ref2[0],
+            errorMessage = _ref2[1];
+          var errorParagraph = $('#addTopicModal').find("p.error-message.".concat(key, "-error-message"));
+          errorParagraph.text(errorMessage);
+        });
+      }
+      hideSpinner();
+    }
+  });
+};
+var editTopic = function editTopic(e) {
+  var topicRow = $(e.target).closest('tr');
+  var topicId = topicRow.data('topicid');
+  $('#addTopicModal').attr('data-topicid', topicId);
+  $('#addTopicModal .js-topic').val(topicRow.find('.js-single-topic-topic').text());
+  $('#addTopicModal .js-teacher').val(topicRow.find('.js-single-topic-teacher').data('teacherid'));
+  showModal('addTopicModal');
+};
+var drawSingleTopic = function drawSingleTopic(topic) {
+  var existingRow = $('#topics-table tbody tr[data-topicid="' + topic.id + '"]');
+  if (existingRow.length > 0) {
+    existingRow.find('.js-single-topic-topic').text(topic.topic);
+    existingRow.find('.js-single-topic-teacher').text(topic.teacher.user.full_name).attr('data-teacherid', topic.teacher.user_id);
+    if (topic.student.length > 0) {
+      existingRow.find('.js-single-topic-student').text(topic.student.user.full_name).attr('data-studentid', topic.student.user_id);
+    } else {
+      existingRow.find('.js-single-topic-student').text('-').removeAttr('data-studentid');
+    }
+  } else {
+    var newRow = $('<tr>').attr('data-topicid', topic.id);
+    newRow.append($('<td>').text(topic.id));
+    newRow.append($('<td>').addClass('js-single-topic-topic').text(topic.topic));
+    newRow.append($('<td>').addClass('js-single-topic-teacher').text(topic.teacher.user.full_name).attr('data-teacherid', topic.teacher.user_id));
+    if (topic.student.length > 0) {
+      newRow.append($('<td>').addClass('js-single-topic-student').text(topic.student.user.full_name).attr('data-studentid', topic.student.user_id));
+    } else {
+      newRow.append($('<td>').addClass('js-single-topic-student').text('-'));
+    }
+    var addActionCell = $('<td>');
+    var addActionIcon = $('<i>').addClass('fas fa-edit action-icon js-edit-topic').attr('title', 'Редагувати');
+    addActionCell.append(addActionIcon);
+    newRow.append(addActionCell);
+    newRow.addClass(($('#topics-table tbody tr').length + 1) % 2 === 0 ? 'row-gray' : 'row-beige');
+    $('#topics-table tbody').append(newRow);
+  }
+};
+module.exports = {
+  getCatalogs: getCatalogs,
+  drawCatalogCommonDataRow: drawCatalogCommonDataRow,
+  addTopic: addTopic,
+  saveTopic: saveTopic,
+  editTopic: editTopic
+};
+
+/***/ }),
+
 /***/ "./resources/js/general.js":
 /*!*********************************!*\
   !*** ./resources/js/general.js ***!
@@ -30492,13 +30640,57 @@ var __webpack_exports__ = {};
 // This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
 (() => {
 /*!******************************************!*\
-  !*** ./resources/js/teacher/subjects.js ***!
+  !*** ./resources/js/student/catalogs.js ***!
   \******************************************/
 var _require = __webpack_require__(/*! ./../general.js */ "./resources/js/general.js"),
   toggleTabsSideBar = _require.toggleTabsSideBar;
+var _require2 = __webpack_require__(/*! ../common/catalogs.js */ "./resources/js/common/catalogs.js"),
+  getCatalogs = _require2.getCatalogs,
+  drawCatalogCommonDataRow = _require2.drawCatalogCommonDataRow;
 document.addEventListener('DOMContentLoaded', function () {
-  toggleTabsSideBar('js-subjects');
+  toggleTabsSideBar('js-catalogs');
+  getCatalogs({
+    'studentId': studentId
+  }, displayCatalogsData);
+  $(document).on('click', '.js-view-catalog', viewCatalog);
+  $(document).on('click', '.js-send-request', sendRequestTopic);
 });
+var displayCatalogsData = function displayCatalogsData(data) {
+  var tbody = $('#catalogs-table tbody');
+  tbody.empty();
+  data.forEach(function (catalog) {
+    drawSingleCatalog(catalog);
+  });
+};
+var drawSingleCatalog = function drawSingleCatalog(catalog) {
+  var tbody = $('#catalogs-table tbody');
+  var row = drawCatalogCommonDataRow(catalog);
+  var addActionCell = $('<td>');
+  var viewActionIcon = $('<i>').addClass('fas fa-eye action-icon js-view-catalog').attr('title', 'Переглянути');
+  addActionCell.append(viewActionIcon);
+  row.append(addActionCell);
+  tbody.append(row);
+};
+var viewCatalog = function viewCatalog(e) {
+  window.open('/university/' + universityId + '/catalogs/' + $(e.target).closest('tr').data('catalogid'), '_blank');
+};
+var sendRequestTopic = function sendRequestTopic(e) {
+  var topicId = $(e.target).closest('tr').data('topicid');
+  var catalogId = $(document).find('.js-edit-catalog-block').data('catalogid');
+  $.ajax({
+    url: '/api/university/' + universityId + '/catalog/' + catalogId + '/topic/' + topicId + '/send-request',
+    method: 'POST',
+    data: {
+      _token: $(e.target).data('token')
+    },
+    success: function success(response) {
+      $(e.target).removeClass('fa-paper-plane').addClass('fa-envelope-circle-check').attr('title', 'Запит надіслано');
+    },
+    error: function error(xhr, status, _error) {
+      console.error('Помилка:', _error);
+    }
+  });
+};
 })();
 
 /******/ 	return __webpack_exports__;

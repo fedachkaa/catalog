@@ -161,6 +161,17 @@ class StudentController extends Controller
     }
 
     /**
+     * @return Application|Factory|View
+     */
+    public function getStudentTopicRequests(): View|Factory|Application
+    {
+        $student = $this->studentRepository->export(auth()->user()->getStudent(), ['topicRequests']);
+        $topicRequests = $student['topicRequests'];
+
+        return view('userProfile.studentProfile.partials.requests.requests-block', compact('topicRequests'));
+    }
+
+    /**
      * @param Request $request
      * @return array
      */

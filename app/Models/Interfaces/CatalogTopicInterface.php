@@ -2,6 +2,7 @@
 
 namespace App\Models\Interfaces;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 interface CatalogTopicInterface
@@ -11,6 +12,8 @@ interface CatalogTopicInterface
     public function getTeacher(): Model;
 
     public function getStudent(): ?Model;
+
+    public function getStudentRequests(): Collection;
 
     public function getId(): int;
 

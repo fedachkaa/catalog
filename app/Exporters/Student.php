@@ -2,6 +2,7 @@
 
 namespace App\Exporters;
 
+use App\Repositories\Interfaces\TopicRequestRepositoryInterface;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Student as StudentModel;
 use Illuminate\Support\Facades\App;
@@ -18,6 +19,7 @@ class Student extends ExporterAbstract
             'group' => 'group',
             'course' => 'course',
             'faculty' => 'faculty',
+            'topicRequests' => 'topicRequests',
         ];
     }
 
@@ -81,5 +83,17 @@ class Student extends ExporterAbstract
         $facultyRepository = App::get(\App\Repositories\Faculty::class);
 
         return $facultyRepository->export($student->getGroup()->getCourse()->getFaculty());
+    }
+
+    /**
+     * @param StudentModel $student
+     * @return array
+     */
+    protected function expandTopicRequests(StudentModel $student): array
+    {
+        /** @var TopicRequestRepositoryInterface $topicRequestRepository */
+        $topicRequestRepository = App::get(TopicRequestRepositoryInterface::class);
+
+        return $topicRequestRepository->exportAll($student->getTopicRequests(), ['topic']);
     }
 }
