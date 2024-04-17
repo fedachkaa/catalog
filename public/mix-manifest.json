@@ -1,6 +1,5 @@
 {
     "/js/general.js": "/js/general.js",
-    "/js/universityAdminProfile.js": "/js/universityAdminProfile.js",
     "/js/universityAdminProfile/teachers.js": "/js/universityAdminProfile/teachers.js",
     "/js/universityAdminProfile/subjects.js": "/js/universityAdminProfile/subjects.js",
     "/js/universityAdminProfile/students.js": "/js/universityAdminProfile/students.js",
@@ -10,5 +9,7 @@
     "/js/universityAdminProfile/edit-catalog.js": "/js/universityAdminProfile/edit-catalog.js",
     "/js/teacher/subjects.js": "/js/teacher/subjects.js",
     "/js/teacher/students.js": "/js/teacher/students.js",
-    "/js/teacher/catalogs.js": "/js/teacher/catalogs.js"
+    "/js/teacher/catalogs.js": "/js/teacher/catalogs.js",
+    "/js/student/catalogs.js": "/js/student/catalogs.js",
+    "/js/student/topic-requests.js": "/js/student/topic-requests.js"
 }

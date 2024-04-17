@@ -33,7 +33,7 @@ class CurrentUserData
         $userRepository = App::get(UserRepository::class);
 
         $expands = match ($user->getRoleId()) {
-            UserRole::USER_ROLE_UNIVERSITY_ADMIN, UserRole::USER_ROLE_TEACHER => ['university'],
+            UserRole::USER_ROLE_UNIVERSITY_ADMIN, UserRole::USER_ROLE_TEACHER, UserRole::USER_ROLE_STUDENT => ['university'],
             default => [],
         };
 

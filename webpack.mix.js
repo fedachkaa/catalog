@@ -12,7 +12,6 @@ const mix = require('laravel-mix');
  */
 
 mix.js('resources/js/general.js', 'public/js/general.js');
-mix.js('resources/js/universityAdminProfile.js', 'public/js/universityAdminProfile.js');
 mix.js('resources/js/universityAdminProfile/teachers.js', 'public/js/universityAdminProfile/teachers.js');
 mix.js('resources/js/universityAdminProfile/subjects.js', 'public/js/universityAdminProfile/subjects.js');
 mix.js('resources/js/universityAdminProfile/students.js', 'public/js/universityAdminProfile/students.js');
@@ -25,9 +24,12 @@ mix.js('resources/js/teacher/subjects.js', 'public/js/teacher/subjects.js');
 mix.js('resources/js/teacher/students.js', 'public/js/teacher/students.js');
 mix.js('resources/js/teacher/catalogs.js', 'public/js/teacher/catalogs.js');
 
+mix.js('resources/js/student/catalogs.js', 'public/js/student/catalogs.js');
+mix.js('resources/js/student/topic-requests.js', 'public/js/student/topic-requests.js');
+
 mix.webpackConfig({
      output: {
-         library: ['general', 'universityAdminProfile', 'teacher'],
+         library: ['general', 'universityAdminProfile', 'teacher', 'student'],
          libraryTarget: 'umd',
          umdNamedDefine: true,
          globalObject: 'this'

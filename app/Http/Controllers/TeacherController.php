@@ -35,7 +35,7 @@ class TeacherController extends Controller
      */
     public function getTeachers(UniversityInterface $university): View|Factory|Application
     {
-        return view('universityAdminProfile.partials.teachers.teachers-block');
+        return view('userProfile.universityAdminProfile.partials.teachers.teachers-block');
     }
 
     /**

@@ -4,7 +4,7 @@ const { getCatalogs, drawCatalogCommonDataRow, addTopic, saveTopic, editTopic} =
 document.addEventListener('DOMContentLoaded', function () {
     toggleTabsSideBar('js-catalogs');
 
-    getCatalogs(displayCatalogsData);
+    getCatalogs({teacherId: teacherId }, displayCatalogsData);
 
     $(document).on('click', '.js-view-catalog', viewCatalog);
 

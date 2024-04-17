@@ -2,10 +2,15 @@
 
 namespace App\Services;
 
+use App\Exceptions\ServiceUserException;
 use App\Models\Catalog;
+use App\Models\CatalogTopic;
+use App\Models\Student;
+use App\Models\TopicRequest;
 use App\Repositories\Interfaces\CatalogGroupRepositoryInterface;
 use App\Repositories\Interfaces\CatalogRepositoryInterface;
 use App\Repositories\Interfaces\CatalogSupervisorRepositoryInterface;
+use App\Repositories\Interfaces\TopicRequestRepositoryInterface;
 
 class CatalogService
 {
@@ -18,19 +23,25 @@ class CatalogService
     /** @var CatalogSupervisorRepositoryInterface */
     private $catalogSupervisorRepository;
 
+    /** @var TopicRequestRepositoryInterface */
+    private $topicRequestRepository;
+
     /**
      * @param CatalogRepositoryInterface $catalogRepository
      * @param CatalogGroupRepositoryInterface $catalogGroupRepository
      * @param CatalogSupervisorRepositoryInterface $catalogSupervisorRepository
+     * @param TopicRequestRepositoryInterface $topicRequestRepository
      */
     public function __construct(
         CatalogRepositoryInterface $catalogRepository,
         CatalogGroupRepositoryInterface $catalogGroupRepository,
-        CatalogSupervisorRepositoryInterface $catalogSupervisorRepository
+        CatalogSupervisorRepositoryInterface $catalogSupervisorRepository,
+        TopicRequestRepositoryInterface $topicRequestRepository
     ){
         $this->catalogRepository = $catalogRepository;
         $this->catalogGroupRepository = $catalogGroupRepository;
         $this->catalogSupervisorRepository = $catalogSupervisorRepository;
+        $this->topicRequestRepository = $topicRequestRepository;
     }
 
     /**
@@ -108,5 +119,36 @@ class CatalogService
         }
 
         return $catalog;
+    }
+
+    /**
+     * @param CatalogTopic $catalogTopic
+     * @param Student $student
+     * @return bool
+     * @throws \Throwable
+     */
+    public function sendRequestTopic(CatalogTopic $catalogTopic, Student $student): bool
+    {
+        $studentRequests = $student->getTopicRequests();
+
+        if (count($studentRequests) >= TopicRequest::MAX_TOPIC_REQUESTS_PER_STUDENT) {
+            throw new ServiceUserException('Can`t request topic. User reached max allowed requests.');
+        }
+
+        $topicRequest = $this->topicRequestRepository->getOne([
+            'topic_id' => $catalogTopic->getId(),
+            'student_id' => $student->getUserId(),
+        ]);
+
+        if (empty($topicRequest)) {
+            $topicRequest = $this->topicRequestRepository->getNew([
+                'topic_id' => $catalogTopic->getId(),
+                'student_id' => $student->getUserId(),
+            ]);
+
+            $topicRequest->saveOrFail();
+        }
+
+        return true;
     }
 }

@@ -6,7 +6,7 @@
 	else if(typeof exports === 'object')
 		exports["general"] = factory();
 	else
-		root["general"] = root["general"] || {}, root["general"]["universityAdminProfile"] = root["general"]["universityAdminProfile"] || {}, root["general"]["universityAdminProfile"]["teacher"] = factory();
+		root["general"] = root["general"] || {}, root["general"]["universityAdminProfile"] = root["general"]["universityAdminProfile"] || {}, root["general"]["universityAdminProfile"]["teacher"] = root["general"]["universityAdminProfile"]["teacher"] || {}, root["general"]["universityAdminProfile"]["teacher"]["student"] = factory();
 })(this, () => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({

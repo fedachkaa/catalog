@@ -83,6 +83,6 @@ class UniversityController extends Controller
     {
         $university = $this->universityRepository->export($university);
 
-        return view('universityAdminProfile.partials.university.university-info-block', compact('university'));
+        return view('userProfile.universityAdminProfile.partials.university.university-info-block', compact('university'));
     }
 }

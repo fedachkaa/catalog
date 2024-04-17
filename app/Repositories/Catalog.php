@@ -75,6 +75,12 @@ class Catalog extends RepositoryAbstract implements CatalogRepositoryInterface
             $query = $query->where(\App\Models\CatalogSupervisor::TABLE_NAME . '.teacher_id', (int) $filters['teacher_id']);
         }
 
+        if (!empty($filters['student_id'])) {
+            $query = $query->join(\App\Models\CatalogGroup::TABLE_NAME, \App\Models\CatalogGroup::TABLE_NAME . '.catalog_id', '=', CatalogModel::TABLE_NAME . '.id');
+            $query = $query->join(\App\Models\Student::TABLE_NAME, \App\Models\Student::TABLE_NAME . '.group_id', '=', \App\Models\CatalogGroup::TABLE_NAME . '.group_id');
+            $query = $query->where(\App\Models\Student::TABLE_NAME . '.user_id', (int) $filters['student_id']);
+        }
+
         return $query->get();
     }
 }

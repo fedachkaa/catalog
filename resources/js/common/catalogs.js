@@ -1,8 +1,10 @@
 const { showModal, showSpinner, clearModal, hideModal, hideSpinner } = require("../general");
 
-const getCatalogs = function (callback = () => {}) {
+const getCatalogs = function (searchParams ={}, callback = () => {}) {
+    const queryString = Object.keys(searchParams).map(key => key + '=' + encodeURIComponent(searchParams[key])).join('&');
+
     $.ajax({
-        url: '/api/university/' + universityId + '/catalogs',
+        url: '/api/university/' + universityId + '/catalogs?' + queryString,
         method: 'GET',
         success: function (response) {
             if (response.data.length !== 0) {

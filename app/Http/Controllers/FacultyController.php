@@ -30,7 +30,7 @@ class FacultyController extends Controller
      */
     public function getFaculties(University $university): View|Factory|Application
     {
-        return view('universityAdminProfile.partials.faculties.faculties-block');
+        return view('userProfile.universityAdminProfile.partials.faculties.faculties-block');
     }
 
     /**

@@ -41,9 +41,9 @@ class StudentController extends Controller
     public function getStudents(University $university)
     {
         if (auth()->user()->isUniversityAdmin()) {
-            return view('universityAdminProfile.partials.students.students-block');
+            return view('userProfile.universityAdminProfile.partials.students.students-block');
         } else if (auth()->user()->isTeacher()) {
-            return view('teacherProfile.partials.students.students-block');
+            return view('userProfile.teacherProfile.partials.students.students-block');
         } else {
             return view('404NotFound');
         }
@@ -158,6 +158,17 @@ class StudentController extends Controller
         return response()->json([
             'message' => 'Empty data',
         ])->setStatusCode(400);
+    }
+
+    /**
+     * @return Application|Factory|View
+     */
+    public function getStudentTopicRequests(): View|Factory|Application
+    {
+        $student = $this->studentRepository->export(auth()->user()->getStudent(), ['topicRequests']);
+        $topicRequests = $student['topicRequests'];
+
+        return view('userProfile.studentProfile.partials.requests.requests-block', compact('topicRequests'));
     }
 
     /**

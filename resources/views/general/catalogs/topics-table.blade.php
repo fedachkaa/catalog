@@ -31,6 +31,12 @@
                         <?php if ($topic['teacher']['user_id'] === $user['id']): ?>
                             <i class="fas fa-edit action-icon js-edit-topic" title="Редагувати"></i>
                             <i class="fa-solid fa-person-circle-question" title="Переглянути запити"></i>
+                        <?php elseif ($user['role_id'] === \App\Models\UserRole::USER_ROLE_STUDENT): ?>
+                            <?php if (in_array($user['id'], array_column($topic['requests'], 'student_id'))): ?>
+                                <i class="fas fa-envelope-circle-check action-icon" title="Запит надіслано"></i>
+                            <?php else: ?>
+                                <i class="fas fa-paper-plane action-icon js-send-request" title="Надіслати запит" data-token="{{ csrf_token() }}"></i>
+                            <?php endif; ?>
                         <?php endif; ?>
                     </td>
                 </tr>
@@ -41,7 +47,9 @@
         Тем ще немає.
     <?php endif; ?>
 
-    <div class="mt-2">
-        <i class="fas fa-circle-plus action-icon text-3xl js-add-topic" title="Додати тему"></i>
-    </div>
+    <?php if ($user['role_id'] !== \App\Models\UserRole::USER_ROLE_STUDENT): ?>
+        <div class="mt-2">
+            <i class="fas fa-circle-plus action-icon text-3xl js-add-topic" title="Додати тему"></i>
+        </div>
+    <?php endif; ?>
 </div>

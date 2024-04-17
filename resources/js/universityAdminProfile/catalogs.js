@@ -5,7 +5,7 @@ const { getCatalogs, drawCatalogCommonDataRow } = require('../common/catalogs.js
 document.addEventListener('DOMContentLoaded', function () {
     toggleTabsSideBar('js-catalogs');
 
-    getCatalogs(displayCatalogsData);
+    getCatalogs({}, displayCatalogsData);
 
     $(document).on('click', '.js-add-catalog', addCatalog);
     $(document).on('click', '.js-save-catalog', saveCatalog);
