@@ -8,7 +8,7 @@
 @section('title', 'Subjects | UniSpace')
 
 @section('content')
-    @include('teacherProfile.partials.sidebar-template')
+    @include('userProfile.teacherProfile.partials.sidebar-template')
 
     <div class="pl-48">
         <div>
