@@ -36,6 +36,10 @@ class TopicRequest extends RepositoryAbstract implements TopicRequestRepositoryI
     {
         $query = TopicRequestModel::query();
 
+        if (!empty($filters['id'])) {
+            $query = $query->where('id', (int) $filters['id']);
+        }
+
         if (!empty($filters['topic_id'])) {
             $query = $query->where('topic_id', (int) $filters['topic_id']);
         }
@@ -61,6 +65,10 @@ class TopicRequest extends RepositoryAbstract implements TopicRequestRepositoryI
 
         if (!empty($filters['student_id'])) {
             $query = $query->where('student_id', (int) $filters['student_id']);
+        }
+
+        if (!empty($filters['idNotIn']) && is_array($filters['idNotIn'])) {
+            $query = $query->whereNotIn('id', $filters['idNotIn']);
         }
 
         return $query->get();

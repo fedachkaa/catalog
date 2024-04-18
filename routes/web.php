@@ -78,6 +78,9 @@ Route::put('/api/university/{universityId}/catalogs/{catalogId}', [CatalogContro
 Route::post('/api/university/{universityId}/catalogs/{catalogId}/topic', [CatalogController::class, 'saveCatalogTopic'])->middleware('university.get')->middleware('catalog.get');
 Route::put('/api/university/{universityId}/catalogs/{catalogId}/topic/{topicId}', [CatalogController::class, 'updateCatalogTopic'])->middleware('university.get')->middleware('catalog.get')->middleware('topic.get');
 Route::post('/api/university/{universityId}/catalog/{catalogId}/topic/{topicId}/send-request', [CatalogController::class, 'sendRequestTopic'])->middleware('university.get')->middleware('catalog.get')->middleware('topic.get');
+Route::get('/api/topic/{topicId}/topic-requests', [CatalogController::class, 'getTopicRequests'])->middleware('topic.get');
+Route::post('/api/topic-requests/{requestId}/approve', [CatalogController::class, 'approveRequest'])->middleware('topicRequest.get');
+Route::post('/api/topic-requests/{requestId}/reject', [CatalogController::class, 'rejectRequest'])->middleware('topicRequest.get');
 
 Route::put('/user/api/change-password', [AuthController::class, 'changePassword'])->name('user.changePassword');
 Route::get('forget-password', [AuthController::class, 'showForgetPassword'])->name('forget.password.get');

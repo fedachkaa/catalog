@@ -1361,6 +1361,20 @@ video {
   color: rgb(37 99 235 / var(--tw-text-opacity));
 }
 
+.span-approved {
+  padding-left: 0.5rem;
+  font-weight: 700;
+  --tw-text-opacity: 1;
+  color: rgb(22 163 74 / var(--tw-text-opacity));
+}
+
+.span-rejected {
+  padding-left: 0.5rem;
+  font-weight: 700;
+  --tw-text-opacity: 1;
+  color: rgb(220 38 38 / var(--tw-text-opacity));
+}
+
 @media (prefers-color-scheme: dark) {
   .dark\:text-gray-600 {
     --tw-text-opacity: 1;

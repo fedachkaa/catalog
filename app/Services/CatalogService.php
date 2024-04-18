@@ -151,4 +151,54 @@ class CatalogService
 
         return true;
     }
+
+    /**
+     * @param TopicRequest $topicRequest
+     * @return bool
+     * @throws ServiceUserException
+     * @throws \Throwable
+     */
+    public function approveRequest(TopicRequest $topicRequest): bool
+    {
+        /** @var Student $student */
+        $student = $topicRequest->getStudent();
+        $otherStudentRequests = $student->getTopicRequests();
+        foreach ($otherStudentRequests as $otherStudentRequest) {
+            if ($otherStudentRequest->getStatus() === TopicRequest::STATUS_APPROVED) {
+                throw new ServiceUserException('Can`t approve student topic request, because student already has approved topic.');
+            }
+        }
+
+        $topicRequest->updateOrFail(['status' => TopicRequest::STATUS_APPROVED]);
+        $topic = $topicRequest->getTopic();
+        $topic->updateOrFail(['student_id' => $student->getUserId()]);
+
+        $otherTopicRequests = $this->topicRequestRepository->getAll([
+            'topic_id' => $topicRequest->getTopicId(),
+            'idNotIn' => [$topicRequest->getId()],
+        ]);
+
+        foreach ($otherTopicRequests as $otherTopicRequest) {
+            $this->rejectRequest($otherTopicRequest);
+        }
+
+        return true;
+    }
+
+    /**
+     * @param TopicRequest $topicRequest
+     * @return bool
+     * @throws ServiceUserException
+     * @throws \Throwable
+     */
+    public function rejectRequest(TopicRequest $topicRequest): bool
+    {
+        if ($topicRequest->getStatus() === TopicRequest::STATUS_APPROVED) {
+            throw new ServiceUserException('Can`t reject already approved topic request.');
+        }
+
+        $topicRequest->updateOrFail(['status' => TopicRequest::STATUS_REJECTED]);
+
+        return true;
+    }
 }

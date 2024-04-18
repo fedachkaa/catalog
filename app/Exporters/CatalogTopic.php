@@ -83,6 +83,6 @@ class CatalogTopic extends ExporterAbstract
         /** @var TopicRequestRepositoryInterface $topicRequestRepository */
         $topicRequestRepository = App::get(TopicRequestRepositoryInterface::class);
 
-        return $topicRequestRepository->exportAll($catalogTopic->getStudentRequests());
+        return $topicRequestRepository->exportAll($catalogTopic->getStudentRequests(), ['student']);
     }
 }

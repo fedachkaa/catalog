@@ -3,7 +3,7 @@
 @section('title', 'Students | UniSpace')
 
 @section('content')
-    @include('teacherProfile.partials.sidebar-template')
+    @include('userProfile.teacherProfile.partials.sidebar-template')
 
     <div class="pl-52">
         <div class="flex flex-row gap-1">
