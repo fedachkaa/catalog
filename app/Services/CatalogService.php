@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Events\CatalogActivation;
 use App\Exceptions\ServiceUserException;
 use App\Models\Catalog;
 use App\Models\CatalogTopic;
@@ -58,6 +59,8 @@ class CatalogService
                     'is_active' => Catalog::IS_ACTIVE_TRUE,
                     'activated_at' => date('Y-m-d'),
                 ]);
+
+                event(new CatalogActivation($catalog));
             } else {
                 $catalog->update([
                     'is_active' => Catalog::IS_ACTIVE_FALSE,

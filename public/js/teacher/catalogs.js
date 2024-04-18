@@ -30729,12 +30729,10 @@ var approveRequest = function approveRequest(e) {
         _token: $('#topicRequestsModal').data('token')
       },
       success: function success(response) {
-        clearModal('topicRequestsModal', ['requestid']);
-        hideModal('topicRequestsModal');
         window.location.reload();
       },
       error: function error(xhr, status, _error2) {
-        // Обробка помилки
+        console.error('Помилка:', _error2);
       }
     });
   }
@@ -30750,12 +30748,10 @@ var rejectRequest = function rejectRequest(e) {
         _token: $('#topicRequestsModal').data('token')
       },
       success: function success(response) {
-        clearModal('topicRequestsModal', ['requestid']);
-        hideModal('topicRequestsModal');
         window.location.reload();
       },
       error: function error(xhr, status, _error3) {
-        // Обробка помилки
+        console.error('Помилка:', _error3);
       }
     });
   }

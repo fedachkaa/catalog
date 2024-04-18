@@ -2520,10 +2520,10 @@ var addCatalog = function addCatalog() {
 };
 var saveCatalog = function saveCatalog(e) {
   var groupsIds = $('#addCatalogModal .js-groups-list li').map(function () {
-    return $(this).data('id');
+    return $(this).data('groupid');
   }).get();
   var teacherIds = $('#addCatalogModal .js-teachers-list li').map(function () {
-    return $(this).data('id');
+    return $(this).data('teacherid');
   }).get();
   $.ajax({
     url: '/api/university/' + universityId + '/catalogs/create',

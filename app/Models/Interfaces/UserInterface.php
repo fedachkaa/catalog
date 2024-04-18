@@ -18,6 +18,8 @@ interface UserInterface
 
     public function getLastName() : string;
 
+    public function getFullName(): string;
+
     public function getEmail(): string;
 
     public function getPhoneNumber(): string;

@@ -73,7 +73,7 @@ Route::post('/api/university/{universityId}/teachers', [TeacherController::class
 Route::get('/university/{universityId}/catalogs', [CatalogController::class, 'getCatalogs'])->middleware('university.get');
 Route::get('/api/university/{universityId}/catalogs', [CatalogController::class, 'getCatalogsList'])->middleware('university.get');
 Route::post('/api/university/{universityId}/catalogs/create', [CatalogController::class, 'saveCatalog'])->middleware('university.get');
-Route::get('/university/{universityId}/catalogs/{catalogId}', [CatalogController::class, 'editCatalog'])->middleware('university.get')->middleware('catalog.get');
+Route::get('/university/{universityId}/catalogs/{catalogId}', [CatalogController::class, 'editCatalog'])->middleware('university.get')->middleware('catalog.get')->name('view.catalog');
 Route::put('/api/university/{universityId}/catalogs/{catalogId}', [CatalogController::class, 'updateCatalog'])->middleware('university.get')->middleware('catalog.get');
 Route::post('/api/university/{universityId}/catalogs/{catalogId}/topic', [CatalogController::class, 'saveCatalogTopic'])->middleware('university.get')->middleware('catalog.get');
 Route::put('/api/university/{universityId}/catalogs/{catalogId}/topic/{topicId}', [CatalogController::class, 'updateCatalogTopic'])->middleware('university.get')->middleware('catalog.get')->middleware('topic.get');

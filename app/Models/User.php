@@ -120,6 +120,14 @@ class User extends Authenticatable implements UserInterface
     /**
      * @return string
      */
+    public function getFullName(): string
+    {
+        return (string) $this->getAttribute('first_name') . ' ' . (string) $this->getAttribute('last_name');
+    }
+
+    /**
+     * @return string
+     */
     public function getEmail(): string
     {
         return (string) $this->getAttribute('email');
