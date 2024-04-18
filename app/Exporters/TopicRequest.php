@@ -4,6 +4,7 @@ namespace App\Exporters;
 
 use App\Models\TopicRequest as TopicRequestModel;
 use App\Repositories\Interfaces\CatalogTopicRepositoryInterface;
+use App\Repositories\Interfaces\StudentRepositoryInterface;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\App;
 
@@ -46,6 +47,18 @@ class TopicRequest extends ExporterAbstract
         /** @var CatalogTopicRepositoryInterface $catalogTopicRepository */
         $catalogTopicRepository = App::get(CatalogTopicRepositoryInterface::class);
 
-        return $catalogTopicRepository->export($topicRequest->getTopic(), ['catalog', 'teacher']);
+        return $catalogTopicRepository->export($topicRequest->getTopic(), ['catalog', 'teacher', 'student']);
+    }
+
+    /**
+     * @param TopicRequestModel $topicRequest
+     * @return array
+     */
+    protected function expandStudent(TopicRequestModel $topicRequest): array
+    {
+        /** @var StudentRepositoryInterface $studentRepository */
+        $studentRepository = App::get(StudentRepositoryInterface::class);
+
+        return $studentRepository->export($topicRequest->getStudent(), ['user']);
     }
 }

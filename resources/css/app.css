@@ -238,3 +238,11 @@
 .form-checkbox {
     @apply w-6 h-6 text-blue-600 bg-gray-100 border-gray-300 rounded me-2;
 }
+
+.span-approved {
+    @apply text-green-600 font-bold pl-2;
+}
+
+.span-rejected {
+    @apply text-red-600 font-bold pl-2;
+}

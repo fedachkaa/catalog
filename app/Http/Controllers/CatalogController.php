@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\ServiceUserException;
 use App\Http\Requests\PostPutCatalogRequest;
 use App\Http\Requests\PostPutTopicRequest;
 use App\Models\Catalog;
 use App\Models\CatalogTopic;
+use App\Models\TopicRequest;
 use App\Models\University;
 use App\Repositories\Interfaces\CatalogRepositoryInterface;
 use App\Repositories\Interfaces\CatalogTopicRepositoryInterface;
@@ -233,6 +235,78 @@ class CatalogController extends Controller
         DB::beginTransaction();
         try {
             $this->catalogService->sendRequestTopic($catalogTopic, auth()->user()->getStudent());
+        } catch (\Throwable $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'message' => 'Internal serve error',
+                'error' => $e->getMessage()
+            ])->setStatusCode(500);
+        }
+        DB::commit();
+
+        return response()->json([
+            'message' => 'Success',
+        ])->setStatusCode(200);
+    }
+
+    /**
+     * @param CatalogTopic $catalogTopic
+     * @return JsonResponse
+     */
+    public function getTopicRequests(CatalogTopic $catalogTopic): JsonResponse
+    {
+        return response()->json([
+            'message' => 'Success',
+            'data' => $this->catalogTopicRepository->export($catalogTopic, ['requests', 'student']),
+        ])->setStatusCode(200);
+    }
+
+    /**
+     * @param TopicRequest $topicRequest
+     * @return JsonResponse
+     */
+    public function approveRequest(TopicRequest $topicRequest): JsonResponse
+    {
+        DB::beginTransaction();
+        try {
+            $this->catalogService->approveRequest($topicRequest);
+        } catch (ServiceUserException $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'message' => 'Can`t approve student topic request. Error: "' . $e->getMessage() . '".',
+            ])->setStatusCode(500);
+        } catch (\Throwable $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'message' => 'Internal serve error',
+                'error' => $e->getMessage()
+            ])->setStatusCode(500);
+        }
+        DB::commit();
+
+        return response()->json([
+            'message' => 'Success',
+        ])->setStatusCode(200);
+    }
+
+    /**
+     * @param TopicRequest $topicRequest
+     * @return JsonResponse
+     */
+    public function rejectRequest(TopicRequest $topicRequest): JsonResponse
+    {
+        DB::beginTransaction();
+        try {
+            $this->catalogService->rejectRequest($topicRequest);
+        } catch (ServiceUserException $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'message' => 'Can`t reject student topic request. Error: "' . $e->getMessage() . '".',
+            ])->setStatusCode(500);
         } catch (\Throwable $e) {
             DB::rollBack();
 

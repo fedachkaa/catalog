@@ -30,7 +30,7 @@
                     <td>
                         <?php if ($topic['teacher']['user_id'] === $user['id']): ?>
                             <i class="fas fa-edit action-icon js-edit-topic" title="Редагувати"></i>
-                            <i class="fa-solid fa-person-circle-question" title="Переглянути запити"></i>
+                            <i class="fa-solid fa-person-circle-question js-view-requests action-icon" title="Переглянути запити"></i>
                         <?php elseif ($user['role_id'] === \App\Models\UserRole::USER_ROLE_STUDENT): ?>
                             <?php if (in_array($user['id'], array_column($topic['requests'], 'student_id'))): ?>
                                 <i class="fas fa-envelope-circle-check action-icon" title="Запит надіслано"></i>

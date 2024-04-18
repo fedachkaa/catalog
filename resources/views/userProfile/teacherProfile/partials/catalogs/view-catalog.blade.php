@@ -69,6 +69,7 @@
         </div>
 
         @include('general.catalogs.topics-table', ['topics' => $catalogData['topics']])
+        @include('general.catalogs.topic-requests-modal')
     </div>
 
     @include('general.catalogs.add-topic-modal', ['catalogData' => $catalogData])
