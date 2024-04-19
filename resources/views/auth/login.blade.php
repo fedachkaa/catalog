@@ -26,11 +26,14 @@
         </div>
 
         <div class="form-group">
-            <button type="submit" class="btn save-btn">Увійти</button>
+            <button type="submit" class="btn add-user-btn">Увійти</button>
         </div>
 
-        <div class="reset-link">
+        <div class="form-group reset-link">
             <a href="{{ route('forget.password.get') }}" target="_blank" class="js-reset-password">Забули пароль?</a>
+        </div>
+        <div class="form-group reset-link">
+            <a href="{{ route('university.create') }}" target="_blank">Зареєструвати університет</a>
         </div>
     </form>
 @endsection

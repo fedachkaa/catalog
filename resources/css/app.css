@@ -51,7 +51,7 @@
 }
 
 .nav {
-    @apply flex flex-wrap justify-between ps-2 pe-14 items-center bg-gray-400;
+    @apply flex flex-wrap justify-between ps-2 pe-14 items-center bg-gray-400 p-4;
 }
 
 .nav ul {
@@ -245,4 +245,23 @@
 
 .span-rejected {
     @apply text-red-600 font-bold pl-2;
+}
+
+
+/* ADMIN */
+
+.university-block {
+    @apply flex flex-row p-4 justify-between border-2 border-amber-300 rounded-md hover:cursor-pointer hover:bg-amber-100 w-4/6;
+}
+
+.university-block .actions-block {
+    @apply flex flex-row items-center gap-2 mx-2;
+}
+
+.university-block .main-data-block {
+    @apply flex flex-row justify-between items-center;
+}
+
+.university-search-tool {
+    @apply h-auto p-5 mb-3 w-full border-b-2 border-amber-200;
 }

@@ -10,6 +10,7 @@ use App\Http\Controllers\FacultyController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\GroupController;
+use App\Http\Controllers\Admin\AdminOverviewController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -32,8 +33,8 @@ Route::get('/', function () {
     }
 });
 
-Route::get('/university/create', [UniversityController::class, 'create'])->name('university.create');
-Route::post('/university/create', [UniversityController::class, 'store'])->name('university.store');
+Route::get('/university', [UniversityController::class, 'create'])->name('university.create');
+Route::post('/university', [UniversityController::class, 'store'])->name('university.store');
 
 Route::get('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/login', [AuthController::class, 'authenticate'])->name('authenticate');
@@ -90,7 +91,7 @@ Route::get('reset-password/{token}', [AuthController::class, 'showResetPassword'
 Route::post('reset-password', [AuthController::class, 'submitResetPassword'])->name('reset.password.post');
 
 //
-//// TODO add middleware
-//Route::get('/admin/overview', [DashboardOverviewController::class, 'overview'])->name('dashboard.overview');
+// TODO add middleware
+Route::get('/admin/overview', [AdminOverviewController::class, 'overview'])->name('dashboard.overview');
 //Route::get('/admin/university/{id}', [DashboardUniversityController::class, 'universitySingle'])->name('university.single');
 //Route::post('/admin/university/{id}/activate', [DashboardUniversityController::class, 'universityActivation'])->name('university.activation');
