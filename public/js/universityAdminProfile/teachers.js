@@ -6,7 +6,7 @@
 	else if(typeof exports === 'object')
 		exports["general"] = factory();
 	else
-		root["general"] = root["general"] || {}, root["general"]["universityAdminProfile"] = root["general"]["universityAdminProfile"] || {}, root["general"]["universityAdminProfile"]["teacher"] = root["general"]["universityAdminProfile"]["teacher"] || {}, root["general"]["universityAdminProfile"]["teacher"]["student"] = factory();
+		root["general"] = root["general"] || {}, root["general"]["universityAdminProfile"] = root["general"]["universityAdminProfile"] || {}, root["general"]["universityAdminProfile"]["teacher"] = root["general"]["universityAdminProfile"]["teacher"] || {}, root["general"]["universityAdminProfile"]["teacher"]["student"] = root["general"]["universityAdminProfile"]["teacher"]["student"] || {}, root["general"]["universityAdminProfile"]["teacher"]["student"]["admin"] = factory();
 })(this, () => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
@@ -30665,16 +30665,14 @@ var _require = __webpack_require__(/*! ../general.js */ "./resources/js/general.
   hideModal = _require.hideModal,
   toggleTabsSideBar = _require.toggleTabsSideBar,
   showSpinner = _require.showSpinner,
-  hideSpinner = _require.hideSpinner;
+  hideSpinner = _require.hideSpinner,
+  getUserBaseInfo = _require.getUserBaseInfo;
 var _require2 = __webpack_require__(/*! ./common.js */ "./resources/js/universityAdminProfile/common.js"),
   searchFaculties = _require2.searchFaculties;
-var _require3 = __webpack_require__(/*! ../general */ "./resources/js/general.js"),
-  getUserBaseInfo = _require3.getUserBaseInfo;
 document.addEventListener('DOMContentLoaded', function () {
   toggleTabsSideBar('js-teachers');
   getTeachers();
   $(document).on('click', '.js-add-teacher', addTeacher);
-  $(document).on('click', '.js-edit-teacher', editTeacher);
   $(document).on('click', '.js-save-teacher', saveTeacher);
   $(document).on('click', '.js-show-user-info', showUserInfo);
 });
@@ -30710,7 +30708,6 @@ var addTeacher = function addTeacher(e) {
   });
   showModal('addTeacherModal');
 };
-var editTeacher = function editTeacher(e) {};
 var saveTeacher = function saveTeacher(e) {
   showSpinner();
   var teacherModal = $('#addTeacherModal');

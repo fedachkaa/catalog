@@ -31,3 +31,7 @@
         @endforeach
     </div>
 @endsection
+
+@push('scripts')
+    <script src="{{ asset('js/admin/overview.js')}}"></script>
+@endpush

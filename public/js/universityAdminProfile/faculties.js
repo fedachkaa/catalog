@@ -6,7 +6,7 @@
 	else if(typeof exports === 'object')
 		exports["general"] = factory();
 	else
-		root["general"] = root["general"] || {}, root["general"]["universityAdminProfile"] = root["general"]["universityAdminProfile"] || {}, root["general"]["universityAdminProfile"]["teacher"] = root["general"]["universityAdminProfile"]["teacher"] || {}, root["general"]["universityAdminProfile"]["teacher"]["student"] = factory();
+		root["general"] = root["general"] || {}, root["general"]["universityAdminProfile"] = root["general"]["universityAdminProfile"] || {}, root["general"]["universityAdminProfile"]["teacher"] = root["general"]["universityAdminProfile"]["teacher"] || {}, root["general"]["universityAdminProfile"]["teacher"]["student"] = root["general"]["universityAdminProfile"]["teacher"]["student"] || {}, root["general"]["universityAdminProfile"]["teacher"]["student"]["admin"] = factory();
 })(this, () => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
@@ -30667,6 +30667,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 var _require = __webpack_require__(/*! ./../general.js */ "./resources/js/general.js"),
+  showErrors = _require.showErrors,
   showModal = _require.showModal,
   hideModal = _require.hideModal,
   clearModal = _require.clearModal,
@@ -30675,8 +30676,6 @@ var _require = __webpack_require__(/*! ./../general.js */ "./resources/js/genera
   hideSpinner = _require.hideSpinner;
 var _require2 = __webpack_require__(/*! ./common.js */ "./resources/js/universityAdminProfile/common.js"),
   searchGroups = _require2.searchGroups;
-var _require3 = __webpack_require__(/*! ../general */ "./resources/js/general.js"),
-  showErrors = _require3.showErrors;
 document.addEventListener('DOMContentLoaded', function () {
   toggleTabsSideBar('js-faculties');
   getFaculties();
