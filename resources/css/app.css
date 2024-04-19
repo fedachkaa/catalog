@@ -171,7 +171,7 @@
 }
 
 .action-icon {
-    @apply cursor-pointer p-0.5;
+    @apply cursor-pointer p-0.5 hover:font-bold hover:cursor-pointer;
 }
 
 .add-user-btn {

@@ -1206,6 +1206,11 @@ video {
   padding: 0.125rem;
 }
 
+.action-icon:hover {
+  cursor: pointer;
+  font-weight: 700;
+}
+
 .add-user-btn {
   margin-top: 1rem;
   margin-bottom: 1rem;

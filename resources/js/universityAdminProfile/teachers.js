@@ -1,4 +1,4 @@
-const { showModal, hideModal, toggleTabsSideBar, showSpinner, hideSpinner} = require('../general.js');
+const { showModal, hideModal, toggleTabsSideBar, showSpinner, hideSpinner, getUserBaseInfo} = require('../general.js');
 const { searchFaculties } = require('./common.js');
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -7,7 +7,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
     $(document).on('click', '.js-add-teacher', addTeacher);
     $(document).on('click', '.js-save-teacher', saveTeacher);
-})
+    $(document).on('click', '.js-show-user-info', showUserInfo)
+});
+
+const showUserInfo = function (e) {
+    getUserBaseInfo($(e.target).closest('tr').data('userid'));
+}
 
 const getTeachers = function () {
     showSpinner();
@@ -131,9 +136,9 @@ const initSubjectDelete = function () {
 }
 
 const displaySingleTeacher = function (teacher) {
-    const newRow = $('<tr>');
+    const newRow = $('<tr>').attr('data-userid', teacher.user_id );
     newRow.append($('<td>').text(teacher.user_id));
-    newRow.append($('<td>').text(teacher.user.full_name));
+    newRow.append($('<td class="action-icon js-show-user-info">').text(teacher.user.full_name));
     newRow.append($('<td>').text(teacher.faculty.title));
     const subjectsList = $('<ul>').addClass('js-teacher-subjects');
     teacher.subjects.forEach(subject => {
@@ -143,8 +148,8 @@ const displaySingleTeacher = function (teacher) {
     newRow.append($('<td>').append(subjectsList));
 
     const actionsCell = $('<td>');
-    const editIcon = $('<i>').addClass('fas fa-edit edit-icon');
-    const deleteIcon = $('<i>').addClass('fas fa-trash delete-icon');
+    const editIcon = $('<i>').addClass('fas fa-edit edit-icon js-edit-teacher');
+    const deleteIcon = $('<i>').addClass('fas fa-trash delete-icon js-delete-teacher');
     actionsCell.append(editIcon, deleteIcon);
     newRow.append(actionsCell);
     newRow.addClass(($('#teachers-table tbody tr').length + 1) % 2 === 0 ? 'row-gray' : 'row-beige');

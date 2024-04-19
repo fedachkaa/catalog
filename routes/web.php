@@ -41,6 +41,7 @@ Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::get('/profile', [UserProfileController::class, 'userProfile'])->name('user.profile');
 Route::get('/api/profile', [UserProfileController::class, 'getUserProfile'])->name('user.profile.get');
+Route::get('/api/user/{userId}', [UserProfileController::class, 'getBaseUserInfo']);
 
 Route::get('/university/{universityId}', [UniversityController::class, 'getUniversity'])->middleware('university.get');
 

@@ -4,8 +4,7 @@
 - ~~**Create exporters**~~
 - **Fix FE part**
 - **Fix email templates**
-- **Add student to topic**
-- **Edit groups**
+- ~~**Add student to topic**~~
 - **Edit teachers + display validation errors**
 - ~~**Add event for activation catalog and sent students email**~~
 - ~~**Add event for approve/reject student topic request and sent email to student**~~

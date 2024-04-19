@@ -23,6 +23,7 @@
         </div>
     </div>
 
+    @include('general.user-info-modal')
     @include('userProfile.universityAdminProfile.partials.students.add-students-modal')
     @include('userProfile.universityAdminProfile.partials.students.import-students-modal')
 @endsection

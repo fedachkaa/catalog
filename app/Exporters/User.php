@@ -28,6 +28,7 @@ class User extends ExporterAbstract
         return [
             'id' => $model->getId(),
             'role_id' => $model->getRoleId(),
+            'role_text' => \App\Models\UserRole::AVAILABLE_USER_ROLES[$model->getRoleId()],
             'first_name' => $model->getFirstName(),
             'last_name' => $model->getLastName(),
             'full_name' => $model->getFirstName() . ' ' . $model->getLastName(),

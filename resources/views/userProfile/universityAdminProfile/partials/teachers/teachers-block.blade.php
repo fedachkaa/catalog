@@ -28,6 +28,7 @@
     </div>
 
     @include('userProfile.universityAdminProfile.partials.teachers.add-teacher-modal')
+    @include('general.user-info-modal')
 @endsection
 
 @push('scripts')

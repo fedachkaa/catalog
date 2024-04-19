@@ -2259,9 +2259,9 @@ var displayStudentsData = function displayStudentsData(data) {
   });
 };
 var drawSingleStudent = function drawSingleStudent(student) {
-  var row = $('<tr>');
+  var row = $('<tr>').attr('data-userid', student.user_id);
   row.append($('<td>').text(student.user_id));
-  row.append($('<td>').text(student.user.full_name));
+  row.append($('<td class="js-show-user-info action-icon">').text(student.user.full_name));
   row.append($('<td>').text(student.faculty.title));
   row.append($('<td>').text(student.course.course + ' курс'));
   row.append($('<td>').text(student.group.title));
@@ -2282,6 +2282,12 @@ module.exports = {
   \*********************************/
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
+function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 __webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
 window.$ = window.jQuery = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js");
 document.addEventListener("DOMContentLoaded", function () {
@@ -2299,25 +2305,36 @@ var toggleTabsSideBar = function toggleTabsSideBar(activeTabClass) {
     }
   });
 };
-var toggleContentBlock = function toggleContentBlock(containerClass, selectorClass, activeBlockClass) {
-  $(".".concat(containerClass)).find(".".concat(selectorClass)).each(function () {
-    if ($(this).hasClass(activeBlockClass)) {
-      $(this).removeClass('hidden');
-    } else {
-      $(this).addClass('hidden');
-    }
-  });
-};
 var getUserData = function getUserData() {
+  showSpinner();
   $.ajax({
     url: '/api/profile',
     method: 'GET',
     success: function success(response) {
       displayUserProfileData(response.data);
-      console.log('Успішно!', response);
+      hideSpinner();
     },
     error: function error(xhr, status, _error) {
       console.error('Помилка:', _error);
+      hideSpinner();
+    }
+  });
+};
+var getUserBaseInfo = function getUserBaseInfo(userId) {
+  showSpinner();
+  $.ajax({
+    url: '/api/user/' + userId,
+    method: 'GET',
+    success: function success(response) {
+      console.log(response);
+      $('#userInfoModal').find('.js-name').text(response.data.full_name);
+      $('#userInfoModal').find('.js-role').text(response.data.role_text);
+      showModal('userInfoModal');
+      hideSpinner();
+    },
+    error: function error(xhr, status, _error2) {
+      console.error('Помилка:', _error2);
+      hideSpinner();
     }
   });
 };
@@ -2327,8 +2344,6 @@ var displayUserProfileData = function displayUserProfileData(data) {
   userBlock.find('.js-user-name').text(data.full_name);
   userBlock.find('.js-phone-number').text(data.phone_number);
   userBlock.find('.js-email').text(data.email);
-  userBlock.removeClass('hidden');
-  $('.js-university-info').addClass('hidden');
 };
 var showModal = function showModal(id) {
   var modal = $('#' + id);
@@ -2363,16 +2378,26 @@ var showSpinner = function showSpinner() {
 var hideSpinner = function hideSpinner() {
   $('#spinner').addClass('hidden');
 };
+var showErrors = function showErrors(errors, selectorBlock) {
+  Object.entries(errors).forEach(function (_ref) {
+    var _ref2 = _slicedToArray(_ref, 2),
+      key = _ref2[0],
+      errorMessage = _ref2[1];
+    var errorParagraph = $(selectorBlock).find("p.error-message.".concat(key, "-error-message"));
+    errorParagraph.text(errorMessage);
+  });
+};
 module.exports = {
   toggleTabsSideBar: toggleTabsSideBar,
-  toggleContentBlock: toggleContentBlock,
   getUserData: getUserData,
   displayUserProfileData: displayUserProfileData,
   showModal: showModal,
   hideModal: hideModal,
   clearModal: clearModal,
   showSpinner: showSpinner,
-  hideSpinner: hideSpinner
+  hideSpinner: hideSpinner,
+  showErrors: showErrors,
+  getUserBaseInfo: getUserBaseInfo
 };
 
 /***/ }),
@@ -30709,19 +30734,16 @@ var __webpack_exports__ = {};
 /*!*********************************************************!*\
   !*** ./resources/js/universityAdminProfile/students.js ***!
   \*********************************************************/
-function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
-function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
-function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
-function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
-function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
-function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 var _require = __webpack_require__(/*! ./../general.js */ "./resources/js/general.js"),
   showModal = _require.showModal,
   hideModal = _require.hideModal,
   toggleTabsSideBar = _require.toggleTabsSideBar,
   showSpinner = _require.showSpinner,
-  hideSpinner = _require.hideSpinner;
-var _require2 = __webpack_require__(/*! ./common */ "./resources/js/universityAdminProfile/common.js"),
+  hideSpinner = _require.hideSpinner,
+  showErrors = _require.showErrors,
+  clearModal = _require.clearModal,
+  getUserBaseInfo = _require.getUserBaseInfo;
+var _require2 = __webpack_require__(/*! ./common.js */ "./resources/js/universityAdminProfile/common.js"),
   searchGroups = _require2.searchGroups,
   searchFaculties = _require2.searchFaculties,
   searchCourses = _require2.searchCourses;
@@ -30735,9 +30757,13 @@ document.addEventListener('DOMContentLoaded', function () {
   $(document).on('click', '.js-search-students', searchStudents);
   $(document).on('click', '.js-add-student', addStudent);
   $(document).on('click', '.js-save-student', saveStudent);
+  $(document).on('click', '.js-show-user-info', showUserInfo);
   $(document).on('click', '.js-import-students', importStudents);
   $(document).on('click', '.js-import-students-save', importStudentsStore);
 });
+var showUserInfo = function showUserInfo(e) {
+  getUserBaseInfo($(e.target).closest('tr').data('userid'));
+};
 var addStudent = function addStudent(e) {
   searchFaculties('addStudentModal');
   $('#addStudentModal .js-faculty').on('change', function () {
@@ -30779,20 +30805,11 @@ var saveStudent = function saveStudent(e) {
     success: function success(response) {
       drawSingleStudent(response.data);
       hideModal('addStudentModal');
-      modal.find('input').val('');
-      modal.find('select').val('');
+      clearModal('addStudentModal');
       hideSpinner();
     },
     error: function error(response) {
-      if (response.responseJSON.errors) {
-        Object.entries(response.responseJSON.errors).forEach(function (_ref) {
-          var _ref2 = _slicedToArray(_ref, 2),
-            key = _ref2[0],
-            errorMessage = _ref2[1];
-          var errorParagraph = $('#addStudentModal').find("p.error-message.".concat(key, "-error-message"));
-          errorParagraph.text(errorMessage);
-        });
-      }
+      showErrors(response.responseJSON.errors, '#addStudentModal');
       hideSpinner();
     }
   });

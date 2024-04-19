@@ -2208,6 +2208,12 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
   \*********************************/
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
+function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 __webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
 window.$ = window.jQuery = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js");
 document.addEventListener("DOMContentLoaded", function () {
@@ -2225,25 +2231,36 @@ var toggleTabsSideBar = function toggleTabsSideBar(activeTabClass) {
     }
   });
 };
-var toggleContentBlock = function toggleContentBlock(containerClass, selectorClass, activeBlockClass) {
-  $(".".concat(containerClass)).find(".".concat(selectorClass)).each(function () {
-    if ($(this).hasClass(activeBlockClass)) {
-      $(this).removeClass('hidden');
-    } else {
-      $(this).addClass('hidden');
-    }
-  });
-};
 var getUserData = function getUserData() {
+  showSpinner();
   $.ajax({
     url: '/api/profile',
     method: 'GET',
     success: function success(response) {
       displayUserProfileData(response.data);
-      console.log('Успішно!', response);
+      hideSpinner();
     },
     error: function error(xhr, status, _error) {
       console.error('Помилка:', _error);
+      hideSpinner();
+    }
+  });
+};
+var getUserBaseInfo = function getUserBaseInfo(userId) {
+  showSpinner();
+  $.ajax({
+    url: '/api/user/' + userId,
+    method: 'GET',
+    success: function success(response) {
+      console.log(response);
+      $('#userInfoModal').find('.js-name').text(response.data.full_name);
+      $('#userInfoModal').find('.js-role').text(response.data.role_text);
+      showModal('userInfoModal');
+      hideSpinner();
+    },
+    error: function error(xhr, status, _error2) {
+      console.error('Помилка:', _error2);
+      hideSpinner();
     }
   });
 };
@@ -2253,8 +2270,6 @@ var displayUserProfileData = function displayUserProfileData(data) {
   userBlock.find('.js-user-name').text(data.full_name);
   userBlock.find('.js-phone-number').text(data.phone_number);
   userBlock.find('.js-email').text(data.email);
-  userBlock.removeClass('hidden');
-  $('.js-university-info').addClass('hidden');
 };
 var showModal = function showModal(id) {
   var modal = $('#' + id);
@@ -2289,16 +2304,26 @@ var showSpinner = function showSpinner() {
 var hideSpinner = function hideSpinner() {
   $('#spinner').addClass('hidden');
 };
+var showErrors = function showErrors(errors, selectorBlock) {
+  Object.entries(errors).forEach(function (_ref) {
+    var _ref2 = _slicedToArray(_ref, 2),
+      key = _ref2[0],
+      errorMessage = _ref2[1];
+    var errorParagraph = $(selectorBlock).find("p.error-message.".concat(key, "-error-message"));
+    errorParagraph.text(errorMessage);
+  });
+};
 module.exports = {
   toggleTabsSideBar: toggleTabsSideBar,
-  toggleContentBlock: toggleContentBlock,
   getUserData: getUserData,
   displayUserProfileData: displayUserProfileData,
   showModal: showModal,
   hideModal: hideModal,
   clearModal: clearModal,
   showSpinner: showSpinner,
-  hideSpinner: hideSpinner
+  hideSpinner: hideSpinner,
+  showErrors: showErrors,
+  getUserBaseInfo: getUserBaseInfo
 };
 
 /***/ }),
@@ -30650,6 +30675,8 @@ var _require = __webpack_require__(/*! ./../general.js */ "./resources/js/genera
   hideSpinner = _require.hideSpinner;
 var _require2 = __webpack_require__(/*! ./common.js */ "./resources/js/universityAdminProfile/common.js"),
   searchGroups = _require2.searchGroups;
+var _require3 = __webpack_require__(/*! ../general */ "./resources/js/general.js"),
+  showErrors = _require3.showErrors;
 document.addEventListener('DOMContentLoaded', function () {
   toggleTabsSideBar('js-faculties');
   getFaculties();
@@ -30791,7 +30818,7 @@ var saveCourse = function saveCourse(e) {
   });
 };
 var addGroup = function addGroup(e) {
-  var inputField = "<input type=\"text\" class=\"form-control js-group-title\">";
+  var inputField = "<div>\n                            <input type=\"text\" class=\"form-control js-group-title\">\n                            <p class=\"error-message title-error-message\"></p>\n                        </div>";
   $(inputField).insertBefore('.js-add-group');
   $(e.target).addClass('hidden');
   $('.js-save-group').removeClass('hidden');
@@ -30809,12 +30836,12 @@ var saveGroup = function saveGroup(e) {
     success: function success(response) {
       $('.js-groups').append("<div class=\"js-group-item\" data-groupid=" + response.data.id + ">" + response.data.title + "<i class=\"fa fa-eye js-view-group\"></i>\n                </div>");
       $(e.target).addClass('hidden');
-      $('.js-groups-info').find('input.js-group-title').remove();
+      $('.js-groups-info').find('input.js-group-title').parent().remove();
       $('.js-add-group').removeClass('hidden');
       hideSpinner();
     },
-    error: function error(xhr, status, _error3) {
-      console.error('Помилка:', _error3);
+    error: function error(response) {
+      showErrors(response.responseJSON.errors, '#courseInfo');
       hideSpinner();
     }
   });
@@ -30861,8 +30888,8 @@ var getGroupStudents = function getGroupStudents(e) {
       modal.find('.js-group-info').removeClass('hidden');
       hideSpinner();
     },
-    error: function error(xhr, status, _error4) {
-      console.error('Помилка:', _error4);
+    error: function error(xhr, status, _error3) {
+      console.error('Помилка:', _error3);
       hideSpinner();
     }
   });

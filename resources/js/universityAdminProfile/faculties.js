@@ -1,4 +1,4 @@
-const { showModal, hideModal, clearModal, toggleTabsSideBar, showSpinner, hideSpinner } = require('./../general.js');
+const { showErrors, showModal, hideModal, clearModal, toggleTabsSideBar, showSpinner, hideSpinner } = require('./../general.js');
 const { searchGroups } = require('./common.js');
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -171,7 +171,10 @@ const saveCourse = function(e) {
 };
 
 const addGroup = function(e) {
-    const inputField = `<input type="text" class="form-control js-group-title">`;
+    const inputField = `<div>
+                            <input type="text" class="form-control js-group-title">
+                            <p class="error-message title-error-message"></p>
+                        </div>`;
     $(inputField).insertBefore('.js-add-group');
     $(e.target).addClass('hidden');
     $('.js-save-group').removeClass('hidden');
@@ -197,12 +200,12 @@ const saveGroup = function(e) {
             );
 
             $(e.target).addClass('hidden');
-            $('.js-groups-info').find('input.js-group-title').remove();
+            $('.js-groups-info').find('input.js-group-title').parent().remove();
             $('.js-add-group').removeClass('hidden');
             hideSpinner();
         },
-        error: function (xhr, status, error) {
-            console.error('Помилка:', error);
+        error: function (response) {
+            showErrors(response.responseJSON.errors, '#courseInfo');
             hideSpinner();
         }
     });
