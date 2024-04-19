@@ -2,20 +2,26 @@
 
 namespace App\Mail;
 
-use App\Models\Catalog;
 use App\Models\Student;
+use App\Models\TopicRequest;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class CatalogActivation extends Mailable
+class TopicRequestProcessed extends Mailable
 {
     use Queueable, SerializesModels;
 
-    /** @var Catalog */
-    private $catalog;
+    /** @var string[] */
+    const AVAILABLE_SUBJECTS_BY_STATUS = [
+        TopicRequest::STATUS_APPROVED => 'Your topic request was approved!',
+        TopicRequest::STATUS_REJECTED => 'Your topic request was rejected.',
+    ];
+
+    /** @var TopicRequest */
+    private $topicRequest;
 
     /** @var Student */
     private $student;
@@ -25,9 +31,9 @@ class CatalogActivation extends Mailable
      *
      * @return void
      */
-    public function __construct(Catalog $catalog, Student $student)
+    public function __construct(TopicRequest $topicRequest, Student $student)
     {
-        $this->catalog = $catalog;
+        $this->topicRequest = $topicRequest;
         $this->student = $student;
     }
 
@@ -39,7 +45,7 @@ class CatalogActivation extends Mailable
     public function envelope()
     {
         return new Envelope(
-            subject: 'Catalog Activation',
+            subject: self::AVAILABLE_SUBJECTS_BY_STATUS[$this->topicRequest->getStatus()],
         );
     }
 
@@ -50,17 +56,13 @@ class CatalogActivation extends Mailable
      */
     public function content()
     {
-        $university = $this->student->getGroup()->getCourse()->getFaculty()->getUniversity();
-
         return new Content(
-            markdown: 'mail.catalog-activation',
+            markdown: 'mail.topic-processed',
             with: [
                 'studentFullName' => $this->student->getUser()->getFullName(),
-                'catalogType' => \App\Models\Catalog::AVAILABLE_CATALOG_TYPES[$this->catalog->getType()],
-                'url' => route('view.catalog', [
-                    'universityId' => $university->getId(),
-                    'catalogId' => $this->catalog->getId(),
-                ]),
+                'topic' => $this->topicRequest->getTopic()->getTopic(),
+                'status' => $this->topicRequest->getStatus(),
+                'catalogType' => \App\Models\Catalog::AVAILABLE_CATALOG_TYPES[$this->topicRequest->getTopic()->getCatalog()->getType()],
             ],
         );
     }

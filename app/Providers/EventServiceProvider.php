@@ -3,7 +3,9 @@
 namespace App\Providers;
 
 use App\Events\CatalogActivation;
+use App\Events\TopicRequestProcessed;
 use App\Listeners\SendCatalogActivationEmail;
+use App\Listeners\SendTopicRequestProcessedEmail;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 
 class EventServiceProvider extends ServiceProvider
@@ -16,6 +18,9 @@ class EventServiceProvider extends ServiceProvider
     protected $listen = [
         CatalogActivation::class => [
             SendCatalogActivationEmail::class,
+        ],
+        TopicRequestProcessed::class => [
+            SendTopicRequestProcessedEmail::class,
         ],
     ];
 
