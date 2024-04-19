@@ -58,9 +58,9 @@ const displayStudentsData = function (data) {
 }
 
 const drawSingleStudent = function (student) {
-    const row = $('<tr>');
+    const row = $('<tr>').attr('data-userid', student.user_id);
     row.append($('<td>').text(student.user_id));
-    row.append($('<td>').text(student.user.full_name));
+    row.append($('<td class="js-show-user-info action-icon">').text(student.user.full_name));
     row.append($('<td>').text(student.faculty.title));
     row.append($('<td>').text(student.course.course + ' курс'));
     row.append($('<td>').text(student.group.title));

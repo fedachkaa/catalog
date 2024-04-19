@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\TopicRequestProcessed;
 use App\Exceptions\ServiceUserException;
 use App\Http\Requests\PostPutCatalogRequest;
 use App\Http\Requests\PostPutTopicRequest;
@@ -287,6 +288,8 @@ class CatalogController extends Controller
         }
         DB::commit();
 
+        event(new TopicRequestProcessed($topicRequest));
+
         return response()->json([
             'message' => 'Success',
         ])->setStatusCode(200);
@@ -316,6 +319,8 @@ class CatalogController extends Controller
             ])->setStatusCode(500);
         }
         DB::commit();
+
+        event(new TopicRequestProcessed($topicRequest));
 
         return response()->json([
             'message' => 'Success',

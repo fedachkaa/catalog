@@ -1,4 +1,4 @@
-const {toggleTabsSideBar, showSpinner, hideSpinner, toggleContentBlock} = require("../general");
+const {toggleTabsSideBar, showSpinner, hideSpinner} = require("../general");
 
 document.addEventListener('DOMContentLoaded', function () {
     toggleTabsSideBar('js-university');
@@ -35,6 +35,4 @@ const displayUniversityData = function(data) {
     universityBlock.find('.js-website').text(data.website);
     universityBlock.find('.js-university-acc-level').text(data.accreditation_level);
     universityBlock.find('.js-university-founded').text(data.founded_at);
-
-    toggleContentBlock('js-university-profile', 'admin-profile-content-block', 'js-university-info');
 }

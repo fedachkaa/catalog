@@ -18,26 +18,39 @@ const toggleTabsSideBar = function(activeTabClass) {
     });
 }
 
-const toggleContentBlock = function(containerClass, selectorClass, activeBlockClass) {
-    $(`.${containerClass}`).find(`.${selectorClass}`).each(function () {
-        if ($(this).hasClass(activeBlockClass)) {
-            $(this).removeClass('hidden');
-        } else {
-            $(this).addClass('hidden');
-        }
-    })
-}
-
 const getUserData = function() {
+    showSpinner();
+
     $.ajax({
         url: '/api/profile',
         method: 'GET',
         success: function (response) {
             displayUserProfileData(response.data);
-            console.log('Успішно!', response);
+            hideSpinner();
         },
         error: function (xhr, status, error) {
             console.error('Помилка:', error);
+            hideSpinner();
+        }
+    });
+}
+
+const getUserBaseInfo = function (userId) {
+    showSpinner();
+
+    $.ajax({
+        url: '/api/user/' + userId,
+        method: 'GET',
+        success: function (response) {
+            console.log(response);
+            $('#userInfoModal').find('.js-name').text(response.data.full_name);
+            $('#userInfoModal').find('.js-role').text(response.data.role_text);
+            showModal('userInfoModal');
+            hideSpinner();
+        },
+        error: function (xhr, status, error) {
+            console.error('Помилка:', error);
+            hideSpinner();
         }
     });
 }
@@ -49,16 +62,13 @@ const displayUserProfileData = function(data) {
     userBlock.find('.js-user-name').text(data.full_name);
     userBlock.find('.js-phone-number').text(data.phone_number);
     userBlock.find('.js-email').text(data.email);
-
-    userBlock.removeClass('hidden');
-    $('.js-university-info').addClass('hidden');
 }
 
 const showModal = function (id) {
-    var modal = $('#' + id);
+    const modal = $('#' + id);
     modal.css('display', 'block');
 
-    var closeBtn = modal.find('.close');
+    const closeBtn = modal.find('.close');
 
     closeBtn.on('click', function() {
         modal.css('display', 'none');
@@ -72,7 +82,7 @@ const showModal = function (id) {
 }
 
 const hideModal = function (id) {
-    var modal = $('#' + id);
+    const modal = $('#' + id);
     modal.css('display', 'none');
 }
 
@@ -90,13 +100,19 @@ const clearModal = function (id, attributesToRemove = []) {
 const showSpinner = function () {
     $('#spinner').removeClass('hidden');
 }
+
 const hideSpinner = function () {
     $('#spinner').addClass('hidden');
+}
 
+const showErrors = function (errors, selectorBlock) {
+    Object.entries(errors).forEach(function([key, errorMessage]) {
+        const errorParagraph = $(selectorBlock).find(`p.error-message.${key}-error-message`);
+        errorParagraph.text(errorMessage);
+    });
 }
 module.exports = {
     toggleTabsSideBar,
-    toggleContentBlock,
     getUserData,
     displayUserProfileData,
     showModal,
@@ -104,4 +120,6 @@ module.exports = {
     clearModal,
     showSpinner,
     hideSpinner,
+    showErrors,
+    getUserBaseInfo
 }

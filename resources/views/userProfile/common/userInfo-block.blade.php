@@ -4,16 +4,17 @@
  */
 ?>
 
-<div class="pl-52">
+<div class="pl-56">
     <div class="name-info">
         <div class="text-3xl js-user-role"><?= \App\Models\UserRole::AVAILABLE_USER_ROLES[$userData['role_id']]; ?></div>
         <div class="text-3xl js-user-name"><?= $userData['full_name']; ?></div>
     </div>
 
-    @include('general.contactInfo--block', [
-        'email' => $userData['email'],
-        'phoneNumber' => $userData['phone_number']
-    ])
+    <div class="contact-info">
+        <div>Контактна інформація</div>
+        <div>Електронна пошта: <span class="js-email">{{ $userData['email'] ?? '' }}</span></div>
+        <div>Номер телефону: <span class="js-phone-number">{{ $userData['phone_number'] ?? '' }}</span></div>
+    </div>
 
     <i class="fa-solid fa-lock js-lock-icon"></i>
     <div class="password-block locked">

@@ -11,7 +11,7 @@ class UserProfileController extends Controller
     /** @var UserService */
     private $userService;
 
-    /** @var User  */
+    /** @var User */
     private $userRepository;
 
     /**
@@ -20,10 +20,11 @@ class UserProfileController extends Controller
      */
     public function __construct(
         UserService $userService,
-        User $userRepository
-    ){
-        $this->userService          = $userService;
-        $this->userRepository       = $userRepository;
+        User        $userRepository
+    )
+    {
+        $this->userService = $userService;
+        $this->userRepository = $userRepository;
     }
 
     /**
@@ -43,5 +44,18 @@ class UserProfileController extends Controller
         return response()->json([
             'data' => $this->userRepository->export(auth()->user(), ['university']),
         ])->setStatusCode(200);
+    }
+
+    /**
+     * @param int $userId
+     * @return JsonResponse
+     */
+    public function getBaseUserInfo(int $userId): JsonResponse
+    {
+        $user = $this->userRepository->getOne(['id' => $userId]);
+
+        return response()->json([
+            'data' => $this->userRepository->export($user),
+        ]);
     }
 }

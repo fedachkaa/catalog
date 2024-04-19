@@ -53,11 +53,11 @@ const addCatalog = function () {
 
 const saveCatalog = function (e) {
     const groupsIds = $('#addCatalogModal .js-groups-list li').map(function() {
-        return $(this).data('id');
+        return $(this).data('groupid');
     }).get();
 
     const teacherIds = $('#addCatalogModal .js-teachers-list li').map(function() {
-        return $(this).data('id');
+        return $(this).data('teacherid');
     }).get();
 
     $.ajax({

@@ -6,5 +6,5 @@
 
 @include('userProfile.studentProfile.partials.sidebar-template')
 
-@include('general.password--block', ['userData' => $user])
+@include('userProfile.common.userInfo-block', ['userData' => $user])
 

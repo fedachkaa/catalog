@@ -10,6 +10,7 @@ use App\Http\Controllers\FacultyController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\GroupController;
+use App\Http\Controllers\Admin\AdminOverviewController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -32,8 +33,8 @@ Route::get('/', function () {
     }
 });
 
-Route::get('/university/create', [UniversityController::class, 'create'])->name('university.create');
-Route::post('/university/create', [UniversityController::class, 'store'])->name('university.store');
+Route::get('/university', [UniversityController::class, 'create'])->name('university.create');
+Route::post('/university', [UniversityController::class, 'store'])->name('university.store');
 
 Route::get('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/login', [AuthController::class, 'authenticate'])->name('authenticate');
@@ -41,6 +42,7 @@ Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::get('/profile', [UserProfileController::class, 'userProfile'])->name('user.profile');
 Route::get('/api/profile', [UserProfileController::class, 'getUserProfile'])->name('user.profile.get');
+Route::get('/api/user/{userId}', [UserProfileController::class, 'getBaseUserInfo']);
 
 Route::get('/university/{universityId}', [UniversityController::class, 'getUniversity'])->middleware('university.get');
 
@@ -73,7 +75,7 @@ Route::post('/api/university/{universityId}/teachers', [TeacherController::class
 Route::get('/university/{universityId}/catalogs', [CatalogController::class, 'getCatalogs'])->middleware('university.get');
 Route::get('/api/university/{universityId}/catalogs', [CatalogController::class, 'getCatalogsList'])->middleware('university.get');
 Route::post('/api/university/{universityId}/catalogs/create', [CatalogController::class, 'saveCatalog'])->middleware('university.get');
-Route::get('/university/{universityId}/catalogs/{catalogId}', [CatalogController::class, 'editCatalog'])->middleware('university.get')->middleware('catalog.get');
+Route::get('/university/{universityId}/catalogs/{catalogId}', [CatalogController::class, 'editCatalog'])->middleware('university.get')->middleware('catalog.get')->name('view.catalog');
 Route::put('/api/university/{universityId}/catalogs/{catalogId}', [CatalogController::class, 'updateCatalog'])->middleware('university.get')->middleware('catalog.get');
 Route::post('/api/university/{universityId}/catalogs/{catalogId}/topic', [CatalogController::class, 'saveCatalogTopic'])->middleware('university.get')->middleware('catalog.get');
 Route::put('/api/university/{universityId}/catalogs/{catalogId}/topic/{topicId}', [CatalogController::class, 'updateCatalogTopic'])->middleware('university.get')->middleware('catalog.get')->middleware('topic.get');
@@ -89,7 +91,7 @@ Route::get('reset-password/{token}', [AuthController::class, 'showResetPassword'
 Route::post('reset-password', [AuthController::class, 'submitResetPassword'])->name('reset.password.post');
 
 //
-//// TODO add middleware
-//Route::get('/admin/overview', [DashboardOverviewController::class, 'overview'])->name('dashboard.overview');
+// TODO add middleware
+Route::get('/admin/overview', [AdminOverviewController::class, 'overview'])->name('dashboard.overview');
 //Route::get('/admin/university/{id}', [DashboardUniversityController::class, 'universitySingle'])->name('university.single');
 //Route::post('/admin/university/{id}/activate', [DashboardUniversityController::class, 'universityActivation'])->name('university.activation');

@@ -1,5 +1,5 @@
-const { showModal, hideModal, toggleTabsSideBar, showSpinner, hideSpinner } = require('./../general.js');
-const { searchGroups, searchFaculties, searchCourses } = require('./common');
+const { showModal, hideModal, toggleTabsSideBar, showSpinner, hideSpinner, showErrors, clearModal, getUserBaseInfo } = require('./../general.js');
+const { searchGroups, searchFaculties, searchCourses } = require('./common.js');
 const { searchStudents, getStudents, drawSingleStudent } = require('../common/students.js');
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -12,10 +12,15 @@ document.addEventListener('DOMContentLoaded', function () {
     $(document).on('click', '.js-add-student', addStudent);
     $(document).on('click', '.js-save-student', saveStudent);
 
+    $(document).on('click', '.js-show-user-info', showUserInfo);
+
     $(document).on('click', '.js-import-students', importStudents);
     $(document).on('click', '.js-import-students-save', importStudentsStore);
 });
 
+const showUserInfo = function (e) {
+    getUserBaseInfo($(e.target).closest('tr').data('userid'));
+}
 
 const addStudent = function (e) {
     searchFaculties('addStudentModal');
@@ -64,17 +69,11 @@ const saveStudent = function (e) {
         success: function (response) {
             drawSingleStudent(response.data);
             hideModal('addStudentModal')
-            modal.find('input').val('');
-            modal.find('select').val('');
+            clearModal('addStudentModal');
             hideSpinner();
         },
         error: function (response) {
-            if (response.responseJSON.errors) {
-                Object.entries(response.responseJSON.errors).forEach(function([key, errorMessage]) {
-                    const errorParagraph = $('#addStudentModal').find(`p.error-message.${key}-error-message`);
-                    errorParagraph.text(errorMessage);
-                });
-            }
+            showErrors(response.responseJSON.errors, '#addStudentModal');
             hideSpinner();
         }
     });

@@ -67,6 +67,14 @@ class University extends RepositoryAbstract implements UniversityRepositoryInter
             $query = $query->where('accreditation_level', $filters['accreditation_level']);
         }
 
+        if (isset($filters['isActive']) && is_bool($filters['isActive'])) {
+            if ($filters['isActive']) {
+                $query = $query->whereNotNull('activated_at');
+            } else {
+                $query = $query->whereNull('activated_at');
+            }
+        }
+
         return $query->get();
     }
 }

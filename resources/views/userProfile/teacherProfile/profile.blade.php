@@ -6,8 +6,4 @@
 
 @include('userProfile.teacherProfile.partials.sidebar-template')
 
-@include('general.password--block', ['userData' => $user])
-
-<script>
-    const universityId = <?= $user['university']['id'] ?? ''; ?>
-</script>
+@include('userProfile.common.userInfo-block', ['userData' => $user])

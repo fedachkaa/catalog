@@ -50,7 +50,7 @@ class AuthController extends Controller
             $request->session()->regenerate();
 
             if ($user->getRoleId() === UserRole::USER_ROLE_ADMIN) {
-                return redirect()->route('admin');
+                return redirect()->route('dashboard.overview');
             }
 
             return redirect()->route('user.profile');
