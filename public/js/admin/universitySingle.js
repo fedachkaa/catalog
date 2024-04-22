@@ -30578,8 +30578,7 @@ var updateUniversity = function updateUniversity(e) {
       'is_active': $(e.target).data('approved'),
       '_token': $(e.target).parent().data('token')
     },
-    success: function success(response) {
-      (0,_general__WEBPACK_IMPORTED_MODULE_0__.hideSpinner)();
+    success: function success() {
       window.location.reload();
     },
     error: function error(response) {

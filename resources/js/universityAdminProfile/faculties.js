@@ -83,12 +83,7 @@ const saveFaculty = function(e) {
             hideSpinner();
         },
         error: function (response) {
-            if (response.responseJSON.errors) {
-                Object.entries(response.responseJSON.errors).forEach(function([key, errorMessage]) {
-                    const errorParagraph = $('#addEditFacultyModal').find(`p.error-message.${key}-error-message`);
-                    errorParagraph.text(errorMessage);
-                });
-            }
+            showErrors(response.responseJSON.errors, '#addEditFacultyModal');
             hideSpinner();
         }
     });

@@ -16,8 +16,7 @@ const updateUniversity = function (e) {
             'is_active': $(e.target).data('approved'),
             '_token': $(e.target).parent().data('token'),
         },
-        success: function (response) {
-          hideSpinner();
+        success: function () {
           window.location.reload();
         },
         error: function (response) {
