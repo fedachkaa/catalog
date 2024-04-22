@@ -61,7 +61,7 @@ const saveFaculty = function(e) {
     showSpinner();
 
     let method = 'POST';
-    let url = '/api/university/'+ universityId +'/faculty/create';
+    let url = '/api/university/'+ universityId +'/faculties';
 
     const modal = $('#addEditFacultyModal');
     const facultyId = modal.attr('data-facultyid');
@@ -150,7 +150,7 @@ const saveCourse = function(e) {
 
     const facultyId =  $('#addCourseModal').data('facultyid');
     $.ajax({
-        url: '/api/university/' + universityId + '/courses/create',
+        url: '/api/university/' + universityId + '/courses',
         method: 'POST',
         data: {
             faculty_id: facultyId,
@@ -184,7 +184,7 @@ const saveGroup = function(e) {
     showSpinner();
 
     $.ajax({
-        url: '/api/university/' + universityId + '/groups/create',
+        url: '/api/university/' + universityId + '/groups',
         method: 'POST',
         data: {
             course_id: $('#courseInfo').data('courseid'),

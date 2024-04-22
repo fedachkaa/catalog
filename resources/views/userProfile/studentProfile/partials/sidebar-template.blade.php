@@ -20,7 +20,7 @@
                 </a>
             </li>
             <li class="sidebar-menu-title js-topic-requests">
-                <a href="/student/topic-requests">
+                <a href="/topic-requests">
                     <i class="fas fa-square-check"></i>
                     <span>Мої запити</span>
                 </a>

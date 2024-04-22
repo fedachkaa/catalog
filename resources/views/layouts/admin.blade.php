@@ -23,7 +23,7 @@
                 <a href="#" class="nav-menu-item">Користувачі</a>
             </div>
             <div class="mx-2">
-                <a href="#" class="nav-menu-item">Вийти</a>
+                <a href="{{ route('logout') }}" class="nav-menu-item">Вийти</a>
             </div>
         </div>
     </div>

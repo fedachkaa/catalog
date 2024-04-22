@@ -73,7 +73,7 @@ const saveSubject = function (e) {
     showSpinner();
 
     let method = 'POST';
-    let url = '/api/university/'+ universityId +'/subject';
+    let url = '/api/university/'+ universityId +'/subjects';
     const teacherIds = $('#addEditSubjectModal .js-teachers-list li').map(function() {
         return $(this).data('id');
     }).get();
@@ -81,7 +81,7 @@ const saveSubject = function (e) {
     const subjectId = $('#addEditSubjectModal').attr('data-subjectid');
     if (subjectId) {
         method = 'PUT';
-        url = '/api/university/'+ universityId +'/subject/' + subjectId;
+        url = '/api/university/'+ universityId +'/subjects/' + subjectId;
     }
     $.ajax({
         url: url,

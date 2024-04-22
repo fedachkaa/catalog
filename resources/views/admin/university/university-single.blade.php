@@ -20,6 +20,7 @@
             <div><span class="font-bold">Електронна пошта: </span><a href="mailto:{{ $universityData['email'] }}">{{ $universityData['email'] }}</a></div>
             <div><span class="font-bold">Заснований: </span>{{ date('d M Y', strtotime($universityData['founded_at'])) }} </div>
             <div><span class="font-bold">Веб-сайт: </span><a href="{{ $universityData['website'] }}" target="_blank">{{ $universityData['website'] }}</a></div>
+            <div><span class="font-bold">Статус: </span>{{ $universityData['activated_at'] ? 'Активний (' .  date('d M Y', strtotime($universityData['activated_at'])) . ')' : 'Не активний'}}</div>
         </div>
         <div class="flex flex-col gap-3 w-1/2">
             Заява надіслана від:
@@ -28,10 +29,12 @@
             <div><span class="font-bold">Номер телефону: </span>{{ $universityData['universityAdmin']['phone_number'] }}</div>
         </div>
     </div>
-    <div class="flex flex-row justify-end gap-4 m-4" data-token="{{ csrf_token() }}">
-        <a class="save-btn js-approve-university" data-approved="1">Approve</a>
-        <a class="remove-btn js-reject-university" data-approved="0">Decline</a>
-    </div>
+    @if (!$universityData['activated_at'])
+        <div class="flex flex-row justify-end gap-4 m-4" data-token="{{ csrf_token() }}">
+            <a class="save-btn js-approve-university" data-approved="1">Approve</a>
+            <a class="remove-btn js-reject-university" data-approved="0">Decline</a>
+        </div>
+    @endif
 </div>
 @endsection
 

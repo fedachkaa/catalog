@@ -30735,14 +30735,14 @@ var editSubject = function editSubject(e) {
 var saveSubject = function saveSubject(e) {
   showSpinner();
   var method = 'POST';
-  var url = '/api/university/' + universityId + '/subject';
+  var url = '/api/university/' + universityId + '/subjects';
   var teacherIds = $('#addEditSubjectModal .js-teachers-list li').map(function () {
     return $(this).data('id');
   }).get();
   var subjectId = $('#addEditSubjectModal').attr('data-subjectid');
   if (subjectId) {
     method = 'PUT';
-    url = '/api/university/' + universityId + '/subject/' + subjectId;
+    url = '/api/university/' + universityId + '/subjects/' + subjectId;
   }
   $.ajax({
     url: url,

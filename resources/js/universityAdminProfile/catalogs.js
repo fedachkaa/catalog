@@ -61,7 +61,7 @@ const saveCatalog = function (e) {
     }).get();
 
     $.ajax({
-        url: '/api/university/' + universityId + '/catalogs/create',
+        url: '/api/university/' + universityId + '/catalogs',
         method: 'POST',
         data: {
             type: $('#addCatalogModal .js-catalog-type').val(),

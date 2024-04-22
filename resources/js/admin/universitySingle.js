@@ -18,6 +18,7 @@ const updateUniversity = function (e) {
         },
         success: function (response) {
           hideSpinner();
+          window.location.reload();
         },
         error: function (response) {
             hideSpinner();

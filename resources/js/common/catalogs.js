@@ -56,11 +56,11 @@ const saveTopic = function (e) {
     const topicId = $('#addTopicModal').data('topicid');
 
     let method = 'POST';
-    let url = '/api/university/' + universityId + '/catalogs/' + catalogId + '/topic';
+    let url = '/api/university/' + universityId + '/catalogs/' + catalogId + '/topics';
     let attrToRemove = [];
     if (topicId) {
         method = 'PUT';
-        url = '/api/university/' + universityId + '/catalogs/' + catalogId + '/topic/' + topicId;
+        url = '/api/university/' + universityId + '/catalogs/' + catalogId + '/topics/' + topicId;
         attrToRemove = ['topicid'];
     }
     $.ajax({

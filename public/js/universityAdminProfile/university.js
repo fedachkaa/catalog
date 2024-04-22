@@ -30519,41 +30519,11 @@ var __webpack_exports__ = {};
 /*!***********************************************************!*\
   !*** ./resources/js/universityAdminProfile/university.js ***!
   \***********************************************************/
-var _require = __webpack_require__(/*! ../general */ "./resources/js/general.js"),
-  toggleTabsSideBar = _require.toggleTabsSideBar,
-  showSpinner = _require.showSpinner,
-  hideSpinner = _require.hideSpinner;
+var _require = __webpack_require__(/*! ../general.js */ "./resources/js/general.js"),
+  toggleTabsSideBar = _require.toggleTabsSideBar;
 document.addEventListener('DOMContentLoaded', function () {
   toggleTabsSideBar('js-university');
-  getUniversity();
 });
-var getUniversity = function getUniversity() {
-  showSpinner();
-  $.ajax({
-    url: '/profile/api/university',
-    method: 'GET',
-    success: function success(response) {
-      displayUniversityData(response.data);
-      hideSpinner();
-    },
-    error: function error(xhr, status, _error) {
-      console.error('Помилка:', _error);
-      hideSpinner();
-    }
-  });
-};
-var displayUniversityData = function displayUniversityData(data) {
-  var universityBlock = $('.js-university-info');
-  universityBlock.data('universityid', data.id);
-  universityBlock.find('.js-university-name').text(data.name);
-  universityBlock.find('.js-city').text(data.city);
-  universityBlock.find('.js-address').text(data.address);
-  universityBlock.find('.js-phone').text(data.phone_number);
-  universityBlock.find('.js-email').text(data.email);
-  universityBlock.find('.js-website').text(data.website);
-  universityBlock.find('.js-university-acc-level').text(data.accreditation_level);
-  universityBlock.find('.js-university-founded').text(data.founded_at);
-};
 })();
 
 /******/ 	return __webpack_exports__;

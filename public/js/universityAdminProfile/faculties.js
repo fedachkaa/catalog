@@ -30724,7 +30724,7 @@ var editFaculty = function editFaculty(e) {
 var saveFaculty = function saveFaculty(e) {
   showSpinner();
   var method = 'POST';
-  var url = '/api/university/' + universityId + '/faculty/create';
+  var url = '/api/university/' + universityId + '/faculties';
   var modal = $('#addEditFacultyModal');
   var facultyId = modal.attr('data-facultyid');
   if (facultyId) {
@@ -30797,7 +30797,7 @@ var saveCourse = function saveCourse(e) {
   showSpinner();
   var facultyId = $('#addCourseModal').data('facultyid');
   $.ajax({
-    url: '/api/university/' + universityId + '/courses/create',
+    url: '/api/university/' + universityId + '/courses',
     method: 'POST',
     data: {
       faculty_id: facultyId,
@@ -30825,7 +30825,7 @@ var addGroup = function addGroup(e) {
 var saveGroup = function saveGroup(e) {
   showSpinner();
   $.ajax({
-    url: '/api/university/' + universityId + '/groups/create',
+    url: '/api/university/' + universityId + '/groups',
     method: 'POST',
     data: {
       course_id: $('#courseInfo').data('courseid'),

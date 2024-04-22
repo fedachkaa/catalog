@@ -30580,6 +30580,7 @@ var updateUniversity = function updateUniversity(e) {
     },
     success: function success(response) {
       (0,_general__WEBPACK_IMPORTED_MODULE_0__.hideSpinner)();
+      window.location.reload();
     },
     error: function error(response) {
       (0,_general__WEBPACK_IMPORTED_MODULE_0__.hideSpinner)();

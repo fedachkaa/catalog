@@ -2269,11 +2269,11 @@ var saveTopic = function saveTopic(e) {
   var catalogId = $('#addTopicModal').data('catalogid');
   var topicId = $('#addTopicModal').data('topicid');
   var method = 'POST';
-  var url = '/api/university/' + universityId + '/catalogs/' + catalogId + '/topic';
+  var url = '/api/university/' + universityId + '/catalogs/' + catalogId + '/topics';
   var attrToRemove = [];
   if (topicId) {
     method = 'PUT';
-    url = '/api/university/' + universityId + '/catalogs/' + catalogId + '/topic/' + topicId;
+    url = '/api/university/' + universityId + '/catalogs/' + catalogId + '/topics/' + topicId;
     attrToRemove = ['topicid'];
   }
   $.ajax({
