@@ -4,8 +4,10 @@ namespace App\Providers;
 
 use App\Events\CatalogActivation;
 use App\Events\TopicRequestProcessed;
+use App\Events\UniversityProcessed;
 use App\Listeners\SendCatalogActivationEmail;
 use App\Listeners\SendTopicRequestProcessedEmail;
+use App\Listeners\SendUniversityProcessedEmail;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 
 class EventServiceProvider extends ServiceProvider
@@ -21,6 +23,9 @@ class EventServiceProvider extends ServiceProvider
         ],
         TopicRequestProcessed::class => [
             SendTopicRequestProcessedEmail::class,
+        ],
+        UniversityProcessed::class => [
+            SendUniversityProcessedEmail::class,
         ],
     ];
 

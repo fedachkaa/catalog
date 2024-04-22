@@ -3,6 +3,7 @@
 namespace App\Exporters;
 
 use App\Repositories\Faculty as FacultyRepository;
+use App\Repositories\Interfaces\UserRepositoryInterface;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\University as UniversityModel;
 use Illuminate\Support\Facades\App;
@@ -54,5 +55,16 @@ class University extends ExporterAbstract
         $facultyRepository = App::get(FacultyRepository::class);
 
         return $facultyRepository->exportAll($university->getFaculties());
+    }
+
+    /**
+     * @param UniversityModel $university
+     * @return array
+     */
+    protected function expandUniversityAdmin(UniversityModel $university): array
+    {
+        $userRepository = App::get(UserRepositoryInterface::class);
+
+        return $userRepository->export($university->getAdmin());
     }
 }

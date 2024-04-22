@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminUniversityController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\SubjectController;
@@ -93,5 +94,5 @@ Route::post('reset-password', [AuthController::class, 'submitResetPassword'])->n
 //
 // TODO add middleware
 Route::get('/admin/overview', [AdminOverviewController::class, 'overview'])->name('dashboard.overview');
-//Route::get('/admin/university/{id}', [DashboardUniversityController::class, 'universitySingle'])->name('university.single');
-//Route::post('/admin/university/{id}/activate', [DashboardUniversityController::class, 'universityActivation'])->name('university.activation');
+Route::get('/admin/university/{universityId}', [AdminUniversityController::class, 'universitySingle'])->name('university.single')->middleware('university.get');
+Route::put('/admin/api/university/{universityId}', [AdminUniversityController::class, 'updateUniversity'])->middleware('university.get');

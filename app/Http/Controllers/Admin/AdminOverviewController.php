@@ -22,7 +22,7 @@ class AdminOverviewController extends Controller
     /**
      * @return View
      */
-    public function overview() : View
+    public function overview(): View
     {
         $inactiveUniversities = $this->universityRepository->getAll([
             'isActive' => false,

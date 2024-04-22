@@ -22,12 +22,12 @@
                     </div>
                 </div>
                 <div class="actions-block">
-                    <i class="fa-solid fa-eye"></i>
+                    <a href="{{ route('university.single', ['universityId' => $university['id']]) }}" target="_blank">
+                        <i class="fa-solid fa-eye"></i>
+                    </a>
                     <i class="fa-solid fa-trash"></i>
                 </div>
             </div>
-            {{--                    <a href="{{ route('university.single', ['id' => $university['id']]) }}"><i class="far fa-eye"></i> Переглянути</a>--}}
-
         @endforeach
     </div>
 @endsection

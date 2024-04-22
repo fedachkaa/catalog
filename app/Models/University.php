@@ -36,6 +36,7 @@ class University extends Model implements UniversityInterface
         'accreditation_level',
         'founded_at',
         'website',
+        'activated_at',
     ];
 
     // --- Model relationships

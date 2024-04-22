@@ -12,5 +12,6 @@
     "/js/teacher/catalogs.js": "/js/teacher/catalogs.js",
     "/js/student/catalogs.js": "/js/student/catalogs.js",
     "/js/student/topic-requests.js": "/js/student/topic-requests.js",
-    "/js/admin/overview.js": "/js/admin/overview.js"
+    "/js/admin/overview.js": "/js/admin/overview.js",
+    "/js/admin/universitySingle.js": "/js/admin/universitySingle.js"
 }
