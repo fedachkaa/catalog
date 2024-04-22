@@ -2,37 +2,36 @@
 
 namespace App\Http\Middleware;
 
-use App\Repositories\Interfaces\FacultyRepositoryInterface;
-use Illuminate\Http\JsonResponse;
+use App\Repositories\Interfaces\SubjectRepositoryInterface;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Closure;
 
-class FacultyRequest extends UniversityRequest
+class GetSubjectRequest extends UniversityRequest
 {
     /**
      * @param Request $request
      * @param Closure $next
-     * @return JsonResponse|mixed
+     * @return \Illuminate\Http\JsonResponse|mixed
      */
     public function handle(Request $request, Closure $next)
     {
         parent::handle( $request, $next);
 
-        $facultyRepository = App::get(FacultyRepositoryInterface::class);
+        $subjectRepository = App::get(SubjectRepositoryInterface::class);
 
-        $facultyId = $request->route('facultyId');
-        if (empty($facultyId)) {
+        $subjectId = $request->route('subjectId');
+        if (empty($subjectId)) {
             return response()->json(['error' => 'Invalid get params'], 404);
         }
 
-        $faculty = $facultyRepository->getOne(['id' => $facultyId]);
+        $subject = $subjectRepository->getOne(['id' => $subjectId]);
 
-        if (!$faculty) {
+        if (!$subject) {
             return response()->json(['error' => 'Not found'], 404);
         }
 
-        $request->route()->setParameter('facultyId', $faculty);
+        $request->route()->setParameter('subjectId', $subject);
 
         return $next($request);
     }

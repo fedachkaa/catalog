@@ -28,6 +28,9 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     if (Auth::check()) {
+        if (auth()->user()->isAdmin()) {
+            return redirect()->route('dashboard.overview');
+        }
         return redirect()->route('user.profile');
     } else {
         return redirect()->route('login');
@@ -91,8 +94,9 @@ Route::post('forget-password', [AuthController::class, 'sendResetLink'])->name('
 Route::get('reset-password/{token}', [AuthController::class, 'showResetPassword'])->name('reset.password.get');
 Route::post('reset-password', [AuthController::class, 'submitResetPassword'])->name('reset.password.post');
 
-//
-// TODO add middleware
-Route::get('/admin/overview', [AdminOverviewController::class, 'overview'])->name('dashboard.overview');
-Route::get('/admin/university/{universityId}', [AdminUniversityController::class, 'universitySingle'])->name('university.single')->middleware('university.get');
-Route::put('/admin/api/university/{universityId}', [AdminUniversityController::class, 'updateUniversity'])->middleware('university.get');
+
+Route::prefix('admin')->middleware('admin')->group(function () {
+    Route::get('/overview', [AdminOverviewController::class, 'overview'])->name('dashboard.overview');
+    Route::get('/university/{universityId}', [AdminUniversityController::class, 'universitySingle'])->name('university.single');
+    Route::put('/api/university/{universityId}', [AdminUniversityController::class, 'updateUniversity']);
+});

@@ -29,4 +29,12 @@ interface UserInterface
     public function getCreatedAt(): string;
 
     public function getUpdatedAt(): string;
+
+    public function isTeacher(): bool;
+
+    public function isStudent(): bool;
+
+    public function isUniversityAdmin(): bool;
+
+    public function isAdmin(): bool;
 }
