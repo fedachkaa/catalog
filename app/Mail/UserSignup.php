@@ -16,17 +16,13 @@ class UserSignup extends Mailable
     /** @var User */
     private $user;
 
-    /** @var string */
-    private $password;
-
     /**
      * @param User $user
-     * @param string $password
      */
-    public function __construct(User $user, string $password)
+
+    public function __construct(User $user)
     {
         $this->user = $user;
-        $this->password = $password;
     }
 
     /**
@@ -48,7 +44,6 @@ class UserSignup extends Mailable
             markdown: 'mail.auth.signup',
             with: [
                 'user' => $this->user->toArray(),
-                'password' => $this->password,
                 'url' => route('login'),
             ],
         );

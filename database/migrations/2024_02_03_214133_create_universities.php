@@ -24,7 +24,7 @@ return new class extends Migration
             $table->enum('accreditation_level', ['I', 'II', 'III', 'IV'])->default('I');
             $table->timestamp('founded_at');
             $table->string('website', 128)->nullable();
-            $table->string('activated_at')->nullable();
+            $table->timestamp('activated_at')->nullable();
             $table->timestamps();
 
             $table->foreign('admin_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');

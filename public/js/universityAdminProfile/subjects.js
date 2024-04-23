@@ -30665,12 +30665,11 @@ var _require = __webpack_require__(/*! ./../general.js */ "./resources/js/genera
   hideModal = _require.hideModal,
   toggleTabsSideBar = _require.toggleTabsSideBar,
   showSpinner = _require.showSpinner,
-  hideSpinner = _require.hideSpinner;
+  hideSpinner = _require.hideSpinner,
+  showErrors = _require.showErrors;
 var _require2 = __webpack_require__(/*! ./common.js */ "./resources/js/universityAdminProfile/common.js"),
   searchTeachers = _require2.searchTeachers,
   initRemoveTeacherClick = _require2.initRemoveTeacherClick;
-var _require3 = __webpack_require__(/*! ../general */ "./resources/js/general.js"),
-  showErrors = _require3.showErrors;
 document.addEventListener('DOMContentLoaded', function () {
   toggleTabsSideBar('js-subjects');
   getSubjects();

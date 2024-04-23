@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CreateUniversityRequest;
 use App\Models\University;
+use App\Models\UserRole;
 use App\Repositories\Interfaces\UniversityRepositoryInterface;
 use App\Services\UniversityService;
 use App\Services\UserService;
@@ -51,28 +52,27 @@ class UniversityController extends Controller
 
     /**
      * @param CreateUniversityRequest $request
-     * @return JsonResponse
+     * @return JsonResponse|\Illuminate\Http\RedirectResponse
      */
-    public function store(CreateUniversityRequest $request) : JsonResponse
+    public function store(CreateUniversityRequest $request)
     {
         $data = $request->validated();
 
         DB::beginTransaction();
         try {
-            $user = $this->userService->createUser($data);
+            $user = $this->userService->createUser(array_merge($data['user'], ['role_id' => UserRole::USER_ROLE_UNIVERSITY_ADMIN]));
             $university = $this->universityService->createUniversity(array_merge(['admin_id' => $user->getId()], $data));
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
+            // TODO add view
             return response()->json([
                 'message' => 'Internal serve error',
                 'error' => $e->getMessage()
             ])->setStatusCode(500);
         }
 
-        return response()->json([
-            'data' => $user->toArray(),
-        ])->setStatusCode(200);
+        return redirect()->route('university.success');
     }
 
     /**
@@ -84,5 +84,13 @@ class UniversityController extends Controller
         $university = $this->universityRepository->export($university);
 
         return view('userProfile.universityAdminProfile.partials.university.university-info-block', compact('university'));
+    }
+
+    /**
+     * @return Application|Factory|View
+     */
+    public function registrationSuccess(): View|Factory|Application
+    {
+        return view('registrationSuccess');
     }
 }

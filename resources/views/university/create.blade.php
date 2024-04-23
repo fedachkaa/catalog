@@ -95,41 +95,42 @@
 
                     <div class="form-group">
                         <label for="first_name">Ім'я:</label>
-                        <input type="text" name="first_name" id="first_name" class="form-control" value="{{ old('first_name') }}">
+                        <input type="text" name="user[first_name]"  class="form-control" value="{{ old('user.first_name') }}">
 
-                        @if($errors->has('first_name'))
-                            <div class="alert alert-danger">{{ $errors->first('first_name') }}</div>
+                        @if($errors->has('user.first_name'))
+                            <div class="alert alert-danger">{{ $errors->first('user.first_name') }}</div>
                         @endif
                     </div>
 
                     <div class="form-group">
                         <label for="last_name">Прізвище:</label>
-                        <input type="text" name="last_name" id="last_name" class="form-control" value="{{ old('last_name') }}">
+                        <input type="text" name="user[last_name]" class="form-control" value="{{ old('user.last_name') }}">
 
-                        @if($errors->has('last_name'))
-                            <div class="alert alert-danger">{{ $errors->first('last_name') }}</div>
+                        @if($errors->has('user.last_name'))
+                            <div class="alert alert-danger">{{ $errors->first('user.last_name') }}</div>
                         @endif
                     </div>
 
                     <div class="form-group">
                         <label for="user_phone_number">Номер телефону:</label>
-                        <input type="tel" name="user_phone_number" id="user_phone_number" class="form-control" value="{{ old('user_phone_number') }}">
+                        <input type="tel" name="user[phone_number]" class="form-control" value="{{ old('user.phone_number') }}">
 
-                        @if($errors->has('user_phone_number'))
-                            <div class="alert alert-danger">{{ $errors->first('user_phone_number') }}</div>
+                        @if($errors->has('user.phone_number'))
+                            <div class="alert alert-danger">{{ $errors->first('user.phone_number') }}</div>
                         @endif
                     </div>
 
                     <div class="form-group">
                         <label for="user_email">Електронна пошта:</label>
-                        <input type="email" name="user_email" id="user_email" class="form-control" value="{{ old('user_email') }}">
+                        <input type="email" name="user[email]" class="form-control" value="{{ old('user.email') }}">
 
-                        @if($errors->has('user_email'))
-                            <div class="alert alert-danger">{{ $errors->first('user_email') }}</div>
+                        @if($errors->has('user.email'))
+                            <div class="alert alert-danger">{{ $errors->first('user.email') }}</div>
                         @endif
                     </div>
                 </div>
             </div>
+
             <div class="form-group">
                 <button type="submit" class="btn save-btn">Надіслати заяву на реєстрацію</button>
             </div>

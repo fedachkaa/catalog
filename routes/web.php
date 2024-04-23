@@ -8,9 +8,7 @@ use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\UniversityController;
 use App\Http\Controllers\UserProfileController;
 use App\Http\Controllers\FacultyController;
-use App\Http\Controllers\CourseController;
 use App\Http\Controllers\StudentController;
-use App\Http\Controllers\GroupController;
 use App\Http\Controllers\Admin\AdminOverviewController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -35,7 +33,7 @@ Route::get('/', function () {
     } else {
         return redirect()->route('login');
     }
-});
+})->name('home');
 
 Route::get('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/login', [AuthController::class, 'authenticate'])->name('authenticate');
@@ -49,6 +47,7 @@ Route::post('reset-password', [AuthController::class, 'submitResetPassword'])->n
 
 Route::get('/university', [UniversityController::class, 'create'])->name('university.create');
 Route::post('/university', [UniversityController::class, 'store'])->name('university.store');
+Route::get('/university-registration-success', [UniversityController::class, 'registrationSuccess'])->name('university.success');
 
 Route::get('/profile', [UserProfileController::class, 'userProfile'])->name('user.profile');
 

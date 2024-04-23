@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\UserRegistered;
 use App\Models\Interfaces\UniversityInterface;
 use App\Repositories\Interfaces\TeacherRepositoryInterface;
 use App\Services\TeacherService;
@@ -78,6 +79,8 @@ class TeacherController extends Controller
                 'error' => $e->getMessage()
             ])->setStatusCode(500);
         }
+
+        event(new UserRegistered($teacher->getUser()));
 
         return response()->json([
             'message' => 'Success',

@@ -2,8 +2,7 @@
 # Hi, {{ $user['first_name'] }}!
 
     You are successfully registered at UniSpace!
-    To log in your account use email you enter during registration and password {{ $password }}.
-    After log in you can change yor password in profile setting.
+    Use the "Reset Password" feature to create a password and login.
 
 <x-mail::button :url="$url">
 Log in

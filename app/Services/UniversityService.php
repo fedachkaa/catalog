@@ -27,6 +27,9 @@ class UniversityService
     public function createUniversity(array $data) : University
     {
         try {
+            // TODO fix
+            unset($data['founded_at']);
+           // $data['founded_at'] = date('Y-m-d H:i:s', strtotime($data['founded_at']));
             /** @var University $university */
             $university = $this->universityRepository->getNew($data);
         } catch(\Exception $e) {

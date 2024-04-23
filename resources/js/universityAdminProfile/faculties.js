@@ -36,7 +36,12 @@ const getFaculties = function() {
         url: '/api/university/' + universityId + '/faculties',
         method: 'GET',
         success: function (response) {
-            displayFacultiesData(response.data);
+            if (response.data.faculties.length) {
+                displayFacultiesData(response.data);
+            } else {
+                $('#faculties-table').addClass('hidden');
+                $('.js-faculties-container').append('<p>Ще немає факультетів</p>')
+            }
             hideSpinner();
         },
         error: function (xhr, status, error) {
