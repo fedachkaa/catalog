@@ -75,7 +75,7 @@ const saveSubject = function (e) {
     let method = 'POST';
     let url = '/api/university/'+ universityId +'/subjects';
     const teacherIds = $('#addEditSubjectModal .js-teachers-list li').map(function() {
-        return $(this).data('id');
+        return $(this).data('teacherid');
     }).get();
 
     const subjectId = $('#addEditSubjectModal').attr('data-subjectid');

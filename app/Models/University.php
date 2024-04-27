@@ -57,6 +57,14 @@ class University extends Model implements UniversityInterface
         return $this->hasMany(Faculty::class, 'university_id', 'id')->get();
     }
 
+    /**
+     * @return Collection
+     */
+    public function getCatalogs(): Collection
+    {
+        return $this->hasMany(Catalog::class, 'university_id', 'id')->get();
+    }
+
     // --- Model getters
 
     /**

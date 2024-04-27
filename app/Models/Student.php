@@ -25,9 +25,9 @@ class Student extends Model implements StudentInterface
     // --- Model relationships
 
     /**
-     * @return Model
+     * @return Model|User
      */
-    public function getUser(): Model
+    public function getUser(): User
     {
         return $this->belongsTo(User::class, 'user_id', 'id')->first();
     }

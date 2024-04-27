@@ -1,3 +1,9 @@
+<?php
+/**
+ * @var array $universities
+ */
+?>
+
 @extends('layouts.admin')
 
 @section('title', 'UniSpace | AdminPanel')
@@ -6,7 +12,7 @@
     <div class="flex flex-col items-center">
         @include('admin.university.searchTool')
 
-        @foreach($inactiveUniversities as $i => $university)
+        @foreach($universities as $i => $university)
             <div class="university-block">
                 <div class="main-data-block">
                     <div class="text-6xl mx-6">

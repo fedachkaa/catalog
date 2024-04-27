@@ -11,6 +11,8 @@ interface UniversityInterface
 
     public function getFaculties(): Collection;
 
+    public function getCatalogs(): Collection;
+
     public function getId(): int;
 
     public function getAdminId() : int;

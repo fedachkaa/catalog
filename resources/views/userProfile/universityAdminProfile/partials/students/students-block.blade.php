@@ -5,7 +5,7 @@
 @section('content')
     @include('userProfile.universityAdminProfile.partials.sidebar-template')
 
-    <div class="pl-52">
+    <div class="pl-56">
         <div class="flex flex-row gap-1">
             <div class="flex flex-col mx-2">
                 <div class="js-manual-add">

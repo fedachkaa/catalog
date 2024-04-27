@@ -26,8 +26,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('/api/profile', [UserProfileController::class, 'getUserProfile'])->name('user.profile.get');
-Route::get('/api/user/{userId}', [UserProfileController::class, 'getBaseUserInfo']);
+Route::get('/profile', [UserProfileController::class, 'getUserProfile'])->name('user.profile.get');
+Route::get('/user/{userId}', [UserProfileController::class, 'getBaseUserInfo']);
 
 Route::prefix('/university/{universityId}')->middleware('university.get')->group(function () {
     Route::get('/faculties', [FacultyController::class, 'getFacultiesList']);

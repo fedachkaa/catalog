@@ -269,3 +269,19 @@
 .university-search-tool {
     @apply h-auto p-5 mb-3 w-full border-b-2 border-amber-200;
 }
+
+.accordion-title {
+    @apply text-2xl w-full p-4 font-semibold text-left transition-all ease-in border-b border-solid cursor-pointer border-slate-100 text-slate-700 rounded-t-sm  text-gray-700;
+}
+
+.accordion-body {
+    @apply p-4 text-sm leading-normal text-blue-500 hidden;
+}
+
+.status-active {
+    @apply w-5 h-5 rounded-full bg-green-500 mt-2 ml-3;
+}
+
+.status-inactive {
+    @apply w-5 h-5 rounded-full bg-red-500 mt-2 ml-3;
+}

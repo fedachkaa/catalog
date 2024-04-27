@@ -36,7 +36,7 @@ class AdminUniversityController
      */
     public function universitySingle(University $university): View|Factory|Application
     {
-        $universityData = $this->universityRepository->export($university, ['universityAdmin']);
+        $universityData = $this->universityRepository->export($university, ['universityAdmin', 'faculties', 'teachers', 'students', 'catalogs']);
 
         return view('admin.university.university-single', compact('universityData'));
     }

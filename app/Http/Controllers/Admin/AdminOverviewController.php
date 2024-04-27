@@ -24,10 +24,7 @@ class AdminOverviewController extends Controller
      */
     public function overview(): View
     {
-        $inactiveUniversities = $this->universityRepository->getAll([
-            'isActive' => false,
-        ]);
-        $inactiveUniversities = $this->universityRepository->exportAll($inactiveUniversities);
-        return view('admin.overview', compact('inactiveUniversities'));
+        $universities = $this->universityRepository->exportAll($this->universityRepository->getAll());
+        return view('admin.overview', compact('universities'));
     }
 }

@@ -20,9 +20,9 @@ class Teacher extends Model implements TeacherInterface
     // --- Model relationships
 
     /**
-     * @return Model
+     * @return User|Model
      */
-    public function getUser(): Model
+    public function getUser(): User
     {
         return $this->belongsTo(User::class, 'user_id', 'id')->first();
     }
