@@ -11,6 +11,8 @@ interface FacultyInterface
 
     public function getUniversity(): Model;
 
+    public function getTeachers(): Collection;
+
     public function getId(): int;
 
     public function getUniversityId(): int;

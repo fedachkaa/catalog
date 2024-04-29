@@ -33,6 +33,7 @@ class Catalog extends Model implements CatalogInterface
      * @var string[]
      */
     protected $fillable = [
+        'university_id',
         'type',
         'is_active',
         'created_at',
@@ -41,6 +42,14 @@ class Catalog extends Model implements CatalogInterface
     ];
 
     // --- Model relationships
+
+    /**
+     * @return Model
+     */
+    public function getUniversity(): Model
+    {
+        return $this->hasOne(University::class, 'id', 'university_id')->first();
+    }
 
     /**
      * @return HasMany
@@ -74,6 +83,14 @@ class Catalog extends Model implements CatalogInterface
     public function getId(): int
     {
         return (int) $this->getAttribute('id');
+    }
+
+    /**
+     * @return int
+     */
+    public function getUniversityId(): int
+    {
+        return (int) $this->getAttribute('university_id');
     }
 
     /**

@@ -114,7 +114,9 @@ const importStudentsStore = function (e) {
         processData: false,
         success: function (response) {
             modal.find('.js-form-fields').remove();
-            modal.find('.js-students-content').append(`<p>` + response.data.user.full_name +`</p>`);
+            response.data.forEach(student => {
+                modal.find('.js-students-content').append(`<p>` + student.user.full_name +`</p>`);
+            });
             $(e.target).addClass('hidden');
             hideSpinner();
         },

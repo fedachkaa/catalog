@@ -1,4 +1,4 @@
-const { showModal, hideModal, clearModal, toggleTabsSideBar } = require('./../general.js');
+const { showModal, hideModal, clearModal, toggleTabsSideBar, showErrors } = require('./../general.js');
 const { searchGroups, searchFaculties, searchCourses, searchTeachers } = require('./common.js');
 const { getCatalogs, drawCatalogCommonDataRow } = require('../common/catalogs.js');
 
@@ -61,7 +61,7 @@ const saveCatalog = function (e) {
     }).get();
 
     $.ajax({
-        url: '/api/university/' + universityId + '/catalogs/create',
+        url: '/api/university/' + universityId + '/catalogs',
         method: 'POST',
         data: {
             type: $('#addCatalogModal .js-catalog-type').val(),
@@ -77,12 +77,7 @@ const saveCatalog = function (e) {
             hideModal('addCatalogModal');
         },
         error: function (response) {
-            if (response.responseJSON.errors) {
-                Object.entries(response.responseJSON.errors).forEach(function([key, errorMessage]) {
-                    const errorParagraph = $('#addCatalogModal').find(`p.error-message.${key}-error-message`);
-                    errorParagraph.text(errorMessage);
-                });
-            }
+            showErrors(response.responseJSON.errors, '#addCatalogModal');
         }
     });
 }

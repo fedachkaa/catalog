@@ -46,6 +46,14 @@ class Faculty extends Model implements FacultyInterface
         return $this->belongsTo(University::class, 'university_id', 'id')->first();
     }
 
+    /**
+     * @return Collection
+     */
+    public function getTeachers(): Collection
+    {
+        return $this->hasMany(Teacher::class, 'faculty_id', 'id')->get();
+    }
+
     // --- Model getters
 
     /**

@@ -11,8 +11,6 @@ interface CourseInterface
 
     public function getGroups(): Collection;
 
-    public function getStudents(): Collection;
-
     public function getId(): int;
 
     public function getFacultyId(): int;

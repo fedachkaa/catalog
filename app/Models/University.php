@@ -36,6 +36,7 @@ class University extends Model implements UniversityInterface
         'accreditation_level',
         'founded_at',
         'website',
+        'activated_at',
     ];
 
     // --- Model relationships
@@ -54,6 +55,14 @@ class University extends Model implements UniversityInterface
     public function getFaculties(): Collection
     {
         return $this->hasMany(Faculty::class, 'university_id', 'id')->get();
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getCatalogs(): Collection
+    {
+        return $this->hasMany(Catalog::class, 'university_id', 'id')->get();
     }
 
     // --- Model getters

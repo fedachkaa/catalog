@@ -6,10 +6,9 @@ use App\Models\UserRole;
 use App\Repositories\Interfaces\CourseRepositoryInterface;
 use App\Repositories\Interfaces\FacultyRepositoryInterface;
 use App\Repositories\Interfaces\GroupRepositoryInterface;
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\App;
 
-class PostPutStudentRequest extends FormRequest
+class PostPutStudentRequest extends PostPutUserRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -37,45 +36,44 @@ class PostPutStudentRequest extends FormRequest
         /** @var GroupRepositoryInterface $groupRepository */
         $groupRepository = App::get(\App\Repositories\Group::class);
 
-        return [
-            'first_name' => 'required|string|max:70',
-            'last_name' => 'required|string|max:70',
-            'email' => 'required|email|max:255',
-            'phone_number' => 'required|regex:/^\+?\d{1,15}$/',
-            'faculty_id' => [
-                'required',
-                function($attribute, $value, $fail) use ($facultyRepository) {
-                    $faculty = $facultyRepository->getOne(['id' => $value]);
-                    if (!$faculty) {
-                        $fail('Selected faculty not found');
+        return array_merge(
+            parent::rules(),
+            [
+                'faculty_id' => [
+                    'required',
+                    function($attribute, $value, $fail) use ($facultyRepository) {
+                        $faculty = $facultyRepository->getOne(['id' => $value]);
+                        if (!$faculty) {
+                            $fail('Selected faculty not found');
+                        }
                     }
-                }
-            ],
-            'course_id' => [
-                'required',
-                function($attribute, $value, $fail) use ($courseRepository) {
-                    $course = $courseRepository->getOne([
-                        'faculty_id' => request()->input('faculty_id'),
-                        'id' => $value,
-                    ]);
-                    if (!$course) {
-                        $fail('Selected course not found.');
+                ],
+                'course_id' => [
+                    'required',
+                    function($attribute, $value, $fail) use ($courseRepository) {
+                        $course = $courseRepository->getOne([
+                            'faculty_id' => request()->input('faculty_id'),
+                            'id' => $value,
+                        ]);
+                        if (!$course) {
+                            $fail('Selected course not found.');
+                        }
                     }
-                }
-            ],
-            'group_id' => [
-                'required',
-                function($attribute, $value, $fail) use ($groupRepository) {
-                    $group = $groupRepository->getOne([
-                        'faculty_id' => request()->input('faculty_id'),
-                        'course_id' => request()->input('course_id'),
-                        'id' => $value,
-                    ]);
-                    if (!$group) {
-                        $fail('Selected group not found.');
+                ],
+                'group_id' => [
+                    'required',
+                    function($attribute, $value, $fail) use ($groupRepository) {
+                        $group = $groupRepository->getOne([
+                            'faculty_id' => request()->input('faculty_id'),
+                            'course_id' => request()->input('course_id'),
+                            'id' => $value,
+                        ]);
+                        if (!$group) {
+                            $fail('Selected group not found.');
+                        }
                     }
-                }
+                ]
             ]
-        ];
+        );
     }
 }

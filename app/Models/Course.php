@@ -45,14 +45,6 @@ class Course extends Model implements CourseInterface
         return $this->hasMany(Group::class, 'course_id', 'id')->get();
     }
 
-    /**
-     * @return Collection
-     */
-    public function getStudents(): Collection
-    {
-        return $this->hasMany(Student::class, 'course_id', 'id')->get();
-    }
-
     // --- Model getters
 
     /**

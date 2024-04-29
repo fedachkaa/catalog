@@ -81,6 +81,10 @@ class Catalog extends RepositoryAbstract implements CatalogRepositoryInterface
             $query = $query->where(\App\Models\Student::TABLE_NAME . '.user_id', (int) $filters['student_id']);
         }
 
+        if (!empty($filters['university_id'])) {
+            $query = $query->where('university_id', (int) $filters['university_id']);
+        }
+
         return $query->get();
     }
 }

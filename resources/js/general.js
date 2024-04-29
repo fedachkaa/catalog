@@ -1,5 +1,6 @@
 require('./bootstrap');
 window.$ = window.jQuery = require('jquery');
+require('datatables.net');
 
 document.addEventListener("DOMContentLoaded", function() {
     $('.js-user-profile').on('click', function () {
@@ -42,9 +43,9 @@ const getUserBaseInfo = function (userId) {
         url: '/api/user/' + userId,
         method: 'GET',
         success: function (response) {
-            console.log(response);
             $('#userInfoModal').find('.js-name').text(response.data.full_name);
             $('#userInfoModal').find('.js-role').text(response.data.role_text);
+            $('#userInfoModal').find('.js-email').text(response.data.email);
             showModal('userInfoModal');
             hideSpinner();
         },

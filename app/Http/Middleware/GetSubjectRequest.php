@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Closure;
 
-class SubjectRequest extends UniversityRequest
+class GetSubjectRequest
 {
     /**
      * @param Request $request
@@ -16,8 +16,6 @@ class SubjectRequest extends UniversityRequest
      */
     public function handle(Request $request, Closure $next)
     {
-        parent::handle( $request, $next);
-
         $subjectRepository = App::get(SubjectRepositoryInterface::class);
 
         $subjectId = $request->route('subjectId');

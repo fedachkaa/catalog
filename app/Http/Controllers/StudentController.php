@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\UserRegistered;
 use App\Http\Requests\PostPutStudentRequest;
 use App\Models\University;
 use App\Models\UserRole;
@@ -92,6 +93,8 @@ class StudentController extends Controller
             ])->setStatusCode(500);
         }
 
+        event(new UserRegistered($student->getUser()));
+
         return response()->json([
             'message' => 'Success',
             'data' => $this->studentRepository->export($student, ['user', 'faculty', 'course', 'group']),
@@ -139,8 +142,7 @@ class StudentController extends Controller
                     $rowData['group_id'] = $request->post('group_id');
 
                     try {
-                        $student = $this->studentService->saveStudent($rowData);
-                        $students[] = $this->studentRepository->export($student, ['user']);
+                        $students[] = $this->studentService->saveStudent($rowData);
                     } catch (\Throwable $e) {
                         return response()->json([
                             'message' => 'Error while saving student: "' . $e->getMessage() . '".',
@@ -148,8 +150,14 @@ class StudentController extends Controller
                     }
                 }
 
+                $studentsPrepared = [];
+                foreach ($students as $student) {
+                    $studentsPrepared[] = $this->studentRepository->export($student, ['user']);
+                    event(new UserRegistered($student->getUser()));
+                }
+
                 return response()->json([
-                    'data' => $students,
+                    'data' => $studentsPrepared,
                     'message' => 'Students were successfully saved!',
                 ]);
             }

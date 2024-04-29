@@ -34,6 +34,10 @@
     @apply font-medium text-lg border-green-800 border-2 rounded-md bg-green-600 h-fit p-3 text-white hover:bg-white hover:text-green-700;
 }
 
+.remove-btn {
+    @apply font-medium text-lg border-red-800 border-2 rounded-md bg-red-600 h-fit p-3 text-white hover:bg-white hover:text-red-700;
+}
+
 .alert-danger {
     @apply text-red-500;
 }
@@ -227,7 +231,7 @@
     @apply flex flex-col text-lg;
 }
 
-.search-field input {
+.search-field input, select {
     @apply border-gray-900 border-2 rounded-md p-1;
 }
 
@@ -251,7 +255,7 @@
 /* ADMIN */
 
 .university-block {
-    @apply flex flex-row p-4 justify-between border-2 border-amber-300 rounded-md hover:cursor-pointer hover:bg-amber-100 w-4/6;
+    @apply flex flex-row p-4 justify-between border-2 border-amber-300 rounded-md hover:cursor-pointer hover:bg-amber-100 w-full;
 }
 
 .university-block .actions-block {
@@ -264,4 +268,20 @@
 
 .university-search-tool {
     @apply h-auto p-5 mb-3 w-full border-b-2 border-amber-200;
+}
+
+.accordion-title {
+    @apply text-2xl w-full p-4 font-semibold text-left transition-all ease-in border-b border-solid cursor-pointer border-slate-100 text-slate-700 rounded-t-sm  text-gray-700;
+}
+
+.accordion-body {
+    @apply p-4 text-sm leading-normal text-blue-500 hidden;
+}
+
+.status-active {
+    @apply w-5 h-5 rounded-full bg-green-500 mt-2 ml-3;
+}
+
+.status-inactive {
+    @apply w-5 h-5 rounded-full bg-red-500 mt-2 ml-3;
 }

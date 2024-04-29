@@ -2,12 +2,13 @@
 
 namespace App\Models\Interfaces;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 interface StudentInterface
 {
-    public function getUser(): Model;
+    public function getUser(): User;
 
     public function getGroup(): Model;
 

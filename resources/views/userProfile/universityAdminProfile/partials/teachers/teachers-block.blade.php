@@ -5,7 +5,7 @@
 @section('content')
     @include('userProfile.universityAdminProfile.partials.sidebar-template')
 
-    <div class="pl-52">
+    <div class="pl-56">
         <div class="faculties-block js-faculties-container">
             <button class="add-user-btn js-add-teacher">Додати викладача</button>
         </div>
@@ -27,7 +27,7 @@
         </div>
     </div>
 
-    @include('userProfile.universityAdminProfile.partials.teachers.add-teacher-modal')
+    @include('userProfile.universityAdminProfile.partials.teachers.add-edit-teacher-modal')
     @include('general.user-info-modal')
 @endsection
 

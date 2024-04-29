@@ -1,4 +1,4 @@
-const { showModal, hideModal, toggleTabsSideBar, showSpinner, hideSpinner } = require('./../general.js');
+const { showModal, hideModal, toggleTabsSideBar, showSpinner, hideSpinner, showErrors } = require('./../general.js');
 const { searchTeachers, initRemoveTeacherClick } =  require('./common.js');
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -73,15 +73,15 @@ const saveSubject = function (e) {
     showSpinner();
 
     let method = 'POST';
-    let url = '/api/university/'+ universityId +'/subject';
+    let url = '/api/university/'+ universityId +'/subjects';
     const teacherIds = $('#addEditSubjectModal .js-teachers-list li').map(function() {
-        return $(this).data('id');
+        return $(this).data('teacherid');
     }).get();
 
     const subjectId = $('#addEditSubjectModal').attr('data-subjectid');
     if (subjectId) {
         method = 'PUT';
-        url = '/api/university/'+ universityId +'/subject/' + subjectId;
+        url = '/api/university/'+ universityId +'/subjects/' + subjectId;
     }
     $.ajax({
         url: url,
@@ -101,12 +101,7 @@ const saveSubject = function (e) {
             hideSpinner();
         },
         error: function (response) {
-            if (response.responseJSON.errors) {
-                Object.entries(response.responseJSON.errors).forEach(function([key, errorMessage]) {
-                    const errorParagraph = $('#addEditSubjectModal').find(`p.error-message.${key}-error-message`);
-                    errorParagraph.text(errorMessage);
-                });
-            }
+            showErrors(response.responseJSON.errors, '#addEditSubjectModal');
             hideSpinner();
         }
     });

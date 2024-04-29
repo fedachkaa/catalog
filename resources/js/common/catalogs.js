@@ -1,4 +1,4 @@
-const { showModal, showSpinner, clearModal, hideModal, hideSpinner } = require("../general");
+const { showModal, showSpinner, clearModal, hideModal, hideSpinner, showErrors} = require("../general");
 
 const getCatalogs = function (searchParams ={}, callback = () => {}) {
     const queryString = Object.keys(searchParams).map(key => key + '=' + encodeURIComponent(searchParams[key])).join('&');
@@ -56,11 +56,11 @@ const saveTopic = function (e) {
     const topicId = $('#addTopicModal').data('topicid');
 
     let method = 'POST';
-    let url = '/api/university/' + universityId + '/catalogs/' + catalogId + '/topic';
+    let url = '/api/university/' + universityId + '/catalogs/' + catalogId + '/topics';
     let attrToRemove = [];
     if (topicId) {
         method = 'PUT';
-        url = '/api/university/' + universityId + '/catalogs/' + catalogId + '/topic/' + topicId;
+        url = '/api/university/' + universityId + '/catalogs/' + catalogId + '/topics/' + topicId;
         attrToRemove = ['topicid'];
     }
     $.ajax({
@@ -78,12 +78,7 @@ const saveTopic = function (e) {
             hideSpinner();
         },
         error: function (response) {
-            if (response.responseJSON.errors) {
-                Object.entries(response.responseJSON.errors).forEach(function([key, errorMessage]) {
-                    const errorParagraph = $('#addTopicModal').find(`p.error-message.${key}-error-message`);
-                    errorParagraph.text(errorMessage);
-                });
-            }
+            showErrors(response.responseJSON.errors, '#addTopicModal');
             hideSpinner();
         }
     });

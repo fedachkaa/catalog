@@ -3,10 +3,13 @@
 namespace App\Models\Interfaces;
 
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 interface CatalogInterface
 {
+    public function getUniversity(): Model;
+
     public function getGroups(): HasMany;
 
     public function getTopics(): Collection;
@@ -14,6 +17,8 @@ interface CatalogInterface
     public function getSupervisors(): HasMany;
 
     public function getId(): int;
+
+    public function getUniversityId(): int;
 
     public function getType(): string;
 

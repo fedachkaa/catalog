@@ -55,6 +55,10 @@ class University extends RepositoryAbstract implements UniversityRepositoryInter
             $query = $query->where('id', (int) $filters['id']);
         }
 
+        if (!empty($filters['title'])) {
+            $query = $query->where('title','like','%' . $filters['title'] . '%');
+        }
+
         if (!empty($filters['city'])) {
             $query = $query->where('city','like','%' . $filters['city'] . '%');
         }
@@ -63,7 +67,7 @@ class University extends RepositoryAbstract implements UniversityRepositoryInter
             $query = $query->where('email', 'like','%' . $filters['email'] . '%');
         }
 
-        if (!empty($filters['accreditation_level']) && in_array($filters['accreditation_level'], UniversityModel::AVAILABLE_ACCREDITATION_LEVELS)) {
+        if (!empty($filters['accreditation_level']) && in_array($filters['accreditation_level'], array_keys(UniversityModel::AVAILABLE_ACCREDITATION_LEVELS))) {
             $query = $query->where('accreditation_level', $filters['accreditation_level']);
         }
 
@@ -73,6 +77,11 @@ class University extends RepositoryAbstract implements UniversityRepositoryInter
             } else {
                 $query = $query->whereNull('activated_at');
             }
+        }
+
+        if (!empty($filters['createdAt'])) {
+            $createdAtFormatted = date('Y-m-d', strtotime($filters['createdAt']));
+            $query = $query->whereRaw("DATE_FORMAT(created_at, '%Y-%m-%d') = ?", [$createdAtFormatted]);
         }
 
         return $query->get();

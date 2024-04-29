@@ -36,7 +36,12 @@ const getFaculties = function() {
         url: '/api/university/' + universityId + '/faculties',
         method: 'GET',
         success: function (response) {
-            displayFacultiesData(response.data);
+            if (response.data.faculties.length) {
+                displayFacultiesData(response.data);
+            } else {
+                $('#faculties-table').addClass('hidden');
+                $('.js-faculties-container').append('<p>Ще немає факультетів</p>')
+            }
             hideSpinner();
         },
         error: function (xhr, status, error) {
@@ -61,7 +66,7 @@ const saveFaculty = function(e) {
     showSpinner();
 
     let method = 'POST';
-    let url = '/api/university/'+ universityId +'/faculty/create';
+    let url = '/api/university/'+ universityId +'/faculties';
 
     const modal = $('#addEditFacultyModal');
     const facultyId = modal.attr('data-facultyid');
@@ -83,12 +88,7 @@ const saveFaculty = function(e) {
             hideSpinner();
         },
         error: function (response) {
-            if (response.responseJSON.errors) {
-                Object.entries(response.responseJSON.errors).forEach(function([key, errorMessage]) {
-                    const errorParagraph = $('#addEditFacultyModal').find(`p.error-message.${key}-error-message`);
-                    errorParagraph.text(errorMessage);
-                });
-            }
+            showErrors(response.responseJSON.errors, '#addEditFacultyModal');
             hideSpinner();
         }
     });
@@ -150,7 +150,7 @@ const saveCourse = function(e) {
 
     const facultyId =  $('#addCourseModal').data('facultyid');
     $.ajax({
-        url: '/api/university/' + universityId + '/courses/create',
+        url: '/api/university/' + universityId + '/courses',
         method: 'POST',
         data: {
             faculty_id: facultyId,
@@ -184,7 +184,7 @@ const saveGroup = function(e) {
     showSpinner();
 
     $.ajax({
-        url: '/api/university/' + universityId + '/groups/create',
+        url: '/api/university/' + universityId + '/groups',
         method: 'POST',
         data: {
             course_id: $('#courseInfo').data('courseid'),

@@ -1,7 +1,7 @@
-const { toggleTabsSideBar, showSpinner, hideSpinner } = require('./../general.js');
+const { toggleTabsSideBar, showSpinner, hideSpinner, showErrors } = require('./../general.js');
 const { searchGroups, searchTeachers} = require('./common.js');
 const { initGroupSelectClick, initRemoveGroupClick } = require('./catalogs.js');
-const {  addTopic, editTopic, saveTopic } = require('../common/catalogs.js');
+const { addTopic, editTopic, saveTopic } = require('../common/catalogs.js');
 
 document.addEventListener('DOMContentLoaded', function () {
     toggleTabsSideBar('js-catalogs');
@@ -40,14 +40,8 @@ const updateCatalog = function (e) {
             window.location.reload();
         },
         error: function (response) {
+            showErrors(response.responseJSON.errors, '#addTopicModal');
             hideSpinner();
-
-            if (response.responseJSON.errors) {
-                Object.entries(response.responseJSON.errors).forEach(function([key, errorMessage]) {
-                    const errorParagraph = $('#addTopicModal').find(`p.error-message.${key}-error-message`);
-                    errorParagraph.text(errorMessage);
-                });
-            }
         }
     });
 }

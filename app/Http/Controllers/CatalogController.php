@@ -99,6 +99,7 @@ class CatalogController extends Controller
         try {
             /** @var Catalog $catalog */
             $catalog = $this->catalogRepository->getNew([
+                'university_id' => $university->getId(),
                 'type' => $request->post('type'),
             ]);
 

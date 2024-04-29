@@ -66,13 +66,13 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
 
         'university.get' => \App\Http\Middleware\GetUniversityRequest::class,
-        'universityWithFaculty.get' => \App\Http\Middleware\GetUniversityWithFacultyRequest::class,
-        'universityWithFacultyCourse.get' => \App\Http\Middleware\GetUniversityWithFacultyCourseRequest::class,
-        'universityWithFacultyCourseGroup.get' => \App\Http\Middleware\GetUniversityWithFacultyCourseGroupRequest::class,
-        'subject.get' => \App\Http\Middleware\SubjectRequest::class,
-        'faculty.get' =>  \App\Http\Middleware\FacultyRequest::class,
+        'teacher.get' =>  \App\Http\Middleware\GetTeacherRequest::class,
+        'subject.get' => \App\Http\Middleware\GetSubjectRequest::class,
+        'faculty.get' =>  \App\Http\Middleware\GetFacultyRequest::class,
         'catalog.get' => \App\Http\Middleware\GetCatalogRequest::class,
         'topic.get' => \App\Http\Middleware\GetTopicRequest::class,
         'topicRequest.get' => \App\Http\Middleware\GetTopicRequestRequest::class,
+
+        'admin' => \App\Http\Middleware\Admin::class,
     ];
 }

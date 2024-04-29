@@ -189,5 +189,11 @@ class User extends Authenticatable implements UserInterface
         return $this->getRoleId() === UserRole::USER_ROLE_UNIVERSITY_ADMIN;
     }
 
-
+    /**
+     * @return bool
+     */
+    public function isAdmin(): bool
+    {
+        return $this->getRoleId() === UserRole::USER_ROLE_ADMIN;
+    }
 }

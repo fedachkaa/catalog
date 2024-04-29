@@ -2,11 +2,12 @@
 
 namespace App\Models\Interfaces;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 
 interface TeacherInterface
 {
-    public function getUser(): Model;
+    public function getUser(): User;
 
     public function getFaculty(): Model;
 

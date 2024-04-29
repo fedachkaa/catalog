@@ -3,8 +3,8 @@
 namespace App\Models;
 
 use App\Models\Interfaces\TeacherInterface;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Teacher extends Model implements TeacherInterface
 {
@@ -20,9 +20,9 @@ class Teacher extends Model implements TeacherInterface
     // --- Model relationships
 
     /**
-     * @return Model
+     * @return User|Model
      */
-    public function getUser(): Model
+    public function getUser(): User
     {
         return $this->belongsTo(User::class, 'user_id', 'id')->first();
     }
@@ -36,11 +36,11 @@ class Teacher extends Model implements TeacherInterface
     }
 
     /**
-     * @return Collection
+     * @return BelongsToMany
      */
-    public function getSubjects(): Collection
+    public function getSubjects(): BelongsToMany
     {
-        return $this->belongsToMany(Subject::class, 'teacher_subjects', 'teacher_id', 'subject_id', 'user_id', 'id')->get();
+        return $this->belongsToMany(Subject::class, 'teacher_subjects', 'teacher_id', 'subject_id', 'user_id', 'id');
     }
 
     // -- Model getters
