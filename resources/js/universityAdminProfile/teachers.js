@@ -1,4 +1,4 @@
-const { showModal, hideModal, toggleTabsSideBar, showSpinner, hideSpinner, getUserBaseInfo} = require('../general.js');
+const { showErrors, showModal, hideModal, clearModal, toggleTabsSideBar, showSpinner, hideSpinner, getUserBaseInfo} = require('../general.js');
 const { searchFaculties } = require('./common.js');
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     $(document).on('click', '.js-add-teacher', addTeacher);
     $(document).on('click', '.js-save-teacher', saveTeacher);
+    $(document).on('click', '.js-edit-teacher', editTeacher);
     $(document).on('click', '.js-show-user-info', showUserInfo)
 });
 
@@ -35,32 +36,78 @@ const displayTeachersData = function (data) {
     const tbody = $('#teachers-table tbody');
     tbody.empty();
 
-    data.forEach((teacher, id) => {
+    data.forEach(teacher => {
         displaySingleTeacher(teacher);
     });
-}
+};
 
-const addTeacher = function (e) {
-    searchFaculties('addTeacherModal');
+const initSubjectActions = function() {
     $('#addTeacherModal .js-search-subject-btn').on('click', function() {
         searchSubjects();
     });
+    initSubjectClick();
+    initSubjectDelete();
+};
 
+const addTeacher = function (e) {
+    searchFaculties('addTeacherModal');
+    initSubjectActions();
     showModal('addTeacherModal');
 };
+
+const editTeacher = function (e) {
+    showSpinner();
+
+    searchFaculties('addTeacherModal');
+    $.ajax({
+        url: '/api/university/' + universityId + '/teachers/' + $(e.target).closest('tr').data('userid'),
+        method: 'GET',
+        success: function (response) {
+            const addEditTeacherModal = $('#addTeacherModal');
+            addEditTeacherModal.attr('data-teacherid', response.data.user_id);
+            addEditTeacherModal.find('.js-first-name').val(response.data.user.first_name);
+            addEditTeacherModal.find('.js-last-name').val(response.data.user.last_name)
+            addEditTeacherModal.find('.js-email').val(response.data.user.email)
+            addEditTeacherModal.find('.js-phone-number').val(response.data.user.phone_number)
+            addEditTeacherModal.find('.js-faculty option[value="' + response.data.faculty_id + '"]').prop('selected', true);
+
+            response.data.subjects.forEach(function (subject) {
+                addEditTeacherModal.find('.js-subject-list').append(`<li data-subjectid="`+ subject.id+`">`
+                    + subject.title +
+                    `<i class="fas fa-times js-delete-subject"></i>`
+                    +`</li>`)
+            });
+            initSubjectActions();
+            hideSpinner();
+            showModal('addTeacherModal');
+        },
+        error: function (xhr, status, error) {
+            hideSpinner();
+            console.error('Помилка:', error);
+        }
+    });
+}
 
 const saveTeacher = function (e) {
     showSpinner();
 
     const teacherModal = $('#addTeacherModal');
+    const teacherId = teacherModal.attr('data-teacherid');
+
+    let method = 'POST';
+    let url = '/api/university/' + universityId + '/teachers';
+    if (teacherId) {
+        method = 'PUT';
+        url =  '/api/university/' + universityId + '/teachers/' + teacherId;
+    }
 
     const subjectsIds = teacherModal.find('.js-subject-list li').map(function() {
         return $(this).data('subjectid');
     }).get();
 
     $.ajax({
-        url: '/api/university/' + universityId + '/teachers',
-        method: 'POST',
+        url: url,
+        method: method,
         data: {
             first_name: teacherModal.find('.js-first-name').val(),
             last_name: teacherModal.find('.js-last-name').val(),
@@ -73,11 +120,12 @@ const saveTeacher = function (e) {
         success: function (response) {
             displaySingleTeacher(response.data);
             hideSpinner();
+            clearModal('addTeacherModal');
             hideModal('addTeacherModal');
         },
-        error: function (xhr, status, error) {
+        error: function (response) {
+            showErrors(response.responseJSON.errors, '#addTeacherModal');
             hideSpinner();
-            console.error('Помилка:', error);
         }
     });
 }
@@ -95,8 +143,6 @@ const searchSubjects = function () {
             response.data.forEach(subject => {
                 subjectsSelect.append($('<option>').attr('value', subject.id).text(subject.title));
             });
-            initSubjectClick();
-            initSubjectDelete();
             subjectsSelect.removeClass('hidden');
             hideSpinner();
         },
@@ -108,7 +154,7 @@ const searchSubjects = function () {
 }
 
 const initSubjectClick = function () {
-    $('#addTeacherModal .js-subjects-select').on('change', function () {
+    $('#addTeacherModal').on('change', '.js-subjects-select', function () {
         const selectedSubjectId = $(this).val();
         const selectedSubjectName = $(this).find('option:selected').text();
 
@@ -124,7 +170,7 @@ const initSubjectClick = function () {
 }
 
 const initSubjectDelete = function () {
-    $('#addTeacherModal .js-subject-list').on('click', '.js-delete-subject', function() {
+    $('#addTeacherModal').on('click', '.js-subject-list .js-delete-subject', function() {
         const subjectId = parseInt($(this).parent().data('subjectid'), 10);
         $('#addTeacherModal .js-subjects-select').find('option').each(function() {
             if (parseInt($(this).val(), 10) === subjectId) {
@@ -135,24 +181,43 @@ const initSubjectDelete = function () {
     });
 }
 
-const displaySingleTeacher = function (teacher) {
-    const newRow = $('<tr>').attr('data-userid', teacher.user_id );
+const createTeacherRow = (teacher) => {
+    const newRow = $('<tr>').attr('data-userid', teacher.user_id);
     newRow.append($('<td>').text(teacher.user_id));
-    newRow.append($('<td class="action-icon js-show-user-info">').text(teacher.user.full_name));
+    newRow.append($('<td class="action-icon js-show-user-info js-teacher-name">').text(teacher.user.full_name));
     newRow.append($('<td>').text(teacher.faculty.title));
+
     const subjectsList = $('<ul>').addClass('js-teacher-subjects');
-    teacher.subjects.forEach(subject => {
-        const listItem = $('<li>').addClass('list-course-item').attr('data-id', subject.id).text(subject.title);
-        subjectsList.append(listItem);
-    });
+    updateSubjectsList(subjectsList, teacher.subjects);
     newRow.append($('<td>').append(subjectsList));
 
     const actionsCell = $('<td>');
-    const editIcon = $('<i>').addClass('fas fa-edit edit-icon js-edit-teacher');
-    const deleteIcon = $('<i>').addClass('fas fa-trash delete-icon js-delete-teacher');
-    actionsCell.append(editIcon, deleteIcon);
+    actionsCell.append($('<i>').addClass('fas fa-edit action-icon js-edit-teacher'));
+    actionsCell.append($('<i>').addClass('fas fa-trash action-icon js-delete-teacher'));
     newRow.append(actionsCell);
+
     newRow.addClass(($('#teachers-table tbody tr').length + 1) % 2 === 0 ? 'row-gray' : 'row-beige');
 
-    $('#teachers-table tbody').append(newRow);
-}
+    return newRow;
+};
+
+const displaySingleTeacher = (teacher) => {
+    const existingRow = $('#teachers-table tbody tr[data-userid="' + teacher.user_id + '"]');
+    if (existingRow.length > 0) {
+        existingRow.find('.js-teacher-name').text(teacher.user.full_name);
+        existingRow.find('.js-teacher-faculty').text(teacher.faculty.title);
+        updateSubjectsList(existingRow.find('.js-teacher-subjects'), teacher.subjects);
+    } else {
+        const newRow = createTeacherRow(teacher);
+        $('#teachers-table tbody').append(newRow);
+    }
+};
+
+const updateSubjectsList = (container, subjects) => {
+    container.empty();
+    subjects.forEach(subject => {
+        const listItem = $('<li>').addClass('list-course-item').attr('data-id', subject.id).text(subject.title);
+        container.append(listItem);
+    });
+};
+

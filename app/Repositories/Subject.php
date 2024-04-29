@@ -35,7 +35,6 @@ class Subject extends RepositoryAbstract implements SubjectRepositoryInterface
     {
         $query = SubjectModel::query();
 
-
         if (!empty($filters['id'])) {
             $query = $query->where('id', (int) $filters['id']);
         }

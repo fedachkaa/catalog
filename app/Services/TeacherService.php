@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Interfaces\TeacherInterface;
+use App\Models\Teacher;
 use App\Models\UserRole;
 use App\Repositories\Interfaces\TeacherRepositoryInterface;
 use App\Repositories\Interfaces\TeacherSubjectRepositoryInterface;
@@ -68,5 +69,37 @@ class TeacherService
         }
 
         return $teacher;
+    }
+
+    /**
+     * @param Teacher $teacher
+     * @param array $data
+     * @return bool
+     * @throws \Throwable
+     */
+    public function updateTeacher(Teacher $teacher, array $data): bool
+    {
+        $this->userService->updateUser($teacher->getUser(), $data);
+
+        if (isset($data['faculty_id'])) {
+            $teacher->updateOrFail([
+                'faculty_id' => $data['faculty_id'],
+            ]);
+        }
+
+        if (isset($data['subjectsIds'])) {
+            $teacher->getSubjects()->detach();
+
+            foreach ($data['subjectsIds'] as $subjectId) {
+                $teacherSubject = $this->teacherSubjectRepository->getNew([
+                    'subject_id' => (int) $subjectId,
+                    'teacher_id' => $teacher->getUserId(),
+                ]);
+
+                $teacherSubject->saveOrFail();
+            }
+        }
+
+        return true;
     }
 }

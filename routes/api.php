@@ -52,6 +52,8 @@ Route::prefix('/university/{universityId}')->middleware('university.get')->group
 
     Route::get('/teachers', [TeacherController::class, 'getTeachersList']);
     Route::post('/teachers', [TeacherController::class, 'saveTeacher']);
+    Route::get('/teachers/{teacherId}', [TeacherController::class, 'editTeacher'])->middleware('teacher.get');
+    Route::put('/teachers/{teacherId}', [TeacherController::class, 'updateTeacher'])->middleware('teacher.get');
 
     Route::get('/catalogs', [CatalogController::class, 'getCatalogsList']);
     Route::post('/catalogs', [CatalogController::class, 'saveCatalog']);

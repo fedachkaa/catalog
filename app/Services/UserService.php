@@ -40,4 +40,37 @@ class UserService
 
         return $user;
     }
+
+    /**
+     * @param User $user
+     * @param array $data
+     * @return bool
+     * @throws \Throwable
+     */
+    public function updateUser(User $user, array $data): bool
+    {
+        $fieldsToUpdate = [];
+
+        if (isset($data['first_name'])) {
+            $fieldsToUpdate['first_name'] = $data['first_name'];
+        }
+
+        if (isset($data['last_name'])) {
+            $fieldsToUpdate['last_name'] = $data['last_name'];
+        }
+
+        if (isset($data['email'])) {
+            $fieldsToUpdate['email'] = $data['email'];
+        }
+
+        if (isset($data['phone_number'])) {
+            $fieldsToUpdate['phone_number'] = $data['phone_number'];
+        }
+
+        if (!empty($fieldsToUpdate)) {
+            $user->updateOrFail($fieldsToUpdate);
+        }
+
+        return true;
+    }
 }

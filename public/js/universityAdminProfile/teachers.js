@@ -43782,8 +43782,10 @@ var __webpack_exports__ = {};
   !*** ./resources/js/universityAdminProfile/teachers.js ***!
   \*********************************************************/
 var _require = __webpack_require__(/*! ../general.js */ "./resources/js/general.js"),
+  showErrors = _require.showErrors,
   showModal = _require.showModal,
   hideModal = _require.hideModal,
+  clearModal = _require.clearModal,
   toggleTabsSideBar = _require.toggleTabsSideBar,
   showSpinner = _require.showSpinner,
   hideSpinner = _require.hideSpinner,
@@ -43795,6 +43797,7 @@ document.addEventListener('DOMContentLoaded', function () {
   getTeachers();
   $(document).on('click', '.js-add-teacher', addTeacher);
   $(document).on('click', '.js-save-teacher', saveTeacher);
+  $(document).on('click', '.js-edit-teacher', editTeacher);
   $(document).on('click', '.js-show-user-info', showUserInfo);
 });
 var showUserInfo = function showUserInfo(e) {
@@ -43818,26 +43821,65 @@ var getTeachers = function getTeachers() {
 var displayTeachersData = function displayTeachersData(data) {
   var tbody = $('#teachers-table tbody');
   tbody.empty();
-  data.forEach(function (teacher, id) {
+  data.forEach(function (teacher) {
     displaySingleTeacher(teacher);
   });
 };
-var addTeacher = function addTeacher(e) {
-  searchFaculties('addTeacherModal');
+var initSubjectActions = function initSubjectActions() {
   $('#addTeacherModal .js-search-subject-btn').on('click', function () {
     searchSubjects();
   });
+  initSubjectClick();
+  initSubjectDelete();
+};
+var addTeacher = function addTeacher(e) {
+  searchFaculties('addTeacherModal');
+  initSubjectActions();
   showModal('addTeacherModal');
+};
+var editTeacher = function editTeacher(e) {
+  showSpinner();
+  searchFaculties('addTeacherModal');
+  $.ajax({
+    url: '/api/university/' + universityId + '/teachers/' + $(e.target).closest('tr').data('userid'),
+    method: 'GET',
+    success: function success(response) {
+      var addEditTeacherModal = $('#addTeacherModal');
+      addEditTeacherModal.attr('data-teacherid', response.data.user_id);
+      addEditTeacherModal.find('.js-first-name').val(response.data.user.first_name);
+      addEditTeacherModal.find('.js-last-name').val(response.data.user.last_name);
+      addEditTeacherModal.find('.js-email').val(response.data.user.email);
+      addEditTeacherModal.find('.js-phone-number').val(response.data.user.phone_number);
+      addEditTeacherModal.find('.js-faculty option[value="' + response.data.faculty_id + '"]').prop('selected', true);
+      response.data.subjects.forEach(function (subject) {
+        addEditTeacherModal.find('.js-subject-list').append("<li data-subjectid=\"" + subject.id + "\">" + subject.title + "<i class=\"fas fa-times js-delete-subject\"></i>" + "</li>");
+      });
+      initSubjectActions();
+      hideSpinner();
+      showModal('addTeacherModal');
+    },
+    error: function error(xhr, status, _error2) {
+      hideSpinner();
+      console.error('Помилка:', _error2);
+    }
+  });
 };
 var saveTeacher = function saveTeacher(e) {
   showSpinner();
   var teacherModal = $('#addTeacherModal');
+  var teacherId = teacherModal.attr('data-teacherid');
+  var method = 'POST';
+  var url = '/api/university/' + universityId + '/teachers';
+  if (teacherId) {
+    method = 'PUT';
+    url = '/api/university/' + universityId + '/teachers/' + teacherId;
+  }
   var subjectsIds = teacherModal.find('.js-subject-list li').map(function () {
     return $(this).data('subjectid');
   }).get();
   $.ajax({
-    url: '/api/university/' + universityId + '/teachers',
-    method: 'POST',
+    url: url,
+    method: method,
     data: {
       first_name: teacherModal.find('.js-first-name').val(),
       last_name: teacherModal.find('.js-last-name').val(),
@@ -43850,11 +43892,12 @@ var saveTeacher = function saveTeacher(e) {
     success: function success(response) {
       displaySingleTeacher(response.data);
       hideSpinner();
+      clearModal('addTeacherModal');
       hideModal('addTeacherModal');
     },
-    error: function error(xhr, status, _error2) {
+    error: function error(response) {
+      showErrors(response.responseJSON.errors, '#addTeacherModal');
       hideSpinner();
-      console.error('Помилка:', _error2);
     }
   });
 };
@@ -43870,8 +43913,6 @@ var searchSubjects = function searchSubjects() {
       response.data.forEach(function (subject) {
         subjectsSelect.append($('<option>').attr('value', subject.id).text(subject.title));
       });
-      initSubjectClick();
-      initSubjectDelete();
       subjectsSelect.removeClass('hidden');
       hideSpinner();
     },
@@ -43882,7 +43923,7 @@ var searchSubjects = function searchSubjects() {
   });
 };
 var initSubjectClick = function initSubjectClick() {
-  $('#addTeacherModal .js-subjects-select').on('change', function () {
+  $('#addTeacherModal').on('change', '.js-subjects-select', function () {
     var selectedSubjectId = $(this).val();
     var selectedSubjectName = $(this).find('option:selected').text();
     var subjectsList = $('#addTeacherModal .js-subject-list ul');
@@ -43895,7 +43936,7 @@ var initSubjectClick = function initSubjectClick() {
   });
 };
 var initSubjectDelete = function initSubjectDelete() {
-  $('#addTeacherModal .js-subject-list').on('click', '.js-delete-subject', function () {
+  $('#addTeacherModal').on('click', '.js-subject-list .js-delete-subject', function () {
     var subjectId = parseInt($(this).parent().data('subjectid'), 10);
     $('#addTeacherModal .js-subjects-select').find('option').each(function () {
       if (parseInt($(this).val(), 10) === subjectId) {
@@ -43905,24 +43946,38 @@ var initSubjectDelete = function initSubjectDelete() {
     $(this).parent().remove();
   });
 };
-var displaySingleTeacher = function displaySingleTeacher(teacher) {
+var createTeacherRow = function createTeacherRow(teacher) {
   var newRow = $('<tr>').attr('data-userid', teacher.user_id);
   newRow.append($('<td>').text(teacher.user_id));
-  newRow.append($('<td class="action-icon js-show-user-info">').text(teacher.user.full_name));
+  newRow.append($('<td class="action-icon js-show-user-info js-teacher-name">').text(teacher.user.full_name));
   newRow.append($('<td>').text(teacher.faculty.title));
   var subjectsList = $('<ul>').addClass('js-teacher-subjects');
-  teacher.subjects.forEach(function (subject) {
-    var listItem = $('<li>').addClass('list-course-item').attr('data-id', subject.id).text(subject.title);
-    subjectsList.append(listItem);
-  });
+  updateSubjectsList(subjectsList, teacher.subjects);
   newRow.append($('<td>').append(subjectsList));
   var actionsCell = $('<td>');
-  var editIcon = $('<i>').addClass('fas fa-edit edit-icon js-edit-teacher');
-  var deleteIcon = $('<i>').addClass('fas fa-trash delete-icon js-delete-teacher');
-  actionsCell.append(editIcon, deleteIcon);
+  actionsCell.append($('<i>').addClass('fas fa-edit action-icon js-edit-teacher'));
+  actionsCell.append($('<i>').addClass('fas fa-trash action-icon js-delete-teacher'));
   newRow.append(actionsCell);
   newRow.addClass(($('#teachers-table tbody tr').length + 1) % 2 === 0 ? 'row-gray' : 'row-beige');
-  $('#teachers-table tbody').append(newRow);
+  return newRow;
+};
+var displaySingleTeacher = function displaySingleTeacher(teacher) {
+  var existingRow = $('#teachers-table tbody tr[data-userid="' + teacher.user_id + '"]');
+  if (existingRow.length > 0) {
+    existingRow.find('.js-teacher-name').text(teacher.user.full_name);
+    existingRow.find('.js-teacher-faculty').text(teacher.faculty.title);
+    updateSubjectsList(existingRow.find('.js-teacher-subjects'), teacher.subjects);
+  } else {
+    var newRow = createTeacherRow(teacher);
+    $('#teachers-table tbody').append(newRow);
+  }
+};
+var updateSubjectsList = function updateSubjectsList(container, subjects) {
+  container.empty();
+  subjects.forEach(function (subject) {
+    var listItem = $('<li>').addClass('list-course-item').attr('data-id', subject.id).text(subject.title);
+    container.append(listItem);
+  });
 };
 })();
 

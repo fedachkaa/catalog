@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Events\UserRegistered;
+use App\Http\Requests\PostPutTeacherRequest;
 use App\Models\Interfaces\UniversityInterface;
+use App\Models\Teacher;
+use App\Models\University;
 use App\Repositories\Interfaces\TeacherRepositoryInterface;
 use App\Services\TeacherService;
 use Illuminate\Contracts\Foundation\Application;
@@ -58,11 +61,11 @@ class TeacherController extends Controller
     }
 
     /**
-     * @param Request $request
+     * @param PostPutTeacherRequest $request
      * @param UniversityInterface $university
      * @return JsonResponse
      */
-    public function saveTeacher(Request $request, UniversityInterface $university): JsonResponse
+    public function saveTeacher(PostPutTeacherRequest $request, UniversityInterface $university): JsonResponse
     {
         try {
             $teacher = $this->teacherService->saveTeacher([
@@ -81,6 +84,42 @@ class TeacherController extends Controller
         }
 
         event(new UserRegistered($teacher->getUser()));
+
+        return response()->json([
+            'message' => 'Success',
+            'data' => $this->teacherRepository->export($teacher, ['user', 'faculty', 'subjects']),
+        ])->setStatusCode(200);
+    }
+
+    /**
+     * @param University $university
+     * @param Teacher $teacher
+     * @return JsonResponse
+     */
+    public function editTeacher(University $university, Teacher $teacher): JsonResponse
+    {
+        return response()->json([
+            'message' => 'Success',
+            'data' => $this->teacherRepository->export($teacher, ['user', 'faculty', 'subjects']),
+        ])->setStatusCode(200);
+    }
+
+    /**
+     * @param PostPutTeacherRequest $request
+     * @param University $university
+     * @param Teacher $teacher
+     * @return JsonResponse
+     */
+    public function updateTeacher(PostPutTeacherRequest $request, University $university, Teacher $teacher): JsonResponse
+    {
+        try {
+            $this->teacherService->updateTeacher($teacher, $request->validated());
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'Internal serve error',
+                'error' => $e->getMessage()
+            ])->setStatusCode(500);
+        }
 
         return response()->json([
             'message' => 'Success',

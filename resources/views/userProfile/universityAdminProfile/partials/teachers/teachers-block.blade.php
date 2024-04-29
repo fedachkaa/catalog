@@ -27,7 +27,7 @@
         </div>
     </div>
 
-    @include('userProfile.universityAdminProfile.partials.teachers.add-teacher-modal')
+    @include('userProfile.universityAdminProfile.partials.teachers.add-edit-teacher-modal')
     @include('general.user-info-modal')
 @endsection
 

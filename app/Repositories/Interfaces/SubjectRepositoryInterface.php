@@ -7,5 +7,4 @@ interface SubjectRepositoryInterface
     public function getOne(array $filters = []);
 
     public function getAll(array $filters = []);
-
 }
