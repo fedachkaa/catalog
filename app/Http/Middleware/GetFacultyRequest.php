@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Closure;
 
-class GetFacultyRequest extends UniversityRequest
+class GetFacultyRequest
 {
     /**
      * @param Request $request
@@ -17,8 +17,6 @@ class GetFacultyRequest extends UniversityRequest
      */
     public function handle(Request $request, Closure $next)
     {
-        parent::handle( $request, $next);
-
         $facultyRepository = App::get(FacultyRepositoryInterface::class);
 
         $facultyId = $request->route('facultyId');

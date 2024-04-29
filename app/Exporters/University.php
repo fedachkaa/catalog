@@ -47,6 +47,7 @@ class University extends ExporterAbstract
             'website' => $model->getWebsite(),
             'activated_at' => $model->getActivatedAt(),
             'created_at' => $model->getCreatedAt(),
+            'created_at_formatted' => date('d M Y', strtotime($model->getCreatedAt())),
             'updated_at' => $model->getUpdatedAt(),
         ];
     }

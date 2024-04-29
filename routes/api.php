@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminOverviewController;
+use App\Http\Controllers\Admin\AdminUniversityController;
 use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\FacultyController;
@@ -46,7 +48,7 @@ Route::prefix('/university/{universityId}')->middleware('university.get')->group
 
     Route::get('/subjects', [SubjectController::class, 'getSubjectsList']);
     Route::post('/subjects', [SubjectController::class, 'saveSubject']);
-    Route::put('/subjects/{subjectId}', [SubjectController::class, 'updateSubject'])->middleware('subject.get'); // TODO check middleware
+    Route::put('/subjects/{subjectId}', [SubjectController::class, 'updateSubject'])->middleware('subject.get');
 
     Route::get('/teachers', [TeacherController::class, 'getTeachersList']);
     Route::post('/teachers', [TeacherController::class, 'saveTeacher']);
@@ -60,6 +62,12 @@ Route::prefix('/university/{universityId}')->middleware('university.get')->group
 
     Route::post('/catalog/{catalogId}/topic/{topicId}/send-request', [CatalogController::class, 'sendRequestTopic'])->middleware('catalog.get')->middleware('topic.get'); // TODO check middleware
 });
+
+Route::prefix('admin')->middleware('admin')->group(function () {
+    Route::put('/university/{universityId}', [AdminUniversityController::class, 'updateUniversity'])->middleware('university.get');
+    Route::get('/universities', [AdminOverviewController::class, 'getUniversities']);
+});
+
 
 Route::get('/api/topic/{topicId}/topic-requests', [CatalogController::class, 'getTopicRequests'])->middleware('topic.get');
 Route::post('/api/topic-requests/{requestId}/approve', [CatalogController::class, 'approveRequest'])->middleware('topicRequest.get');

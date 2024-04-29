@@ -231,7 +231,7 @@
     @apply flex flex-col text-lg;
 }
 
-.search-field input {
+.search-field input, select {
     @apply border-gray-900 border-2 rounded-md p-1;
 }
 
@@ -255,7 +255,7 @@
 /* ADMIN */
 
 .university-block {
-    @apply flex flex-row p-4 justify-between border-2 border-amber-300 rounded-md hover:cursor-pointer hover:bg-amber-100 w-4/6;
+    @apply flex flex-row p-4 justify-between border-2 border-amber-300 rounded-md hover:cursor-pointer hover:bg-amber-100 w-full;
 }
 
 .university-block .actions-block {
