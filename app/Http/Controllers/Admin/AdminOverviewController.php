@@ -72,6 +72,10 @@ class AdminOverviewController extends Controller
             $searchParams['email'] = $request->query('email');
         }
 
+        if ($request->query('status')) {
+            $searchParams['status'] = $request->query('status');
+        }
+
         return $searchParams;
     }
 }

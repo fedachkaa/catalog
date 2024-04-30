@@ -43682,6 +43682,10 @@ var searchUniversity = function searchUniversity() {
   if (emailInput) {
     query += '&email=' + emailInput;
   }
+  var statusInput = $('.university-search-tool select[name="status"]').val();
+  if (statusInput) {
+    query += '&status=' + statusInput;
+  }
   (0,_general_js__WEBPACK_IMPORTED_MODULE_0__.showSpinner)();
   $.ajax({
     url: '/api/admin/universities?' + query,

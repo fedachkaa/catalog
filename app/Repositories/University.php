@@ -71,14 +71,13 @@ class University extends RepositoryAbstract implements UniversityRepositoryInter
             $query = $query->where('accreditation_level', $filters['accreditation_level']);
         }
 
-        if (isset($filters['isActive']) && is_bool($filters['isActive'])) {
-            if ($filters['isActive']) {
+        if (isset($filters['status']) && in_array($filters['status'], array_keys(UniversityModel::AVAILABLE_STATUSES))) {
+            if ($filters['status']) {
                 $query = $query->whereNotNull('activated_at');
             } else {
                 $query = $query->whereNull('activated_at');
             }
         }
-
         if (!empty($filters['createdAt'])) {
             $createdAtFormatted = date('Y-m-d', strtotime($filters['createdAt']));
             $query = $query->whereRaw("DATE_FORMAT(created_at, '%Y-%m-%d') = ?", [$createdAtFormatted]);

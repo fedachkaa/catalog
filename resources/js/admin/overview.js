@@ -32,6 +32,11 @@ const searchUniversity = function () {
         query += '&email=' + emailInput;
     }
 
+    const statusInput = $('.university-search-tool select[name="status"]').val();
+    if (statusInput) {
+        query += '&status=' + statusInput;
+    }
+
     showSpinner();
 
     $.ajax({
