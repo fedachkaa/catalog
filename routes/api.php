@@ -34,7 +34,7 @@ Route::get('/user/{userId}', [UserProfileController::class, 'getBaseUserInfo']);
 Route::prefix('/university/{universityId}')->middleware('university.get')->group(function () {
     Route::get('/faculties', [FacultyController::class, 'getFacultiesList']);
     Route::post('/faculties', [FacultyController::class, 'saveFaculty']);
-    Route::put('/faculties/{facultyId}', [FacultyController::class, 'updateFaculty'])->middleware('faculty.get'); // TODO check middleware
+    Route::put('/faculties/{facultyId}', [FacultyController::class, 'updateFaculty'])->middleware('faculty.get');
 
     Route::get('/courses', [CourseController::class, 'getCoursesList']);
     Route::post('/courses', [CourseController::class, 'saveCourse']);
@@ -45,6 +45,9 @@ Route::prefix('/university/{universityId}')->middleware('university.get')->group
     Route::get('/students', [StudentController::class, 'getStudentsList']);
     Route::post('/students', [StudentController::class, 'saveStudent']);
     Route::post('/students-import', [StudentController::class, 'importStudents']);
+    Route::get('/students/{studentId}', [StudentController::class, 'editStudent'])->middleware('student.get');
+    Route::put('/students/{studentId}', [StudentController::class, 'updateStudent'])->middleware('student.get');
+    Route::delete('/students/{studentId}', [StudentController::class, 'deleteStudent'])->middleware('student.get');
 
     Route::get('/subjects', [SubjectController::class, 'getSubjectsList']);
     Route::post('/subjects', [SubjectController::class, 'saveSubject']);

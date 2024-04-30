@@ -2259,14 +2259,27 @@ var displayStudentsData = function displayStudentsData(data) {
   });
 };
 var drawSingleStudent = function drawSingleStudent(student) {
+  var existingRow = $('#students-table tbody tr[data-userid="' + student.user_id + '"]');
+  if (existingRow.length > 0) {
+    existingRow.find('.js-student-name').text(student.user.full_name);
+    existingRow.find('.js-student-faculty').text(student.faculty.title);
+    existingRow.find('.js-student-course').text(student.course.course + ' курс');
+    existingRow.find('.js-student-group').text(student.group.title);
+  } else {
+    var newRow = createStudentRow(student);
+    $('#students-table tbody').append(newRow);
+  }
+};
+var createStudentRow = function createStudentRow(student) {
   var row = $('<tr>').attr('data-userid', student.user_id);
   row.append($('<td>').text(student.user_id));
-  row.append($('<td class="js-show-user-info action-icon">').text(student.user.full_name));
-  row.append($('<td>').text(student.faculty.title));
-  row.append($('<td>').text(student.course.course + ' курс'));
-  row.append($('<td>').text(student.group.title));
+  row.append($('<td class="js-show-user-info js-student-name action-icon">').text(student.user.full_name));
+  row.append($('<td class="js-student-faculty">').text(student.faculty.title));
+  row.append($('<td class="js-student-course">').text(student.course.course + ' курс'));
+  row.append($('<td class="js-student-group">').text(student.group.title));
+  row.append($('<td>').append($('<i>').addClass('fas fa-edit action-icon js-edit-student')).append($('<i>').addClass('fas fa-trash action-icon js-delete-student')));
   row.addClass(($('#students-table tbody tr').length + 1) % 2 === 0 ? 'row-gray' : 'row-beige');
-  $('#students-table tbody').append(row);
+  return row;
 };
 module.exports = {
   getStudents: getStudents,

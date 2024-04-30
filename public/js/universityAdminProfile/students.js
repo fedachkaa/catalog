@@ -2259,14 +2259,27 @@ var displayStudentsData = function displayStudentsData(data) {
   });
 };
 var drawSingleStudent = function drawSingleStudent(student) {
+  var existingRow = $('#students-table tbody tr[data-userid="' + student.user_id + '"]');
+  if (existingRow.length > 0) {
+    existingRow.find('.js-student-name').text(student.user.full_name);
+    existingRow.find('.js-student-faculty').text(student.faculty.title);
+    existingRow.find('.js-student-course').text(student.course.course + ' курс');
+    existingRow.find('.js-student-group').text(student.group.title);
+  } else {
+    var newRow = createStudentRow(student);
+    $('#students-table tbody').append(newRow);
+  }
+};
+var createStudentRow = function createStudentRow(student) {
   var row = $('<tr>').attr('data-userid', student.user_id);
   row.append($('<td>').text(student.user_id));
-  row.append($('<td class="js-show-user-info action-icon">').text(student.user.full_name));
-  row.append($('<td>').text(student.faculty.title));
-  row.append($('<td>').text(student.course.course + ' курс'));
-  row.append($('<td>').text(student.group.title));
+  row.append($('<td class="js-show-user-info js-student-name action-icon">').text(student.user.full_name));
+  row.append($('<td class="js-student-faculty">').text(student.faculty.title));
+  row.append($('<td class="js-student-course">').text(student.course.course + ' курс'));
+  row.append($('<td class="js-student-group">').text(student.group.title));
+  row.append($('<td>').append($('<i>').addClass('fas fa-edit action-icon js-edit-student')).append($('<i>').addClass('fas fa-trash action-icon js-delete-student')));
   row.addClass(($('#students-table tbody tr').length + 1) % 2 === 0 ? 'row-gray' : 'row-beige');
-  $('#students-table tbody').append(row);
+  return row;
 };
 module.exports = {
   getStudents: getStudents,
@@ -43878,6 +43891,8 @@ document.addEventListener('DOMContentLoaded', function () {
   $(document).on('click', '.js-search-students', searchStudents);
   $(document).on('click', '.js-add-student', addStudent);
   $(document).on('click', '.js-save-student', saveStudent);
+  $(document).on('click', '.js-edit-student', editStudent);
+  $(document).on('click', '.js-delete-student', deleteStudent);
   $(document).on('click', '.js-show-user-info', showUserInfo);
   $(document).on('click', '.js-import-students', importStudents);
   $(document).on('click', '.js-import-students-save', importStudentsStore);
@@ -43886,6 +43901,10 @@ var showUserInfo = function showUserInfo(e) {
   getUserBaseInfo($(e.target).closest('tr').data('userid'));
 };
 var addStudent = function addStudent(e) {
+  initAddEditStudentModal();
+  showModal('addStudentModal');
+};
+var initAddEditStudentModal = function initAddEditStudentModal() {
   searchFaculties('addStudentModal');
   $('#addStudentModal .js-faculty').on('change', function () {
     var selectedFacultyId = $(this).val();
@@ -43896,7 +43915,60 @@ var addStudent = function addStudent(e) {
       courseId: $(this).val()
     }, 'addStudentModal', fillGroupSelect);
   });
-  showModal('addStudentModal');
+};
+var editStudent = function editStudent(e) {
+  showSpinner();
+  initAddEditStudentModal();
+  $.ajax({
+    url: '/api/university/' + universityId + '/students/' + $(e.target).closest('tr').data('userid'),
+    method: 'GET',
+    success: function success(response) {
+      var addEditStudentModal = $('#addStudentModal');
+      addEditStudentModal.attr('data-studentid', response.data.user_id);
+      addEditStudentModal.find('.js-first-name').val(response.data.user.first_name);
+      addEditStudentModal.find('.js-last-name').val(response.data.user.last_name);
+      addEditStudentModal.find('.js-email').val(response.data.user.email);
+      addEditStudentModal.find('.js-phone-number').val(response.data.user.phone_number);
+
+      // TODO add student data like text with edit icon
+      // searchFaculties('addStudentModal');
+      // addEditStudentModal.find('.js-faculty option[value="' + response.data.faculty.faculty_id + '"]').prop('selected', true);
+      //
+      // searchCourses(response.data.faculty.faculty_id, 'addStudentModal');
+      // addEditStudentModal.find('.js-course option[value="' + response.data.course.course_id + '"]').prop('selected', true);
+      //
+      // searchGroups({ courseId: response.data.course.course_id }, 'addStudentModal', fillGroupSelect);
+      // addEditStudentModal.find('.js-group option[value="' + response.data.group_id + '"]').prop('selected', true);
+
+      hideSpinner();
+      showModal('addStudentModal');
+    },
+    error: function error(xhr, status, _error) {
+      hideSpinner();
+      console.error('Помилка:', _error);
+    }
+  });
+};
+var deleteStudent = function deleteStudent(e) {
+  if (!confirm("Are you sure you want to delete this student?")) {
+    return;
+  }
+  var studentId = $(e.target).closest('tr').data('userid');
+  $.ajax({
+    url: '/api/university/' + universityId + '/students/' + studentId,
+    method: 'DELETE',
+    data: {
+      _token: $(e.target).closest('#students-table').data('token')
+    },
+    success: function success(response) {
+      $(e.target).closest('tr').remove();
+      hideSpinner();
+    },
+    error: function error(response) {
+      console.error(response);
+      hideSpinner();
+    }
+  });
 };
 var fillGroupSelect = function fillGroupSelect(groups, block) {
   var groupsSelect = $('#' + block).find('.js-group');
@@ -43910,9 +43982,16 @@ var fillGroupSelect = function fillGroupSelect(groups, block) {
 var saveStudent = function saveStudent(e) {
   showSpinner();
   var modal = $('#addStudentModal');
+  var studentId = modal.data('studentid');
+  var url = '/api/university/' + universityId + '/students';
+  var method = 'POST';
+  if (studentId) {
+    url = '/api/university/' + universityId + '/students/' + studentId;
+    method = 'PUT';
+  }
   $.ajax({
-    url: '/api/university/' + universityId + '/students',
-    method: 'POST',
+    url: url,
+    method: method,
     data: {
       first_name: modal.find('.js-first-name').val(),
       last_name: modal.find('.js-last-name').val(),
@@ -43971,8 +44050,8 @@ var importStudentsStore = function importStudentsStore(e) {
       $(e.target).addClass('hidden');
       hideSpinner();
     },
-    error: function error(xhr, status, _error) {
-      console.error('Помилка:', _error);
+    error: function error(xhr, status, _error2) {
+      console.error('Помилка:', _error2);
       hideSpinner();
     }
   });

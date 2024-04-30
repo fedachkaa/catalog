@@ -43849,7 +43849,7 @@ var saveFaculty = function saveFaculty(e) {
   var facultyId = modal.attr('data-facultyid');
   if (facultyId) {
     method = 'PUT';
-    url = '/api/university/' + universityId + '/faculty/' + facultyId;
+    url = '/api/university/' + universityId + '/faculties/' + facultyId;
   }
   $.ajax({
     url: url,

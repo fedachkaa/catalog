@@ -35,10 +35,6 @@ class Student extends RepositoryAbstract implements StudentRepositoryInterface
     {
         $query = StudentModel::query();
 
-        if (!empty($filters['id'])) {
-            $query = $query->where('id', (int) $filters['id']);
-        }
-
         if (!empty($filters['user_id'])) {
             $query = $query->where('user_id', (int) $filters['user_id']);
         }
@@ -55,10 +51,6 @@ class Student extends RepositoryAbstract implements StudentRepositoryInterface
         $query = StudentModel::query();
 
         $query = $this->prepareJoins($query, $filters);
-
-        if (!empty($filters['id'])) {
-            $query = $query->where('id', (int) $filters['id']);
-        }
 
         if (!empty($filters['user_id'])) {
             $query = $query->where('user_id', (int) $filters['user_id']);
