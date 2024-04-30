@@ -14,6 +14,7 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class TeacherController extends Controller
 {
@@ -124,6 +125,30 @@ class TeacherController extends Controller
         return response()->json([
             'message' => 'Success',
             'data' => $this->teacherRepository->export($teacher, ['user', 'faculty', 'subjects']),
+        ])->setStatusCode(200);
+    }
+
+    /**
+     * @param University $university
+     * @param Teacher $teacher
+     * @return JsonResponse
+     */
+    public function deleteTeacher(University $university, Teacher $teacher): JsonResponse
+    {
+        DB::beginTransaction();
+        try {
+            $this->teacherService->deleteTeacher($teacher);
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Internal serve error',
+                'error' => $e->getMessage()
+            ])->setStatusCode(500);
+        }
+        DB::commit();
+
+        return response()->json([
+            'message' => 'Success',
         ])->setStatusCode(200);
     }
 

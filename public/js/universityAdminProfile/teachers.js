@@ -43798,6 +43798,7 @@ document.addEventListener('DOMContentLoaded', function () {
   $(document).on('click', '.js-add-teacher', addTeacher);
   $(document).on('click', '.js-save-teacher', saveTeacher);
   $(document).on('click', '.js-edit-teacher', editTeacher);
+  $(document).on('click', '.js-delete-teacher', deleteTeacher);
   $(document).on('click', '.js-show-user-info', showUserInfo);
 });
 var showUserInfo = function showUserInfo(e) {
@@ -43897,6 +43898,27 @@ var saveTeacher = function saveTeacher(e) {
     },
     error: function error(response) {
       showErrors(response.responseJSON.errors, '#addTeacherModal');
+      hideSpinner();
+    }
+  });
+};
+var deleteTeacher = function deleteTeacher(e) {
+  if (!confirm("Are you sure you want to delete this teacher?")) {
+    return;
+  }
+  var teacherId = $(e.target).closest('tr').data('userid');
+  $.ajax({
+    url: '/api/university/' + universityId + '/teachers/' + teacherId,
+    method: 'DELETE',
+    data: {
+      _token: $(e.target).closest('#teachers-table').data('token')
+    },
+    success: function success(response) {
+      $(e.target).closest('tr').remove();
+      hideSpinner();
+    },
+    error: function error(response) {
+      console.error(response);
       hideSpinner();
     }
   });

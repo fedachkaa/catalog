@@ -102,4 +102,18 @@ class TeacherService
 
         return true;
     }
+
+    /**
+     * @param Teacher $teacher
+     * @return bool
+     * @throws \Throwable
+     */
+    public function deleteTeacher(Teacher $teacher): bool
+    {
+        $teacher->getSubjects()->detach();
+
+        $teacher->getUser()->delete();
+
+        return true;
+    }
 }
