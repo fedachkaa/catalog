@@ -43797,6 +43797,7 @@ document.addEventListener('DOMContentLoaded', function () {
   $(document).on('click', '.js-add-subject', addSubject);
   $(document).on('click', '.js-save-subject', saveSubject);
   $(document).on('click', '.js-edit-subject', editSubject);
+  $(document).on('click', '.js-delete-subject', deleteSubject);
 });
 var getSubjects = function getSubjects() {
   showSpinner();
@@ -43834,8 +43835,8 @@ var editSubject = function editSubject(e) {
       searchText: $('#addEditSubjectModal .js-teacher-search').val()
     });
   });
-  $('#addEditSubjectModal').attr('data-subjectid', $(e.target).data('subjectid'));
   var row = $(e.target).closest('tr');
+  $('#addEditSubjectModal').attr('data-subjectid', row.data('subjectid'));
   $('#addEditSubjectModal .js-subject-title').val(row.find('.js-single-subject-title').text());
   var teachersList = row.find('.js-subject-teachers');
   var editTeachersList = $('#addEditSubjectModal .js-teachers-list ul');
@@ -43883,7 +43884,7 @@ var saveSubject = function saveSubject(e) {
   });
 };
 var drawSingleSubject = function drawSingleSubject(subject) {
-  var existingRow = $('#subjects-table tbody tr[data-id="' + subject.id + '"]');
+  var existingRow = $('#subjects-table tbody tr[data-subject="' + subject.id + '"]');
   if (existingRow.length > 0) {
     existingRow.find('.js-single-subject-title').text(subject.title);
     var teachersList = existingRow.find('.js-subject-teachers');
@@ -43893,7 +43894,7 @@ var drawSingleSubject = function drawSingleSubject(subject) {
       teachersList.append(listItem);
     });
   } else {
-    var newRow = $('<tr>').attr('data-id', subject.id);
+    var newRow = $('<tr>').attr('data-subject', subject.id);
     newRow.append($('<td>').text(subject.id));
     newRow.append($('<td>').addClass('js-single-subject-title').text(subject.title));
     var _teachersList = $('<ul>').addClass('js-subject-teachers');
@@ -43902,13 +43903,32 @@ var drawSingleSubject = function drawSingleSubject(subject) {
       _teachersList.append(listItem);
     });
     newRow.append($('<td>').append(_teachersList));
-    var addActionCell = $('<td>');
-    var addActionIcon = $('<i>').addClass('fas fa-edit action-icon js-edit-subject').attr('title', 'Редагувати').attr('data-subjectid', subject.id);
-    addActionCell.append(addActionIcon);
+    var addActionCell = $('<td>').append($('<i>').addClass('fas fa-edit action-icon js-edit-subject').attr('title', 'Редагувати')).append($('<i>').addClass('fas fa-trash action-icon js-delete-subject').attr('title', 'Видалити'));
     newRow.append(addActionCell);
     newRow.addClass(($('#subjects-table tbody tr').length + 1) % 2 === 0 ? 'row-gray' : 'row-beige');
     $('#subjects-table tbody').append(newRow);
   }
+};
+var deleteSubject = function deleteSubject(e) {
+  if (!confirm("Are you sure you want to delete this subject?")) {
+    return;
+  }
+  var subjectId = $(e.target).closest('tr').data('subject');
+  $.ajax({
+    url: '/api/university/' + universityId + '/subjects/' + subjectId,
+    method: 'DELETE',
+    data: {
+      _token: $(e.target).closest('#subjects-table').data('token')
+    },
+    success: function success(response) {
+      $(e.target).closest('tr').remove();
+      hideSpinner();
+    },
+    error: function error(response) {
+      console.error(response);
+      hideSpinner();
+    }
+  });
 };
 })();
 

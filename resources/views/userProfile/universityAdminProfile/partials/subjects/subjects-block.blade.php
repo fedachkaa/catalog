@@ -10,7 +10,7 @@
             <button class="add-user-btn js-add-subject">Додати предмет</button>
         </div>
         <div>
-            <table id="subjects-table" class="table-block">
+            <table id="subjects-table" class="table-block" data-token="{{ csrf_token() }}">
                 <thead>
                 <tr>
                     <th>№</th>

@@ -52,6 +52,7 @@ Route::prefix('/university/{universityId}')->middleware('university.get')->group
     Route::get('/subjects', [SubjectController::class, 'getSubjectsList']);
     Route::post('/subjects', [SubjectController::class, 'saveSubject']);
     Route::put('/subjects/{subjectId}', [SubjectController::class, 'updateSubject'])->middleware('subject.get');
+    Route::delete('/subjects/{subjectId}', [SubjectController::class, 'deleteSubject'])->middleware('subject.get');
 
     Route::get('/teachers', [TeacherController::class, 'getTeachersList']);
     Route::post('/teachers', [TeacherController::class, 'saveTeacher']);

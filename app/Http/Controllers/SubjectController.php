@@ -12,6 +12,7 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
 
 class SubjectController extends Controller
 {
@@ -140,6 +141,30 @@ class SubjectController extends Controller
         return response()->json([
             'message' => 'Success',
             'data' => $this->subjectRepository->export($subject, ['teachers']),
+        ])->setStatusCode(200);
+    }
+
+    /**
+     * @param University $university
+     * @param Subject $subject
+     * @return JsonResponse
+     */
+    public function deleteSubject(University $university, Subject $subject): JsonResponse
+    {
+        DB::beginTransaction();
+        try {
+            $subject->delete();
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Internal serve error',
+                'error' => $e->getMessage()
+            ])->setStatusCode(500);
+        }
+        DB::commit();
+
+        return response()->json([
+            'message' => 'Success',
         ])->setStatusCode(200);
     }
 
