@@ -10,9 +10,13 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class FacultyController extends Controller
 {
+    /** @var int */
+    const PAGINATION_LIMIT = 1;
+
     /** @var FacultyRepositoryInterface */
     private $facultyRepository;
 
@@ -36,17 +40,21 @@ class FacultyController extends Controller
     /**
      * AJAX Route
      *
-     * @param \App\Models\University $university
+     * @param Request $request
+     * @param University $university
      * @return JsonResponse
      */
-    public function getFacultiesList(University $university): JsonResponse
+    public function getFacultiesList(Request $request, University $university): JsonResponse
     {
-        $faculties = $this->facultyRepository->getAll(['university_id' => $university->getId()]);
+        $searchParams = $this->getSearchParams($request);
+        $totalFaculties = count($this->facultyRepository->getAll(['university_id' => $university->getId()]));
+        $faculties = $this->facultyRepository->getAll(array_merge($searchParams, ['university_id' => $university->getId()]));
 
         return response()->json([
             'message' => 'Success',
             'data' => [
-                'faculties' =>$this->facultyRepository->exportAll($faculties, ['courses']),
+                'faculties' => $this->facultyRepository->exportAll($faculties, ['courses']),
+                'pagination' => $this->getPagination($searchParams, $totalFaculties)
             ],
         ])->setStatusCode(200);
     }
@@ -103,5 +111,45 @@ class FacultyController extends Controller
             'message' => 'Success',
             'data' => $this->facultyRepository->export($faculty, ['courses']),
         ])->setStatusCode(200);
+    }
+
+    /**
+     * @param Request $request
+     * @return array
+     */
+    private function getSearchParams(Request $request): array
+    {
+        $searchParams = [];
+
+        if ($request->has('page')) {
+            $searchParams['page'] = (int) $request->get('page');
+            $searchParams['limit'] = self::PAGINATION_LIMIT;
+            $searchParams['offset'] = $request->get('page') * self::PAGINATION_LIMIT - 1;
+        } else {
+            $searchParams['page'] = 1;
+            $searchParams['limit'] = self::PAGINATION_LIMIT;
+            $searchParams['offset'] = 0;
+        }
+
+        return $searchParams;
+    }
+
+    /**
+     * @param array $filters
+     * @param int $totalRows
+     * @return array
+     */
+    private function getPagination(array $filters, int $totalRows): array
+    {
+        $totalPages = (int)ceil($totalRows / $filters['limit']);
+
+        return [
+            'before' => $filters['page'] === 1 ? $filters['page'] : $filters['page'] - 1,
+            'next' => $filters['page'] === $totalPages ? $totalPages : $filters['page'] + 1,
+            'last' => $totalPages,
+            'current' => $filters['page'],
+            'totalPages' => $totalPages,
+            'totalCount' => $totalRows,
+        ];
     }
 }

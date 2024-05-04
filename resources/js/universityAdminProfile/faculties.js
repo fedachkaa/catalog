@@ -1,4 +1,13 @@
-const { showErrors, showModal, hideModal, clearModal, toggleTabsSideBar, showSpinner, hideSpinner } = require('./../general.js');
+const {
+    showErrors,
+    showModal,
+    hideModal,
+    clearModal,
+    toggleTabsSideBar,
+    showSpinner,
+    hideSpinner,
+    initPagination
+} = require('./../general.js');
 const { searchGroups } = require('./common.js');
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -29,11 +38,15 @@ const openAddStudent = function () {
     };
 }
 
-const getFaculties = function() {
+const getFaculties = function(searchParams = {}) {
     showSpinner();
 
+    const queryString = Object.keys(searchParams)
+        .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(searchParams[key])}`)
+        .join('&');
+
     $.ajax({
-        url: '/api/university/' + universityId + '/faculties',
+        url: '/api/university/' + universityId + '/faculties?' + queryString,
         method: 'GET',
         success: function (response) {
             if (response.data.faculties.length) {
@@ -42,6 +55,20 @@ const getFaculties = function() {
                 $('#faculties-table').addClass('hidden');
                 $('.js-faculties-container').append('<p>Ще немає факультетів</p>')
             }
+            initPagination(response.data.pagination);
+
+            $('.js-pagination .pagination-first').off().on('click', function() {
+               getFaculties();
+            });
+            $('.js-pagination .pagination-next').off().on('click', function() {
+                getFaculties({page: response.data.pagination.next});
+            });
+            $('.js-pagination .pagination-previous').off().on('click', function() {
+                getFaculties({page: response.data.pagination.before});
+            });
+            $('.js-pagination .pagination-last').off().on('click', function() {
+                getFaculties({page: response.data.pagination.last});
+            });
             hideSpinner();
         },
         error: function (xhr, status, error) {

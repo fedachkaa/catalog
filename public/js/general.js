@@ -2314,6 +2314,14 @@ var showErrors = function showErrors(errors, selectorBlock) {
     errorParagraph.text(errorMessage);
   });
 };
+var initPagination = function initPagination(pagination) {
+  var paginationBlock = $('.js-pagination');
+  paginationBlock.find('.pagination-first').attr('data-page', 1);
+  paginationBlock.find('.pagination-previous').attr('data-page', pagination.before);
+  paginationBlock.find('.pagination-next').attr('data-page', pagination.next);
+  paginationBlock.find('.pagination-last').attr('data-page', pagination.last);
+  paginationBlock.find('.pagination-message').text("You are on the page ".concat(pagination.current, " of ").concat(pagination.totalPages));
+};
 module.exports = {
   toggleTabsSideBar: toggleTabsSideBar,
   getUserData: getUserData,
@@ -2324,7 +2332,8 @@ module.exports = {
   showSpinner: showSpinner,
   hideSpinner: hideSpinner,
   showErrors: showErrors,
-  getUserBaseInfo: getUserBaseInfo
+  getUserBaseInfo: getUserBaseInfo,
+  initPagination: initPagination
 };
 
 /***/ }),

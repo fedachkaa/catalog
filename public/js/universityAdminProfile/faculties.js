@@ -2314,6 +2314,14 @@ var showErrors = function showErrors(errors, selectorBlock) {
     errorParagraph.text(errorMessage);
   });
 };
+var initPagination = function initPagination(pagination) {
+  var paginationBlock = $('.js-pagination');
+  paginationBlock.find('.pagination-first').attr('data-page', 1);
+  paginationBlock.find('.pagination-previous').attr('data-page', pagination.before);
+  paginationBlock.find('.pagination-next').attr('data-page', pagination.next);
+  paginationBlock.find('.pagination-last').attr('data-page', pagination.last);
+  paginationBlock.find('.pagination-message').text("You are on the page ".concat(pagination.current, " of ").concat(pagination.totalPages));
+};
 module.exports = {
   toggleTabsSideBar: toggleTabsSideBar,
   getUserData: getUserData,
@@ -2324,7 +2332,8 @@ module.exports = {
   showSpinner: showSpinner,
   hideSpinner: hideSpinner,
   showErrors: showErrors,
-  getUserBaseInfo: getUserBaseInfo
+  getUserBaseInfo: getUserBaseInfo,
+  initPagination: initPagination
 };
 
 /***/ }),
@@ -43788,7 +43797,8 @@ var _require = __webpack_require__(/*! ./../general.js */ "./resources/js/genera
   clearModal = _require.clearModal,
   toggleTabsSideBar = _require.toggleTabsSideBar,
   showSpinner = _require.showSpinner,
-  hideSpinner = _require.hideSpinner;
+  hideSpinner = _require.hideSpinner,
+  initPagination = _require.initPagination;
 var _require2 = __webpack_require__(/*! ./common.js */ "./resources/js/universityAdminProfile/common.js"),
   searchGroups = _require2.searchGroups;
 document.addEventListener('DOMContentLoaded', function () {
@@ -43813,9 +43823,13 @@ var openAddStudent = function openAddStudent() {
   };
 };
 var getFaculties = function getFaculties() {
+  var searchParams = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
   showSpinner();
+  var queryString = Object.keys(searchParams).map(function (key) {
+    return "".concat(encodeURIComponent(key), "=").concat(encodeURIComponent(searchParams[key]));
+  }).join('&');
   $.ajax({
-    url: '/api/university/' + universityId + '/faculties',
+    url: '/api/university/' + universityId + '/faculties?' + queryString,
     method: 'GET',
     success: function success(response) {
       if (response.data.faculties.length) {
@@ -43824,6 +43838,25 @@ var getFaculties = function getFaculties() {
         $('#faculties-table').addClass('hidden');
         $('.js-faculties-container').append('<p>Ще немає факультетів</p>');
       }
+      initPagination(response.data.pagination);
+      $('.js-pagination .pagination-first').off().on('click', function () {
+        getFaculties();
+      });
+      $('.js-pagination .pagination-next').off().on('click', function () {
+        getFaculties({
+          page: response.data.pagination.next
+        });
+      });
+      $('.js-pagination .pagination-previous').off().on('click', function () {
+        getFaculties({
+          page: response.data.pagination.before
+        });
+      });
+      $('.js-pagination .pagination-last').off().on('click', function () {
+        getFaculties({
+          page: response.data.pagination.last
+        });
+      });
       hideSpinner();
     },
     error: function error(xhr, status, _error) {

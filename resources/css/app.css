@@ -251,7 +251,12 @@
     @apply text-red-600 font-bold pl-2;
 }
 
-
+.pagination-block {
+    @apply text-end pe-3;
+}
+.pagination-block .pagination-item {
+    @apply cursor-pointer;
+}
 /* ADMIN */
 
 .university-block {

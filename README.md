@@ -12,7 +12,6 @@
 - **Add pagination to tables in university admin profile**
 - **Soft delete user/students/teachers**
 - **Import teachers via file**
-- **Refactor routes -> without university id in url**
 
 
 

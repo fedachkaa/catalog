@@ -24,6 +24,8 @@
                     <!-- Table body will be populated dynamically -->
                     </tbody>
                 </table>
+
+                @include('general.pagination')
             </div>
         </div>
     </div>
