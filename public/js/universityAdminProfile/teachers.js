@@ -43965,7 +43965,7 @@ var searchSubjects = function searchSubjects() {
       var subjectsSelect = $('#addTeacherModal').find('.js-subjects-select');
       subjectsSelect.empty();
       subjectsSelect.append($('<option>').attr('value', '').text('Виберіть предмет'));
-      response.data.forEach(function (subject) {
+      response.data.subjects.forEach(function (subject) {
         subjectsSelect.append($('<option>').attr('value', subject.id).text(subject.title));
       });
       subjectsSelect.removeClass('hidden');
