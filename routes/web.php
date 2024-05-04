@@ -49,24 +49,25 @@ Route::get('/university', [UniversityController::class, 'create'])->name('univer
 Route::post('/university', [UniversityController::class, 'store'])->name('university.store');
 Route::get('/university-registration-success', [UniversityController::class, 'registrationSuccess'])->name('university.success');
 
-Route::get('/profile', [UserProfileController::class, 'userProfile'])->name('user.profile');
 
-Route::prefix('/university/{universityId}')->middleware('university.get')->group(function () {
+Route::get('/profile', [UserProfileController::class, 'userProfile'])->middleware('auth')->name('user.profile');
+
+Route::prefix('/university/{universityId}')->middleware(['auth', 'university.get'])->group(function () {
     Route::get('/', [UniversityController::class, 'getUniversity']);
     Route::get('/faculties', [FacultyController::class, 'getFaculties']);
     Route::get('/students', [StudentController::class, 'getStudents']);
-    Route::get('/topic-requests', [StudentController::class, 'getStudentTopicRequests'])->middleware('university.get');
+    Route::get('/topic-requests', [StudentController::class, 'getStudentTopicRequests']);
 
     Route::get('/subjects', [SubjectController::class, 'getSubjects']);
 
     Route::get('/teachers', [TeacherController::class, 'getTeachers']);
 
     Route::get('/catalogs', [CatalogController::class, 'getCatalogs']);
-    Route::get('/catalogs/{catalogId}', [CatalogController::class, 'editCatalog'])->middleware('catalog.get')->name('view.catalog'); // TODO check middleware
+    Route::get('/catalogs/{catalogId}', [CatalogController::class, 'editCatalog'])->middleware('catalog.get');
 
 });
 
-Route::prefix('admin')->middleware('admin')->group(function () {
+Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::get('/overview', [AdminOverviewController::class, 'overview'])->name('dashboard.overview');
     Route::get('/university/{universityId}', [AdminUniversityController::class, 'universitySingle'])->name('university.single')->middleware('university.get');
     Route::put('/api/university/{universityId}', [AdminUniversityController::class, 'updateUniversity'])->middleware('university.get');

@@ -28,10 +28,10 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('/profile', [UserProfileController::class, 'getUserProfile'])->name('user.profile.get');
-Route::get('/user/{userId}', [UserProfileController::class, 'getBaseUserInfo']);
+Route::get('/profile', [UserProfileController::class, 'getUserProfile'])->middleware('auth')->name('user.profile.get');
+Route::get('/user/{userId}', [UserProfileController::class, 'getBaseUserInfo'])->middleware('auth');
 
-Route::prefix('/university/{universityId}')->middleware('university.get')->group(function () {
+Route::prefix('/university/{universityId}')->middleware(['auth', 'university.get'])->group(function () {
     Route::get('/faculties', [FacultyController::class, 'getFacultiesList']);
     Route::post('/faculties', [FacultyController::class, 'saveFaculty']);
     Route::put('/faculties/{facultyId}', [FacultyController::class, 'updateFaculty'])->middleware('faculty.get');
@@ -70,12 +70,11 @@ Route::prefix('/university/{universityId}')->middleware('university.get')->group
     Route::post('/catalog/{catalogId}/topic/{topicId}/send-request', [CatalogController::class, 'sendRequestTopic'])->middleware('catalog.get')->middleware('topic.get'); // TODO check middleware
 });
 
-Route::prefix('admin')->middleware('admin')->group(function () {
+Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::put('/university/{universityId}', [AdminUniversityController::class, 'updateUniversity'])->middleware('university.get');
     Route::get('/universities', [AdminOverviewController::class, 'getUniversities']);
 });
 
-
-Route::get('/api/topic/{topicId}/topic-requests', [CatalogController::class, 'getTopicRequests'])->middleware('topic.get');
-Route::post('/api/topic-requests/{requestId}/approve', [CatalogController::class, 'approveRequest'])->middleware('topicRequest.get');
-Route::post('/api/topic-requests/{requestId}/reject', [CatalogController::class, 'rejectRequest'])->middleware('topicRequest.get');
+Route::get('/topic/{topicId}/topic-requests', [CatalogController::class, 'getTopicRequests'])->middleware(['auth', 'topic.get']);
+Route::post('/topic-requests/{requestId}/approve', [CatalogController::class, 'approveRequest'])->middleware(['auth', 'topicRequest.get']);
+Route::post('/topic-requests/{requestId}/reject', [CatalogController::class, 'rejectRequest'])->middleware(['auth', 'topicRequest.get']);
