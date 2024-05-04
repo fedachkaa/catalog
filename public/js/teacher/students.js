@@ -2210,7 +2210,8 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
 var _require = __webpack_require__(/*! ../general */ "./resources/js/general.js"),
   showSpinner = _require.showSpinner,
-  hideSpinner = _require.hideSpinner;
+  hideSpinner = _require.hideSpinner,
+  initPagination = _require.initPagination;
 var getStudents = function getStudents() {
   var query = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
   showSpinner();
@@ -2218,7 +2219,20 @@ var getStudents = function getStudents() {
     url: '/api/university/' + universityId + '/students?' + query,
     method: 'GET',
     success: function success(response) {
-      displayStudentsData(response.data);
+      displayStudentsData(response.data.students);
+      initPagination(response.data.pagination);
+      $('.js-pagination .pagination-first').off().on('click', function () {
+        getStudents();
+      });
+      $('.js-pagination .pagination-next').off().on('click', function () {
+        getStudents("page=".concat(response.data.pagination.next));
+      });
+      $('.js-pagination .pagination-previous').off().on('click', function () {
+        getStudents("page=".concat(response.data.pagination.before));
+      });
+      $('.js-pagination .pagination-last').off().on('click', function () {
+        getStudents("page=".concat(response.data.pagination.last));
+      });
       hideSpinner();
     },
     error: function error(xhr, status, _error) {

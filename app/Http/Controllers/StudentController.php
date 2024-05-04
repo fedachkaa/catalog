@@ -19,6 +19,9 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class StudentController extends Controller
 {
+    /** @var int */
+    const PAGINATION_LIMIT = 10;
+
     /** @var StudentRepositoryInterface */
     private $studentRepository;
 
@@ -61,13 +64,16 @@ class StudentController extends Controller
      */
     public function getStudentsList(Request $request, University $university): JsonResponse
     {
-        $searchParams = array_merge(['university_id' => $university->getId()], $this->getSearchParams($request));
-
-        $students = $this->studentRepository->getAll($searchParams);
+        $searchParams = $this->getSearchParams($request);
+        $totalStudents = count($this->studentRepository->getAll(['university_id' => $university->getId()]));
+        $students = $this->studentRepository->getAll(array_merge(['university_id' => $university->getId()], $searchParams));
 
         return response()->json([
             'message' => 'Success',
-            'data' => $this->studentRepository->exportAll($students, ['user', 'faculty', 'course', 'group'])
+            'data' => [
+                'students' => $this->studentRepository->exportAll($students, ['user', 'faculty', 'course', 'group']),
+                'pagination' => $this->getPagination($searchParams, $totalStudents),
+            ]
         ])->setStatusCode(200);
     }
 
@@ -277,6 +283,16 @@ class StudentController extends Controller
 
         if ($request->query('email')) {
             $searchParams['email'] = $request->query('email');
+        }
+
+        if ($request->has('page')) {
+            $searchParams['page'] = (int) $request->get('page');
+            $searchParams['limit'] = self::PAGINATION_LIMIT;
+            $searchParams['offset'] = ($request->get('page') - 1) * self::PAGINATION_LIMIT;
+        } else {
+            $searchParams['page'] = 1;
+            $searchParams['limit'] = self::PAGINATION_LIMIT;
+            $searchParams['offset'] = 0;
         }
 
         return $searchParams;

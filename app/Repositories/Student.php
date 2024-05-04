@@ -84,6 +84,14 @@ class Student extends RepositoryAbstract implements StudentRepositoryInterface
             $query = $query->where(\App\Models\Course::TABLE_NAME . '.course', 'LIKE', '%' . $filters['courseTitle'] . '%');
         }
 
+        if (!empty($filters['limit'])) {
+            $query = $query->limit($filters['limit']);
+        }
+
+        if (!empty($filters['offset'])) {
+            $query = $query->offset($filters['offset']);
+        }
+
         return $query->get();
     }
 

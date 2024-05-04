@@ -2430,7 +2430,7 @@ var searchTeachers = function searchTeachers(block) {
       var teachersSelect = $(block).find('.js-teachers-select');
       teachersSelect.empty();
       teachersSelect.append($('<option >').attr('value', '').text('Виберіть викладача'));
-      response.data.forEach(function (teacher) {
+      response.data.teachers.forEach(function (teacher) {
         teachersSelect.append($('<option class="js-teacher-item">').attr('value', teacher.user_id).text(teacher.user.full_name));
       });
       initTeachersSelectClick(block, teachersSelect);
@@ -43796,7 +43796,8 @@ var _require = __webpack_require__(/*! ./../general.js */ "./resources/js/genera
   toggleTabsSideBar = _require.toggleTabsSideBar,
   showSpinner = _require.showSpinner,
   hideSpinner = _require.hideSpinner,
-  showErrors = _require.showErrors;
+  showErrors = _require.showErrors,
+  initPagination = _require.initPagination;
 var _require2 = __webpack_require__(/*! ./common.js */ "./resources/js/universityAdminProfile/common.js"),
   searchTeachers = _require2.searchTeachers,
   initRemoveTeacherClick = _require2.initRemoveTeacherClick;
@@ -43809,12 +43810,35 @@ document.addEventListener('DOMContentLoaded', function () {
   $(document).on('click', '.js-delete-subject', deleteSubject);
 });
 var getSubjects = function getSubjects() {
+  var searchParams = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
   showSpinner();
+  var queryString = Object.keys(searchParams).map(function (key) {
+    return "".concat(encodeURIComponent(key), "=").concat(encodeURIComponent(searchParams[key]));
+  }).join('&');
   $.ajax({
-    url: '/api/university/' + universityId + '/subjects',
+    url: '/api/university/' + universityId + '/subjects?' + queryString,
     method: 'GET',
     success: function success(response) {
-      displaySubjectsData(response.data);
+      displaySubjectsData(response.data.subjects);
+      initPagination(response.data.pagination);
+      $('.js-pagination .pagination-first').off().on('click', function () {
+        getSubjects();
+      });
+      $('.js-pagination .pagination-next').off().on('click', function () {
+        getSubjects({
+          page: response.data.pagination.next
+        });
+      });
+      $('.js-pagination .pagination-previous').off().on('click', function () {
+        getSubjects({
+          page: response.data.pagination.before
+        });
+      });
+      $('.js-pagination .pagination-last').off().on('click', function () {
+        getSubjects({
+          page: response.data.pagination.last
+        });
+      });
       hideSpinner();
     },
     error: function error(xhr, status, _error) {

@@ -15,7 +15,7 @@ use Illuminate\Http\Request;
 class FacultyController extends Controller
 {
     /** @var int */
-    const PAGINATION_LIMIT = 1;
+    const PAGINATION_LIMIT = 10;
 
     /** @var FacultyRepositoryInterface */
     private $facultyRepository;
@@ -124,7 +124,7 @@ class FacultyController extends Controller
         if ($request->has('page')) {
             $searchParams['page'] = (int) $request->get('page');
             $searchParams['limit'] = self::PAGINATION_LIMIT;
-            $searchParams['offset'] = $request->get('page') * self::PAGINATION_LIMIT - 1;
+            $searchParams['offset'] = ($request->get('page') - 1) * self::PAGINATION_LIMIT;
         } else {
             $searchParams['page'] = 1;
             $searchParams['limit'] = self::PAGINATION_LIMIT;
@@ -132,24 +132,5 @@ class FacultyController extends Controller
         }
 
         return $searchParams;
-    }
-
-    /**
-     * @param array $filters
-     * @param int $totalRows
-     * @return array
-     */
-    private function getPagination(array $filters, int $totalRows): array
-    {
-        $totalPages = (int)ceil($totalRows / $filters['limit']);
-
-        return [
-            'before' => $filters['page'] === 1 ? $filters['page'] : $filters['page'] - 1,
-            'next' => $filters['page'] === $totalPages ? $totalPages : $filters['page'] + 1,
-            'last' => $totalPages,
-            'current' => $filters['page'],
-            'totalPages' => $totalPages,
-            'totalCount' => $totalRows,
-        ];
     }
 }

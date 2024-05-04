@@ -1,4 +1,12 @@
-const { showModal, hideModal, toggleTabsSideBar, showSpinner, hideSpinner, showErrors } = require('./../general.js');
+const {
+    showModal,
+    hideModal,
+    toggleTabsSideBar,
+    showSpinner,
+    hideSpinner,
+    showErrors,
+    initPagination
+} = require('./../general.js');
 const { searchTeachers, initRemoveTeacherClick } =  require('./common.js');
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -12,14 +20,33 @@ document.addEventListener('DOMContentLoaded', function () {
     $(document).on('click', '.js-delete-subject', deleteSubject);
 })
 
-const getSubjects = function () {
+const getSubjects = function (searchParams = {}) {
     showSpinner();
 
+    const queryString = Object.keys(searchParams)
+        .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(searchParams[key])}`)
+        .join('&');
+
     $.ajax({
-        url: '/api/university/' + universityId +'/subjects',
+        url: '/api/university/' + universityId +'/subjects?' + queryString,
         method: 'GET',
         success: function (response) {
-            displaySubjectsData(response.data);
+            displaySubjectsData(response.data.subjects);
+
+            initPagination(response.data.pagination);
+            $('.js-pagination .pagination-first').off().on('click', function() {
+                getSubjects();
+            });
+            $('.js-pagination .pagination-next').off().on('click', function() {
+                getSubjects({page: response.data.pagination.next});
+            });
+            $('.js-pagination .pagination-previous').off().on('click', function() {
+                getSubjects({page: response.data.pagination.before});
+            });
+            $('.js-pagination .pagination-last').off().on('click', function() {
+                getSubjects({page: response.data.pagination.last});
+            });
+
             hideSpinner();
         },
         error: function (xhr, status, error) {

@@ -1,18 +1,33 @@
-const { showModal, showSpinner, clearModal, hideModal, hideSpinner, showErrors} = require("../general");
+const { showModal, showSpinner, clearModal, hideModal, hideSpinner, showErrors, initPagination } = require("../general");
 
 const getCatalogs = function (searchParams ={}, callback = () => {}) {
+    showSpinner();
+
     const queryString = Object.keys(searchParams).map(key => key + '=' + encodeURIComponent(searchParams[key])).join('&');
 
     $.ajax({
         url: '/api/university/' + universityId + '/catalogs?' + queryString,
         method: 'GET',
         success: function (response) {
-            if (response.data.length !== 0) {
-                callback(response.data);
-            }
+            callback(response.data.catalogs);
+            initPagination(response.data.pagination);
+            $('.js-pagination .pagination-first').off().on('click', function() {
+                getCatalogs({}, callback);
+            });
+            $('.js-pagination .pagination-next').off().on('click', function() {
+                getCatalogs({page: response.data.pagination.next}, callback);
+            });
+            $('.js-pagination .pagination-previous').off().on('click', function() {
+                getCatalogs({page: response.data.pagination.before}, callback);
+            });
+            $('.js-pagination .pagination-last').off().on('click', function() {
+                getCatalogs({page: response.data.pagination.last}, callback);
+            });
+            hideSpinner();
         },
         error: function (xhr, status, error) {
             console.error('Помилка:', error);
+            hideSpinner();
         }
     });
 }

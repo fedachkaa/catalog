@@ -58,6 +58,14 @@ class Subject extends RepositoryAbstract implements SubjectRepositoryInterface
             $query = $query->where('title', 'LIKE',  '%' . $filters['searchText'] . '%');
         }
 
+        if (!empty($filters['limit'])) {
+            $query = $query->limit($filters['limit']);
+        }
+
+        if (!empty($filters['offset'])) {
+            $query = $query->offset($filters['offset']);
+        }
+
         return $query->get();
     }
 }

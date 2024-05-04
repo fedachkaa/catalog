@@ -18,6 +18,9 @@ use Illuminate\Support\Facades\DB;
 
 class TeacherController extends Controller
 {
+    /** @var int */
+    const PAGINATION_LIMIT = 10;
+
     /** @var TeacherService */
     private $teacherService;
 
@@ -52,12 +55,16 @@ class TeacherController extends Controller
      */
     public function getTeachersList(Request $request, UniversityInterface $university): JsonResponse
     {
-        $searchParams = array_merge($this->getSearchParams($request), ['university_id' => $university->getId()]);
-        $teachers = $this->teacherRepository->getAll($searchParams);
+        $searchParams = $this->getSearchParams($request);
+        $totalTeachers = count($this->teacherRepository->getAll(['university_id' => $university->getId()]));
+        $teachers = $this->teacherRepository->getAll(array_merge($searchParams, ['university_id' => $university->getId()]));
 
         return response()->json([
             'message' => 'Success',
-            'data' => $this->teacherRepository->exportAll($teachers, ['user', 'faculty', 'subjects']),
+            'data' => [
+                'teachers' => $this->teacherRepository->exportAll($teachers, ['user', 'faculty', 'subjects']),
+                'pagination' => $this->getPagination($searchParams, $totalTeachers),
+            ],
         ])->setStatusCode(200);
     }
 
@@ -69,6 +76,7 @@ class TeacherController extends Controller
     public function saveTeacher(PostPutTeacherRequest $request, UniversityInterface $university): JsonResponse
     {
         try {
+            /** @var Teacher $teacher */
             $teacher = $this->teacherService->saveTeacher([
                 'first_name' => $request->post('first_name'),
                 'last_name' => $request->post('last_name'),
@@ -168,6 +176,15 @@ class TeacherController extends Controller
             $searchParams['faculty_id'] = $request->get('facultyId');
         }
 
+        if ($request->has('page')) {
+            $searchParams['page'] = (int) $request->get('page');
+            $searchParams['limit'] = self::PAGINATION_LIMIT;
+            $searchParams['offset'] = ($request->get('page') - 1 ) * self::PAGINATION_LIMIT;
+        } else {
+            $searchParams['page'] = 1;
+            $searchParams['limit'] = self::PAGINATION_LIMIT;
+            $searchParams['offset'] = 0;
+        }
         return $searchParams;
     }
 }

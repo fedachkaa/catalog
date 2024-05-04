@@ -85,6 +85,14 @@ class Catalog extends RepositoryAbstract implements CatalogRepositoryInterface
             $query = $query->where('university_id', (int) $filters['university_id']);
         }
 
+        if (!empty($filters['limit'])) {
+            $query = $query->limit($filters['limit']);
+        }
+
+        if (!empty($filters['offset'])) {
+            $query = $query->offset($filters['offset']);
+        }
+
         return $query->get();
     }
 }

@@ -1,4 +1,4 @@
-const {showSpinner, hideSpinner} = require("../general");
+const { showSpinner, hideSpinner, initPagination } = require("../general");
 
 const getStudents = function (query = '') {
     showSpinner();
@@ -7,7 +7,20 @@ const getStudents = function (query = '') {
         url: '/api/university/' + universityId +'/students?' + query,
         method: 'GET',
         success: function (response) {
-            displayStudentsData(response.data);
+            displayStudentsData(response.data.students);
+            initPagination(response.data.pagination);
+            $('.js-pagination .pagination-first').off().on('click', function() {
+                getStudents();
+            });
+            $('.js-pagination .pagination-next').off().on('click', function() {
+                getStudents(`page=${response.data.pagination.next}`);
+            });
+            $('.js-pagination .pagination-previous').off().on('click', function() {
+                getStudents(`page=${response.data.pagination.before}`);
+            });
+            $('.js-pagination .pagination-last').off().on('click', function() {
+                getStudents(`page=${response.data.pagination.last}`);
+            });
             hideSpinner();
         },
         error: function (xhr, status, error) {

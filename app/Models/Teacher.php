@@ -17,9 +17,6 @@ class Teacher extends Model implements TeacherInterface
         'faculty_id',
     ];
 
-    /** @var string  */
-    protected $primaryKey = 'user_id';
-
     // --- Model relationships
 
     /**

@@ -2214,10 +2214,12 @@ var _require = __webpack_require__(/*! ../general */ "./resources/js/general.js"
   clearModal = _require.clearModal,
   hideModal = _require.hideModal,
   hideSpinner = _require.hideSpinner,
-  showErrors = _require.showErrors;
+  showErrors = _require.showErrors,
+  initPagination = _require.initPagination;
 var getCatalogs = function getCatalogs() {
   var searchParams = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
   var callback = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : function () {};
+  showSpinner();
   var queryString = Object.keys(searchParams).map(function (key) {
     return key + '=' + encodeURIComponent(searchParams[key]);
   }).join('&');
@@ -2225,12 +2227,31 @@ var getCatalogs = function getCatalogs() {
     url: '/api/university/' + universityId + '/catalogs?' + queryString,
     method: 'GET',
     success: function success(response) {
-      if (response.data.length !== 0) {
-        callback(response.data);
-      }
+      callback(response.data.catalogs);
+      initPagination(response.data.pagination);
+      $('.js-pagination .pagination-first').off().on('click', function () {
+        getCatalogs({}, callback);
+      });
+      $('.js-pagination .pagination-next').off().on('click', function () {
+        getCatalogs({
+          page: response.data.pagination.next
+        }, callback);
+      });
+      $('.js-pagination .pagination-previous').off().on('click', function () {
+        getCatalogs({
+          page: response.data.pagination.before
+        }, callback);
+      });
+      $('.js-pagination .pagination-last').off().on('click', function () {
+        getCatalogs({
+          page: response.data.pagination.last
+        }, callback);
+      });
+      hideSpinner();
     },
     error: function error(xhr, status, _error) {
       console.error('Помилка:', _error);
+      hideSpinner();
     }
   });
 };
@@ -2701,7 +2722,7 @@ var searchTeachers = function searchTeachers(block) {
       var teachersSelect = $(block).find('.js-teachers-select');
       teachersSelect.empty();
       teachersSelect.append($('<option >').attr('value', '').text('Виберіть викладача'));
-      response.data.forEach(function (teacher) {
+      response.data.teachers.forEach(function (teacher) {
         teachersSelect.append($('<option class="js-teacher-item">').attr('value', teacher.user_id).text(teacher.user.full_name));
       });
       initTeachersSelectClick(block, teachersSelect);

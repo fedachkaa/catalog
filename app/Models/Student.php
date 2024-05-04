@@ -14,9 +14,6 @@ class Student extends Model implements StudentInterface
     /** @const string */
     const TABLE_NAME = 'students';
 
-    /** @var string  */
-    protected $primaryKey = 'user_id';
-
     /**
      * @var string[]
      */

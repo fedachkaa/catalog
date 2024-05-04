@@ -1,4 +1,14 @@
-const { showErrors, showModal, hideModal, clearModal, toggleTabsSideBar, showSpinner, hideSpinner, getUserBaseInfo} = require('../general.js');
+const {
+    showErrors,
+    showModal,
+    hideModal,
+    clearModal,
+    toggleTabsSideBar,
+    showSpinner,
+    hideSpinner,
+    getUserBaseInfo,
+    initPagination
+} = require('../general.js');
 const { searchFaculties } = require('./common.js');
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -16,14 +26,33 @@ const showUserInfo = function (e) {
     getUserBaseInfo($(e.target).closest('tr').data('userid'));
 }
 
-const getTeachers = function () {
+const getTeachers = function (searchParams = {}) {
     showSpinner();
 
+    const queryString = Object.keys(searchParams)
+        .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(searchParams[key])}`)
+        .join('&');
+
     $.ajax({
-        url: '/api/university/' + 1 +'/teachers',
+        url: '/api/university/' + universityId +'/teachers?' + queryString,
         method: 'GET',
         success: function (response) {
-            displayTeachersData(response.data);
+            displayTeachersData(response.data.teachers);
+
+            initPagination(response.data.pagination);
+            $('.js-pagination .pagination-first').off().on('click', function() {
+                getTeachers();
+            });
+            $('.js-pagination .pagination-next').off().on('click', function() {
+                getTeachers({page: response.data.pagination.next});
+            });
+            $('.js-pagination .pagination-previous').off().on('click', function() {
+                getTeachers({page: response.data.pagination.before});
+            });
+            $('.js-pagination .pagination-last').off().on('click', function() {
+                getTeachers({page: response.data.pagination.last});
+            });
+
             hideSpinner();
         },
         error: function (xhr, status, error) {
