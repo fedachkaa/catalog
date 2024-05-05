@@ -8,6 +8,7 @@ const {
     hideSpinner,
     initPagination
 } = require('./../general.js');
+
 const { searchGroups } = require('./common.js');
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -18,6 +19,7 @@ document.addEventListener('DOMContentLoaded', function () {
     $(document).on('click', '.js-add-faculty', addFaculty);
     $(document).on('click', '.js-edit-faculty', editFaculty)
     $(document).on('click', '.js-save-faculty', saveFaculty);
+    $(document).on('click', '.js-remove-faculty', deleteFaculty);
 
     $(document).on('click', '.js-add-course', addCourse);
     $(document).on('click', '.js-save-course', saveCourse);
@@ -51,24 +53,25 @@ const getFaculties = function(searchParams = {}) {
         success: function (response) {
             if (response.data.faculties.length) {
                 displayFacultiesData(response.data);
+                initPagination(response.data.pagination);
+
+                $('.js-pagination .pagination-first').off().on('click', function() {
+                    getFaculties();
+                });
+                $('.js-pagination .pagination-next').off().on('click', function() {
+                    getFaculties({page: response.data.pagination.next});
+                });
+                $('.js-pagination .pagination-previous').off().on('click', function() {
+                    getFaculties({page: response.data.pagination.before});
+                });
+                $('.js-pagination .pagination-last').off().on('click', function() {
+                    getFaculties({page: response.data.pagination.last});
+                });
             } else {
                 $('#faculties-table').addClass('hidden');
-                $('.js-faculties-container').append('<p>Ще немає факультетів</p>')
+                $('.js-pagination').addClass('hidden');
+                $('.js-faculties-message').append('<p>Ще немає факультетів</p>')
             }
-            initPagination(response.data.pagination);
-
-            $('.js-pagination .pagination-first').off().on('click', function() {
-               getFaculties();
-            });
-            $('.js-pagination .pagination-next').off().on('click', function() {
-                getFaculties({page: response.data.pagination.next});
-            });
-            $('.js-pagination .pagination-previous').off().on('click', function() {
-                getFaculties({page: response.data.pagination.before});
-            });
-            $('.js-pagination .pagination-last').off().on('click', function() {
-                getFaculties({page: response.data.pagination.last});
-            });
             hideSpinner();
         },
         error: function (xhr, status, error) {
@@ -83,7 +86,7 @@ const addFaculty = function(e) {
 }
 
 const editFaculty = function (e) {
-    $('#addEditFacultyModal').attr('data-facultyid', $(e.target).data('facultyid'));
+    $('#addEditFacultyModal').attr('data-facultyid', $(e.target).closest('tr').data('facultyid'));
     const row = $(e.target).closest('tr');
     $('#addEditFacultyModal .js-faculty-title').val(row.find('.js-single-faculty-title').text());
     showModal('addEditFacultyModal');
@@ -121,6 +124,30 @@ const saveFaculty = function(e) {
     });
 }
 
+const deleteFaculty = function (e) {
+    if (!confirm("Are you sure you want to delete this faculty? Courses, groups and students related to the faculty will be deleted.")) {
+        return;
+    }
+
+    const facultyId = $(e.target).closest('tr').data('facultyid');
+
+    $.ajax({
+        url: '/api/university/' + universityId + '/faculties/' + facultyId,
+        method: 'DELETE',
+        data: {
+            _token: $(e.target).closest('#faculties-table').data('token'),
+        },
+        success: function (response) {
+            $(e.target).closest('tr').remove();
+            hideSpinner();
+        },
+        error: function (response) {
+            console.error(response);
+            hideSpinner();
+        }
+    });
+}
+
 const displayFacultiesData = function(data) {
     const tbody = $('#faculties-table tbody');
     tbody.empty();
@@ -131,6 +158,8 @@ const displayFacultiesData = function(data) {
 }
 
 const drawSingleFaculty = function (faculty) {
+    $('#faculties-table').removeClass('hidden');
+    $('.js-faculties-message').text();
     const existingRow = $('#faculties-table tbody tr[data-facultyid="' + faculty.id + '"]');
     if (existingRow.length > 0) {
         existingRow.find('.js-single-faculty-title').text(faculty.title);
@@ -149,17 +178,16 @@ const drawSingleFaculty = function (faculty) {
 
         row.append($('<td>').append(coursesList));
 
-        const addActionCell = $('<td>');
-        const addActionIcon = $('<i>').addClass('fas fa-plus action-icon js-add-course')
-            .attr('title', 'Додати курс')
-            .attr('data-facultyid', faculty.id);
-        const editFaculty = $('<i>').addClass('fas fa-edit action-icon js-edit-faculty')
-            .attr('title', 'Редагувати факультет')
-            .attr('data-facultyid', faculty.id);
+        const actions = $('<td>')
+            .append($('<i>').addClass('fas fa-plus action-icon js-add-course')
+                .attr('title', 'Додати курс')
+            ).append($('<i>').addClass('fas fa-edit action-icon js-edit-faculty')
+                .attr('title', 'Редагувати факультет')
+            ).append($('<i>').addClass('fas fa-trash action-icon js-remove-faculty')
+                .attr('title', 'Видалити факультет')
+            );
 
-        addActionCell.append(addActionIcon, editFaculty);
-
-        row.append(addActionCell);
+        row.append(actions);
 
         row.addClass(($('#faculties-table tr').length + 1) % 2 === 0 ? 'row-gray' : 'row-beige');
 
@@ -168,7 +196,7 @@ const drawSingleFaculty = function (faculty) {
 }
 
 const addCourse = function(e) {
-    $('#addCourseModal').attr('data-facultyid', $(e.target).data('facultyid'));
+    $('#addCourseModal').attr('data-facultyid', $(e.target).closest('tr').data('facultyid'));
     showModal('addCourseModal');
 }
 

@@ -5,18 +5,28 @@
 ?>
 
 <style>
-    #faculties-table_wrapper .dt-layout-row:first-child {
+    #faculties-table_wrapper .dt-layout-row:first-child,
+    #students-table_wrapper .dt-layout-row:first-child,
+    #teachers-table_wrapper .dt-layout-row:first-child,
+    #catalog-table_wrapper .dt-layout-row:first-child{
         display: flex;
         flex-direction: row;
         justify-content: space-between;
     }
-    #faculties-table_wrapper .dt-layout-row:last-child {
+
+    #faculties-table_wrapper .dt-layout-row:last-child,
+    #students-table_wrapper .dt-layout-row:last-child,
+    #teachers-table_wrapper .dt-layout-row:last-child,
+    #catalog-table_wrapper .dt-layout-row:last-child {
         display: flex;
         flex-direction: column;
         align-items: flex-end;
     }
 
-    #faculties-table_wrapper .dt-search input {
+    #faculties-table_wrapper .dt-search input,
+    #students-table_wrapper .dt-search input,
+    #teachers-table_wrapper .dt-search input,
+    #catalog-table_wrapper .dt-search input {
         border: 2px #2d3748;
     }
 </style>
@@ -161,20 +171,24 @@
                             @foreach($universityData['catalogs'] as $catalog)
                                 <tr>
                                     <td>{{ $catalog['id'] }}</td>
-                                    <td>{{ \App\Models\Catalog::AVAILABLE_CATALOG_TYPES[$catalog['type']] }}</td>
+                                    <td class="action-icon">
+{{--                                        <a href="{{ route('get.catalog', ['universityId' => $universityData['id'], 'catalogId' => $catalog['id']]) }}">--}}
+                                            {{ \App\Models\Catalog::AVAILABLE_CATALOG_TYPES[$catalog['type']] }}
+{{--                                        </a>--}}
+                                    </td>
                                     <td>{{ $catalog['faculty']['title'] }}</td>
                                     <td>{{ $catalog['course']['course'] }}</td>
                                     <td>
                                         <ul>
-                                            @foreach($catalog['supervisors'] as $supervisor)
-                                                <li> {{ $supervisor['user']['full_name'] }}</li>
+                                            @foreach($catalog['groups'] as $group)
+                                                <li> {{ $group['title'] }}</li>
                                             @endforeach
                                         </ul>
                                     </td>
                                     <td>
                                         <ul>
-                                            @foreach($catalog['groups'] as $group)
-                                                <li> {{ $group['title'] }}</li>
+                                            @foreach($catalog['supervisors'] as $supervisor)
+                                                <li> {{ $supervisor['user']['full_name'] }}</li>
                                             @endforeach
                                         </ul>
                                     </td>

@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', function () {
     $(document).on('click', '.js-show-user-info', showUserInfo);
 
     initUniversityEntities();
-    $('#faculties-table').DataTable({
+    $('#faculties-table, #catalog-table, #teachers-table, #students-table').DataTable({
         autoWidth: false,
         language: {
             lengthMenu: '_MENU_ записів',

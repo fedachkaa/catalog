@@ -35,6 +35,7 @@ Route::prefix('/university/{universityId}')->middleware(['auth', 'university.get
     Route::get('/faculties', [FacultyController::class, 'getFacultiesList']);
     Route::post('/faculties', [FacultyController::class, 'saveFaculty']);
     Route::put('/faculties/{facultyId}', [FacultyController::class, 'updateFaculty'])->middleware('faculty.get');
+    Route::delete('/faculties/{facultyId}', [FacultyController::class, 'deleteFaculty'])->middleware('faculty.get');
 
     Route::get('/courses', [CourseController::class, 'getCoursesList']);
     Route::post('/courses', [CourseController::class, 'saveCourse']);

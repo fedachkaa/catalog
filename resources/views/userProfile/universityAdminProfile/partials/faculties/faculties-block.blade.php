@@ -11,7 +11,7 @@
             <button class="add-user-btn js-save-faculty hidden" data-token="{{ csrf_token() }}">Зберегти</button>
 
             <div>
-                <table id="faculties-table" class="table-block">
+                <table id="faculties-table" class="table-block" data-token="{{ csrf_token() }}">
                     <thead>
                         <tr>
                             <th>№</th>
@@ -27,6 +27,7 @@
 
                 @include('general.pagination')
             </div>
+            <div class="js-faculties-message"></div>
         </div>
     </div>
     @include('userProfile.universityAdminProfile.partials.faculties.add-edit-faculty-modal')

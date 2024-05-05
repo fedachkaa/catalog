@@ -20,10 +20,7 @@
         </div>
         <div class="flex flex-row">
             <div class="mx-2">
-                <a href="#" class="nav-menu-item">Університети</a>
-            </div>
-            <div class="mx-2">
-                <a href="#" class="nav-menu-item">Користувачі</a>
+                <a href="{{ route('dashboard.overview') }}" class="nav-menu-item">Університети</a>
             </div>
             <div class="mx-2">
                 <a href="{{ route('logout') }}" class="nav-menu-item">Вийти</a>

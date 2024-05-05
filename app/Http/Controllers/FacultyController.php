@@ -11,6 +11,7 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class FacultyController extends Controller
 {
@@ -68,6 +69,7 @@ class FacultyController extends Controller
      */
     public function saveFaculty(PostPutFacultyRequest $request, University $university): JsonResponse
     {
+        DB::beginTransaction();
         try {
             /** @var Faculty $faculty */
             $faculty = $this->facultyRepository->getNew([
@@ -77,11 +79,13 @@ class FacultyController extends Controller
 
             $faculty->saveOrFail();
         } catch (\Throwable $e) {
+            DB::rollBack();
             return response()->json([
                 'message' => 'Internal serve error',
                 'error' => $e->getMessage()
             ])->setStatusCode(500);
         }
+        DB::commit();
 
         return response()->json([
             'message' => 'Success',
@@ -97,19 +101,49 @@ class FacultyController extends Controller
      */
     public function updateFaculty(PostPutFacultyRequest $request, University $university, Faculty $faculty): JsonResponse
     {
+        DB::beginTransaction();
         try {
             $faculty->updateOrFail([
                 'title' => $request->input('title'),
             ]);
         } catch (\Throwable $e) {
+            DB::rollBack();
             return response()->json([
                 'message' => 'Internal serve error',
                 'error' => $e->getMessage()
             ])->setStatusCode(500);
         }
+        DB::commit();
+
         return response()->json([
             'message' => 'Success',
             'data' => $this->facultyRepository->export($faculty, ['courses']),
+        ])->setStatusCode(200);
+    }
+
+    /**
+     * @param Request $request
+     * @param University $university
+     * @param Faculty $faculty
+     * @return JsonResponse
+     */
+    public function deleteFaculty(Request $request, University $university, Faculty $faculty): JsonResponse
+    {
+        DB::beginTransaction();
+        try {
+            $faculty->delete();
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Internal serve error',
+                'error' => $e->getMessage()
+            ])->setStatusCode(500);
+        }
+
+        DB::commit();
+
+        return response()->json([
+            'message' => 'Success',
         ])->setStatusCode(200);
     }
 

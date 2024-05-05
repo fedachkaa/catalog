@@ -1,5 +1,6 @@
 {
     "/js/general.js": "/js/general.js",
+    "/js/common/profile.js": "/js/common/profile.js",
     "/js/universityAdminProfile/teachers.js": "/js/universityAdminProfile/teachers.js",
     "/js/universityAdminProfile/subjects.js": "/js/universityAdminProfile/subjects.js",
     "/js/universityAdminProfile/students.js": "/js/universityAdminProfile/students.js",

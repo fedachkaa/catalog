@@ -918,6 +918,7 @@ video {
 .save-btn {
   height: -moz-fit-content;
   height: fit-content;
+  cursor: pointer;
   border-radius: 0.375rem;
   border-width: 2px;
   --tw-border-opacity: 1;
@@ -942,6 +943,7 @@ video {
 .remove-btn {
   height: -moz-fit-content;
   height: fit-content;
+  cursor: pointer;
   border-radius: 0.375rem;
   border-width: 2px;
   --tw-border-opacity: 1;

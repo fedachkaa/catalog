@@ -31,11 +31,11 @@
 }
 
 .save-btn {
-    @apply font-medium text-lg border-green-800 border-2 rounded-md bg-green-600 h-fit p-3 text-white hover:bg-white hover:text-green-700;
+    @apply font-medium text-lg border-green-800 border-2 rounded-md bg-green-600 h-fit p-3 text-white hover:bg-white hover:text-green-700 cursor-pointer;
 }
 
 .remove-btn {
-    @apply font-medium text-lg border-red-800 border-2 rounded-md bg-red-600 h-fit p-3 text-white hover:bg-white hover:text-red-700;
+    @apply font-medium text-lg border-red-800 border-2 rounded-md bg-red-600 h-fit p-3 text-white hover:bg-white hover:text-red-700 cursor-pointer;
 }
 
 .alert-danger {

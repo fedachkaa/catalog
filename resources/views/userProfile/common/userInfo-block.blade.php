@@ -16,7 +16,7 @@
         <div>Номер телефону: <span class="js-phone-number">{{ $userData['phone_number'] ?? '' }}</span></div>
     </div>
 
-    <i class="fa-solid fa-lock js-lock-icon"></i>
+    <i class="fa-solid fa-lock js-lock-icon action-icon"></i>
     <div class="password-block locked">
         <div>Пароль</div>
         <div class="password-form-group">

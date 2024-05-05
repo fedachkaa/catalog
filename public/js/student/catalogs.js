@@ -2477,6 +2477,7 @@ var initPagination = function initPagination(pagination) {
   paginationBlock.find('.pagination-next').attr('data-page', pagination.next);
   paginationBlock.find('.pagination-last').attr('data-page', pagination.last);
   paginationBlock.find('.pagination-message').text("You are on the page ".concat(pagination.current, " of ").concat(pagination.totalPages));
+  paginationBlock.removeClass('hidden');
 };
 module.exports = {
   toggleTabsSideBar: toggleTabsSideBar,
