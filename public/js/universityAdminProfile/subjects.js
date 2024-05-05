@@ -43820,26 +43820,31 @@ var getSubjects = function getSubjects() {
     url: '/api/university/' + universityId + '/subjects?' + queryString,
     method: 'GET',
     success: function success(response) {
-      displaySubjectsData(response.data.subjects);
-      initPagination(response.data.pagination);
-      $('.js-pagination .pagination-first').off().on('click', function () {
-        getSubjects();
-      });
-      $('.js-pagination .pagination-next').off().on('click', function () {
-        getSubjects({
-          page: response.data.pagination.next
+      if (response.data.subjects) {
+        prepareSubjectsTable();
+        displaySubjectsData(response.data.subjects);
+        initPagination(response.data.pagination);
+        $('.js-pagination .pagination-first').off().on('click', function () {
+          getSubjects();
         });
-      });
-      $('.js-pagination .pagination-previous').off().on('click', function () {
-        getSubjects({
-          page: response.data.pagination.before
+        $('.js-pagination .pagination-next').off().on('click', function () {
+          getSubjects({
+            page: response.data.pagination.next
+          });
         });
-      });
-      $('.js-pagination .pagination-last').off().on('click', function () {
-        getSubjects({
-          page: response.data.pagination.last
+        $('.js-pagination .pagination-previous').off().on('click', function () {
+          getSubjects({
+            page: response.data.pagination.before
+          });
         });
-      });
+        $('.js-pagination .pagination-last').off().on('click', function () {
+          getSubjects({
+            page: response.data.pagination.last
+          });
+        });
+      } else {
+        prepareSubjectsTable();
+      }
       hideSpinner();
     },
     error: function error(xhr, status, _error) {
@@ -43854,6 +43859,7 @@ var displaySubjectsData = function displaySubjectsData(data) {
   data.forEach(function (subject) {
     drawSingleSubject(subject);
   });
+  prepareSubjectsTable();
 };
 var addSubject = function addSubject(e) {
   $('#addEditSubjectModal .js-search-teacher-btn').on('click', function () {
@@ -43904,6 +43910,7 @@ var saveSubject = function saveSubject(e) {
       _token: $(e.target).data('token')
     },
     success: function success(response) {
+      prepareSubjectsTable();
       drawSingleSubject(response.data);
       $('#addEditSubjectModal').removeAttr('data-subjectid');
       $('#addEditSubjectModal .js-subject-title').val('');
@@ -43916,6 +43923,16 @@ var saveSubject = function saveSubject(e) {
       hideSpinner();
     }
   });
+};
+var prepareSubjectsTable = function prepareSubjectsTable() {
+  if ($('#subjects-table').hasClass('hidden')) {
+    $('#subjects-table').removeClass('hidden');
+    $('.js-subjects-message').text('');
+  } else {
+    $('#subjects-table').addClass('hidden');
+    $('.js-pagination').addClass('hidden');
+    $('.js-subjects-message').append('<p>Ще немає предметів</p>');
+  }
 };
 var drawSingleSubject = function drawSingleSubject(subject) {
   var existingRow = $('#subjects-table tbody tr[data-subject="' + subject.id + '"]');

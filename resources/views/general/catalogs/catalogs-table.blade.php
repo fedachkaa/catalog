@@ -16,4 +16,6 @@
     </tbody>
 </table>
 
+<div class="js-catalogs-message"></div>
+
 @include('general.pagination')

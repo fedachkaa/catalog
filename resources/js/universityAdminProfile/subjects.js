@@ -31,21 +31,27 @@ const getSubjects = function (searchParams = {}) {
         url: '/api/university/' + universityId +'/subjects?' + queryString,
         method: 'GET',
         success: function (response) {
-            displaySubjectsData(response.data.subjects);
+            if (response.data.subjects) {
+                prepareSubjectsTable();
 
-            initPagination(response.data.pagination);
-            $('.js-pagination .pagination-first').off().on('click', function() {
-                getSubjects();
-            });
-            $('.js-pagination .pagination-next').off().on('click', function() {
-                getSubjects({page: response.data.pagination.next});
-            });
-            $('.js-pagination .pagination-previous').off().on('click', function() {
-                getSubjects({page: response.data.pagination.before});
-            });
-            $('.js-pagination .pagination-last').off().on('click', function() {
-                getSubjects({page: response.data.pagination.last});
-            });
+                displaySubjectsData(response.data.subjects);
+
+                initPagination(response.data.pagination);
+                $('.js-pagination .pagination-first').off().on('click', function () {
+                    getSubjects();
+                });
+                $('.js-pagination .pagination-next').off().on('click', function () {
+                    getSubjects({page: response.data.pagination.next});
+                });
+                $('.js-pagination .pagination-previous').off().on('click', function () {
+                    getSubjects({page: response.data.pagination.before});
+                });
+                $('.js-pagination .pagination-last').off().on('click', function () {
+                    getSubjects({page: response.data.pagination.last});
+                });
+            } else {
+                prepareSubjectsTable();
+            }
 
             hideSpinner();
         },
@@ -63,6 +69,8 @@ const displaySubjectsData = function (data) {
     data.forEach(subject => {
         drawSingleSubject(subject)
     });
+
+    prepareSubjectsTable();
 }
 
 const addSubject = function (e) {
@@ -121,6 +129,8 @@ const saveSubject = function (e) {
             _token: $(e.target).data('token'),
         },
         success: function (response) {
+            prepareSubjectsTable();
+
             drawSingleSubject(response.data);
             $('#addEditSubjectModal').removeAttr('data-subjectid');
             $('#addEditSubjectModal .js-subject-title').val('');
@@ -134,6 +144,17 @@ const saveSubject = function (e) {
             hideSpinner();
         }
     });
+}
+
+const prepareSubjectsTable = function () {
+    if ( $('#subjects-table').hasClass('hidden')) {
+        $('#subjects-table').removeClass('hidden');
+        $('.js-subjects-message').text('');
+    } else {
+        $('#subjects-table').addClass('hidden');
+        $('.js-pagination').addClass('hidden');
+        $('.js-subjects-message').append('<p>Ще немає предметів</p>')
+    }
 }
 
 const drawSingleSubject = function (subject) {

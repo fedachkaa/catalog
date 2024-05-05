@@ -26,6 +26,7 @@
 
             @include('general.pagination')
         </div>
+        <div class="js-subjects-message"></div>
     </div>
 
     @include('userProfile.universityAdminProfile.partials.subjects.add-edit-subject-modal');

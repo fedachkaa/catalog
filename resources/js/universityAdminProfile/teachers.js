@@ -37,21 +37,25 @@ const getTeachers = function (searchParams = {}) {
         url: '/api/university/' + universityId +'/teachers?' + queryString,
         method: 'GET',
         success: function (response) {
-            displayTeachersData(response.data.teachers);
+            if (response.data.teachers.length) {
+                displayTeachersData(response.data.teachers);
 
-            initPagination(response.data.pagination);
-            $('.js-pagination .pagination-first').off().on('click', function() {
-                getTeachers();
-            });
-            $('.js-pagination .pagination-next').off().on('click', function() {
-                getTeachers({page: response.data.pagination.next});
-            });
-            $('.js-pagination .pagination-previous').off().on('click', function() {
-                getTeachers({page: response.data.pagination.before});
-            });
-            $('.js-pagination .pagination-last').off().on('click', function() {
-                getTeachers({page: response.data.pagination.last});
-            });
+                initPagination(response.data.pagination);
+                $('.js-pagination .pagination-first').off().on('click', function () {
+                    getTeachers();
+                });
+                $('.js-pagination .pagination-next').off().on('click', function () {
+                    getTeachers({page: response.data.pagination.next});
+                });
+                $('.js-pagination .pagination-previous').off().on('click', function () {
+                    getTeachers({page: response.data.pagination.before});
+                });
+                $('.js-pagination .pagination-last').off().on('click', function () {
+                    getTeachers({page: response.data.pagination.last});
+                });
+            } else {
+                prepareTeachersTable();
+            }
 
             hideSpinner();
         },
@@ -62,6 +66,17 @@ const getTeachers = function (searchParams = {}) {
     });
 }
 
+const prepareTeachersTable = function () {
+    if ($('#teachers-table').hasClass('hidden')) {
+        $('#teachers-table').removeClass('hidden');
+        $('.js-teachers-message').text('');
+    } else {
+        $('#teachers-table').addClass('hidden');
+        $('.js-pagination').addClass('hidden');
+        $('.js-teachers-message').append('<p>Ще немає викладачів</p>')
+    }
+}
+
 const displayTeachersData = function (data) {
     const tbody = $('#teachers-table tbody');
     tbody.empty();
@@ -69,6 +84,8 @@ const displayTeachersData = function (data) {
     data.forEach(teacher => {
         displaySingleTeacher(teacher);
     });
+
+    prepareTeachersTable();
 };
 
 const initSubjectActions = function() {
@@ -148,6 +165,7 @@ const saveTeacher = function (e) {
             _token: $(e.target).data('token'),
         },
         success: function (response) {
+            prepareTeachersTable();
             displaySingleTeacher(response.data);
             hideSpinner();
             clearModal('addTeacherModal');

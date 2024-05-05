@@ -43825,26 +43825,30 @@ var getTeachers = function getTeachers() {
     url: '/api/university/' + universityId + '/teachers?' + queryString,
     method: 'GET',
     success: function success(response) {
-      displayTeachersData(response.data.teachers);
-      initPagination(response.data.pagination);
-      $('.js-pagination .pagination-first').off().on('click', function () {
-        getTeachers();
-      });
-      $('.js-pagination .pagination-next').off().on('click', function () {
-        getTeachers({
-          page: response.data.pagination.next
+      if (response.data.teachers.length) {
+        displayTeachersData(response.data.teachers);
+        initPagination(response.data.pagination);
+        $('.js-pagination .pagination-first').off().on('click', function () {
+          getTeachers();
         });
-      });
-      $('.js-pagination .pagination-previous').off().on('click', function () {
-        getTeachers({
-          page: response.data.pagination.before
+        $('.js-pagination .pagination-next').off().on('click', function () {
+          getTeachers({
+            page: response.data.pagination.next
+          });
         });
-      });
-      $('.js-pagination .pagination-last').off().on('click', function () {
-        getTeachers({
-          page: response.data.pagination.last
+        $('.js-pagination .pagination-previous').off().on('click', function () {
+          getTeachers({
+            page: response.data.pagination.before
+          });
         });
-      });
+        $('.js-pagination .pagination-last').off().on('click', function () {
+          getTeachers({
+            page: response.data.pagination.last
+          });
+        });
+      } else {
+        prepareTeachersTable();
+      }
       hideSpinner();
     },
     error: function error(xhr, status, _error) {
@@ -43853,12 +43857,23 @@ var getTeachers = function getTeachers() {
     }
   });
 };
+var prepareTeachersTable = function prepareTeachersTable() {
+  if ($('#teachers-table').hasClass('hidden')) {
+    $('#teachers-table').removeClass('hidden');
+    $('.js-teachers-message').text('');
+  } else {
+    $('#teachers-table').addClass('hidden');
+    $('.js-pagination').addClass('hidden');
+    $('.js-teachers-message').append('<p>Ще немає викладачів</p>');
+  }
+};
 var displayTeachersData = function displayTeachersData(data) {
   var tbody = $('#teachers-table tbody');
   tbody.empty();
   data.forEach(function (teacher) {
     displaySingleTeacher(teacher);
   });
+  prepareTeachersTable();
 };
 var initSubjectActions = function initSubjectActions() {
   $('#addTeacherModal .js-search-subject-btn').on('click', function () {
@@ -43925,6 +43940,7 @@ var saveTeacher = function saveTeacher(e) {
       _token: $(e.target).data('token')
     },
     success: function success(response) {
+      prepareTeachersTable();
       displaySingleTeacher(response.data);
       hideSpinner();
       clearModal('addTeacherModal');

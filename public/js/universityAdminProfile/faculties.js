@@ -43856,9 +43856,7 @@ var getFaculties = function getFaculties() {
           });
         });
       } else {
-        $('#faculties-table').addClass('hidden');
-        $('.js-pagination').addClass('hidden');
-        $('.js-faculties-message').append('<p>Ще немає факультетів</p>');
+        prepareFacultyTable();
       }
       hideSpinner();
     },
@@ -43867,6 +43865,16 @@ var getFaculties = function getFaculties() {
       hideSpinner();
     }
   });
+};
+var prepareFacultyTable = function prepareFacultyTable() {
+  if ($('#faculties-table').hasClass('hidden')) {
+    $('#faculties-table').removeClass('hidden');
+    $('.js-faculties-message').text('');
+  } else {
+    $('#faculties-table').addClass('hidden');
+    $('.js-pagination').addClass('hidden');
+    $('.js-faculties-message').append('<p>Ще немає факультетів</p>');
+  }
 };
 var addFaculty = function addFaculty(e) {
   showModal('addEditFacultyModal');
@@ -43907,7 +43915,7 @@ var saveFaculty = function saveFaculty(e) {
   });
 };
 var deleteFaculty = function deleteFaculty(e) {
-  if (!confirm("Are you sure you want to delete this faculty? Courses, groups and students related to the faculty will be deleted?")) {
+  if (!confirm("Are you sure you want to delete this faculty? Courses, groups and students related to the faculty will be deleted.")) {
     return;
   }
   var facultyId = $(e.target).closest('tr').data('facultyid');
@@ -43935,8 +43943,7 @@ var displayFacultiesData = function displayFacultiesData(data) {
   });
 };
 var drawSingleFaculty = function drawSingleFaculty(faculty) {
-  $('#faculties-table').removeClass('hidden');
-  $('.js-faculties-message').text();
+  prepareFacultyTable();
   var existingRow = $('#faculties-table tbody tr[data-facultyid="' + faculty.id + '"]');
   if (existingRow.length > 0) {
     existingRow.find('.js-single-faculty-title').text(faculty.title);

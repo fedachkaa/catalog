@@ -68,9 +68,7 @@ const getFaculties = function(searchParams = {}) {
                     getFaculties({page: response.data.pagination.last});
                 });
             } else {
-                $('#faculties-table').addClass('hidden');
-                $('.js-pagination').addClass('hidden');
-                $('.js-faculties-message').append('<p>Ще немає факультетів</p>')
+                prepareFacultyTable();
             }
             hideSpinner();
         },
@@ -79,6 +77,17 @@ const getFaculties = function(searchParams = {}) {
             hideSpinner();
         }
     });
+}
+
+const prepareFacultyTable = function () {
+    if ($('#faculties-table').hasClass('hidden')) {
+        $('#faculties-table').removeClass('hidden');
+        $('.js-faculties-message').text('');
+    } else {
+        $('#faculties-table').addClass('hidden');
+        $('.js-pagination').addClass('hidden');
+        $('.js-faculties-message').append('<p>Ще немає факультетів</p>')
+    }
 }
 
 const addFaculty = function(e) {
@@ -158,8 +167,8 @@ const displayFacultiesData = function(data) {
 }
 
 const drawSingleFaculty = function (faculty) {
-    $('#faculties-table').removeClass('hidden');
-    $('.js-faculties-message').text();
+    prepareFacultyTable();
+
     const existingRow = $('#faculties-table tbody tr[data-facultyid="' + faculty.id + '"]');
     if (existingRow.length > 0) {
         existingRow.find('.js-single-faculty-title').text(faculty.title);

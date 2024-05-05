@@ -24,9 +24,9 @@
                 <!-- Table body will be populated dynamically -->
                 </tbody>
             </table>
-
             @include('general.pagination')
         </div>
+        <div class="js-teachers-message"></div>
     </div>
 
     @include('userProfile.universityAdminProfile.partials.teachers.add-edit-teacher-modal')

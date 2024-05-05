@@ -2227,26 +2227,31 @@ var getCatalogs = function getCatalogs() {
     url: '/api/university/' + universityId + '/catalogs?' + queryString,
     method: 'GET',
     success: function success(response) {
-      callback(response.data.catalogs);
-      initPagination(response.data.pagination);
-      $('.js-pagination .pagination-first').off().on('click', function () {
-        getCatalogs({}, callback);
-      });
-      $('.js-pagination .pagination-next').off().on('click', function () {
-        getCatalogs({
-          page: response.data.pagination.next
-        }, callback);
-      });
-      $('.js-pagination .pagination-previous').off().on('click', function () {
-        getCatalogs({
-          page: response.data.pagination.before
-        }, callback);
-      });
-      $('.js-pagination .pagination-last').off().on('click', function () {
-        getCatalogs({
-          page: response.data.pagination.last
-        }, callback);
-      });
+      if (response.data.catalogs.length) {
+        callback(response.data.catalogs);
+        prepareCatalogsTable();
+        initPagination(response.data.pagination);
+        $('.js-pagination .pagination-first').off().on('click', function () {
+          getCatalogs({}, callback);
+        });
+        $('.js-pagination .pagination-next').off().on('click', function () {
+          getCatalogs({
+            page: response.data.pagination.next
+          }, callback);
+        });
+        $('.js-pagination .pagination-previous').off().on('click', function () {
+          getCatalogs({
+            page: response.data.pagination.before
+          }, callback);
+        });
+        $('.js-pagination .pagination-last').off().on('click', function () {
+          getCatalogs({
+            page: response.data.pagination.last
+          }, callback);
+        });
+      } else {
+        prepareCatalogsTable();
+      }
       hideSpinner();
     },
     error: function error(xhr, status, _error) {
@@ -2254,6 +2259,16 @@ var getCatalogs = function getCatalogs() {
       hideSpinner();
     }
   });
+};
+var prepareCatalogsTable = function prepareCatalogsTable() {
+  if ($('#catalogs-table').hasClass('hidden')) {
+    $('#catalogs-table').removeClass('hidden');
+    $('.js-catalogs-message').text('');
+  } else {
+    $('#catalogs-table').addClass('hidden');
+    $('.js-pagination').addClass('hidden');
+    $('.js-catalogs-message').append('<p>Ще немає каталогів</p>');
+  }
 };
 var drawCatalogCommonDataRow = function drawCatalogCommonDataRow(catalog) {
   var row = $("<tr data-catalogid=" + catalog.id + ">");
@@ -2353,7 +2368,8 @@ module.exports = {
   drawCatalogCommonDataRow: drawCatalogCommonDataRow,
   addTopic: addTopic,
   saveTopic: saveTopic,
-  editTopic: editTopic
+  editTopic: editTopic,
+  prepareCatalogsTable: prepareCatalogsTable
 };
 
 /***/ }),
@@ -2514,7 +2530,8 @@ var _require2 = __webpack_require__(/*! ./common.js */ "./resources/js/universit
   searchTeachers = _require2.searchTeachers;
 var _require3 = __webpack_require__(/*! ../common/catalogs.js */ "./resources/js/common/catalogs.js"),
   getCatalogs = _require3.getCatalogs,
-  drawCatalogCommonDataRow = _require3.drawCatalogCommonDataRow;
+  drawCatalogCommonDataRow = _require3.drawCatalogCommonDataRow,
+  prepareCatalogsTable = _require3.prepareCatalogsTable;
 document.addEventListener('DOMContentLoaded', function () {
   toggleTabsSideBar('js-catalogs');
   getCatalogs({}, displayCatalogsData);
@@ -2576,6 +2593,7 @@ var saveCatalog = function saveCatalog(e) {
       _token: $(e.target).data('token')
     },
     success: function success(response) {
+      prepareCatalogsTable();
       drawSingleCatalog(response.data);
       clearModal('addCatalogModal');
       hideModal('addCatalogModal');

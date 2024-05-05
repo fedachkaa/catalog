@@ -9,20 +9,27 @@ const getCatalogs = function (searchParams ={}, callback = () => {}) {
         url: '/api/university/' + universityId + '/catalogs?' + queryString,
         method: 'GET',
         success: function (response) {
-            callback(response.data.catalogs);
-            initPagination(response.data.pagination);
-            $('.js-pagination .pagination-first').off().on('click', function() {
-                getCatalogs({}, callback);
-            });
-            $('.js-pagination .pagination-next').off().on('click', function() {
-                getCatalogs({page: response.data.pagination.next}, callback);
-            });
-            $('.js-pagination .pagination-previous').off().on('click', function() {
-                getCatalogs({page: response.data.pagination.before}, callback);
-            });
-            $('.js-pagination .pagination-last').off().on('click', function() {
-                getCatalogs({page: response.data.pagination.last}, callback);
-            });
+            if (response.data.catalogs.length) {
+                callback(response.data.catalogs);
+
+                prepareCatalogsTable();
+
+                initPagination(response.data.pagination);
+                $('.js-pagination .pagination-first').off().on('click', function () {
+                    getCatalogs({}, callback);
+                });
+                $('.js-pagination .pagination-next').off().on('click', function () {
+                    getCatalogs({page: response.data.pagination.next}, callback);
+                });
+                $('.js-pagination .pagination-previous').off().on('click', function () {
+                    getCatalogs({page: response.data.pagination.before}, callback);
+                });
+                $('.js-pagination .pagination-last').off().on('click', function () {
+                    getCatalogs({page: response.data.pagination.last}, callback);
+                });
+            } else {
+                prepareCatalogsTable();
+            }
             hideSpinner();
         },
         error: function (xhr, status, error) {
@@ -30,6 +37,17 @@ const getCatalogs = function (searchParams ={}, callback = () => {}) {
             hideSpinner();
         }
     });
+}
+
+const prepareCatalogsTable = function () {
+    if ($('#catalogs-table').hasClass('hidden')) {
+        $('#catalogs-table').removeClass('hidden');
+        $('.js-catalogs-message').text('');
+    } else {
+        $('#catalogs-table').addClass('hidden');
+        $('.js-pagination').addClass('hidden');
+        $('.js-catalogs-message').append('<p>Ще немає каталогів</p>');
+    }
 }
 
 const drawCatalogCommonDataRow = function (catalog) {
@@ -149,4 +167,5 @@ module.exports = {
     addTopic,
     saveTopic,
     editTopic,
+    prepareCatalogsTable,
 };
