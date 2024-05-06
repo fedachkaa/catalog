@@ -39,6 +39,7 @@ const getTeachers = function (searchParams = {}) {
         success: function (response) {
             if (response.data.teachers.length) {
                 displayTeachersData(response.data.teachers);
+                prepareTeachersTable(true);
 
                 initPagination(response.data.pagination);
                 $('.js-pagination .pagination-first').off().on('click', function () {
@@ -66,8 +67,8 @@ const getTeachers = function (searchParams = {}) {
     });
 }
 
-const prepareTeachersTable = function () {
-    if ($('#teachers-table').hasClass('hidden')) {
+const prepareTeachersTable = function (isShow = false) {
+    if (isShow) {
         $('#teachers-table').removeClass('hidden');
         $('.js-teachers-message').text('');
     } else {
@@ -84,8 +85,6 @@ const displayTeachersData = function (data) {
     data.forEach(teacher => {
         displaySingleTeacher(teacher);
     });
-
-    prepareTeachersTable();
 };
 
 const initSubjectActions = function() {
@@ -165,7 +164,7 @@ const saveTeacher = function (e) {
             _token: $(e.target).data('token'),
         },
         success: function (response) {
-            prepareTeachersTable();
+            prepareTeachersTable(true);
             displaySingleTeacher(response.data);
             hideSpinner();
             clearModal('addTeacherModal');

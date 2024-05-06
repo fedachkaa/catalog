@@ -2229,7 +2229,7 @@ var getCatalogs = function getCatalogs() {
     success: function success(response) {
       if (response.data.catalogs.length) {
         callback(response.data.catalogs);
-        prepareCatalogsTable();
+        prepareCatalogsTable(true);
         initPagination(response.data.pagination);
         $('.js-pagination .pagination-first').off().on('click', function () {
           getCatalogs({}, callback);
@@ -2261,7 +2261,8 @@ var getCatalogs = function getCatalogs() {
   });
 };
 var prepareCatalogsTable = function prepareCatalogsTable() {
-  if ($('#catalogs-table').hasClass('hidden')) {
+  var isShow = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+  if (isShow) {
     $('#catalogs-table').removeClass('hidden');
     $('.js-catalogs-message').text('');
   } else {

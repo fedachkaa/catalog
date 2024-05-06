@@ -43827,6 +43827,7 @@ var getTeachers = function getTeachers() {
     success: function success(response) {
       if (response.data.teachers.length) {
         displayTeachersData(response.data.teachers);
+        prepareTeachersTable(true);
         initPagination(response.data.pagination);
         $('.js-pagination .pagination-first').off().on('click', function () {
           getTeachers();
@@ -43858,7 +43859,8 @@ var getTeachers = function getTeachers() {
   });
 };
 var prepareTeachersTable = function prepareTeachersTable() {
-  if ($('#teachers-table').hasClass('hidden')) {
+  var isShow = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+  if (isShow) {
     $('#teachers-table').removeClass('hidden');
     $('.js-teachers-message').text('');
   } else {
@@ -43873,7 +43875,6 @@ var displayTeachersData = function displayTeachersData(data) {
   data.forEach(function (teacher) {
     displaySingleTeacher(teacher);
   });
-  prepareTeachersTable();
 };
 var initSubjectActions = function initSubjectActions() {
   $('#addTeacherModal .js-search-subject-btn').on('click', function () {
@@ -43940,7 +43941,7 @@ var saveTeacher = function saveTeacher(e) {
       _token: $(e.target).data('token')
     },
     success: function success(response) {
-      prepareTeachersTable();
+      prepareTeachersTable(true);
       displaySingleTeacher(response.data);
       hideSpinner();
       clearModal('addTeacherModal');

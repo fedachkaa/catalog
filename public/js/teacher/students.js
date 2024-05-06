@@ -2219,20 +2219,25 @@ var getStudents = function getStudents() {
     url: '/api/university/' + universityId + '/students?' + query,
     method: 'GET',
     success: function success(response) {
-      displayStudentsData(response.data.students);
-      initPagination(response.data.pagination);
-      $('.js-pagination .pagination-first').off().on('click', function () {
-        getStudents();
-      });
-      $('.js-pagination .pagination-next').off().on('click', function () {
-        getStudents("page=".concat(response.data.pagination.next));
-      });
-      $('.js-pagination .pagination-previous').off().on('click', function () {
-        getStudents("page=".concat(response.data.pagination.before));
-      });
-      $('.js-pagination .pagination-last').off().on('click', function () {
-        getStudents("page=".concat(response.data.pagination.last));
-      });
+      if (response.data.students.length) {
+        displayStudentsData(response.data.students);
+        prepareStudentsTable(true);
+        initPagination(response.data.pagination);
+        $('.js-pagination .pagination-first').off().on('click', function () {
+          getStudents();
+        });
+        $('.js-pagination .pagination-next').off().on('click', function () {
+          getStudents("page=".concat(response.data.pagination.next));
+        });
+        $('.js-pagination .pagination-previous').off().on('click', function () {
+          getStudents("page=".concat(response.data.pagination.before));
+        });
+        $('.js-pagination .pagination-last').off().on('click', function () {
+          getStudents("page=".concat(response.data.pagination.last));
+        });
+      } else {
+        prepareStudentsTable(false);
+      }
       hideSpinner();
     },
     error: function error(xhr, status, _error) {
@@ -2295,10 +2300,23 @@ var createStudentRow = function createStudentRow(student) {
   row.addClass(($('#students-table tbody tr').length + 1) % 2 === 0 ? 'row-gray' : 'row-beige');
   return row;
 };
+var prepareStudentsTable = function prepareStudentsTable() {
+  var isShow = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+  if (isShow) {
+    $('#students-table').removeClass('hidden');
+    $('.js-pagination').removeClass('hidden');
+    $('.js-students-message').text('');
+  } else {
+    $('#students-table').addClass('hidden');
+    $('.js-pagination').addClass('hidden');
+    $('.js-students-message').append('<p>Ще немає студентів</p>');
+  }
+};
 module.exports = {
   getStudents: getStudents,
   searchStudents: searchStudents,
-  drawSingleStudent: drawSingleStudent
+  drawSingleStudent: drawSingleStudent,
+  prepareStudentsTable: prepareStudentsTable
 };
 
 /***/ }),

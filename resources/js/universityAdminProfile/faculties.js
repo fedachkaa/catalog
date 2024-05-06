@@ -164,6 +164,7 @@ const displayFacultiesData = function(data) {
     data.faculties.forEach(faculty => {
         drawSingleFaculty(faculty);
     });
+    prepareFacultyTable();
 }
 
 const drawSingleFaculty = function (faculty) {

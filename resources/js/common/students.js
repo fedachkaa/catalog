@@ -7,20 +7,25 @@ const getStudents = function (query = '') {
         url: '/api/university/' + universityId +'/students?' + query,
         method: 'GET',
         success: function (response) {
-            displayStudentsData(response.data.students);
-            initPagination(response.data.pagination);
-            $('.js-pagination .pagination-first').off().on('click', function() {
-                getStudents();
-            });
-            $('.js-pagination .pagination-next').off().on('click', function() {
-                getStudents(`page=${response.data.pagination.next}`);
-            });
-            $('.js-pagination .pagination-previous').off().on('click', function() {
-                getStudents(`page=${response.data.pagination.before}`);
-            });
-            $('.js-pagination .pagination-last').off().on('click', function() {
-                getStudents(`page=${response.data.pagination.last}`);
-            });
+            if (response.data.students.length) {
+                displayStudentsData(response.data.students);
+                prepareStudentsTable(true);
+                initPagination(response.data.pagination);
+                $('.js-pagination .pagination-first').off().on('click', function () {
+                    getStudents();
+                });
+                $('.js-pagination .pagination-next').off().on('click', function () {
+                    getStudents(`page=${response.data.pagination.next}`);
+                });
+                $('.js-pagination .pagination-previous').off().on('click', function () {
+                    getStudents(`page=${response.data.pagination.before}`);
+                });
+                $('.js-pagination .pagination-last').off().on('click', function () {
+                    getStudents(`page=${response.data.pagination.last}`);
+                });
+            } else {
+                prepareStudentsTable(false);
+            }
             hideSpinner();
         },
         error: function (xhr, status, error) {
@@ -60,6 +65,7 @@ const searchStudents = function () {
 
     getStudents(query);
 }
+
 
 const displayStudentsData = function (data) {
     const tbody = $('#students-table tbody');
@@ -101,8 +107,21 @@ const createStudentRow = function (student) {
     return row;
 }
 
+const prepareStudentsTable = function (isShow = false) {
+    if (isShow) {
+        $('#students-table').removeClass('hidden');
+        $('.js-pagination').removeClass('hidden');
+        $('.js-students-message').text('');
+    } else {
+        $('#students-table').addClass('hidden');
+        $('.js-pagination').addClass('hidden');
+        $('.js-students-message').append('<p>Ще немає студентів</p>')
+    }
+}
+
 module.exports = {
     getStudents,
     searchStudents,
     drawSingleStudent,
+    prepareStudentsTable,
 };

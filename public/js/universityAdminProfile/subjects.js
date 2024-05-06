@@ -43820,9 +43820,9 @@ var getSubjects = function getSubjects() {
     url: '/api/university/' + universityId + '/subjects?' + queryString,
     method: 'GET',
     success: function success(response) {
-      if (response.data.subjects) {
-        prepareSubjectsTable();
+      if (response.data.subjects.length) {
         displaySubjectsData(response.data.subjects);
+        prepareSubjectsTable(true);
         initPagination(response.data.pagination);
         $('.js-pagination .pagination-first').off().on('click', function () {
           getSubjects();
@@ -43843,7 +43843,7 @@ var getSubjects = function getSubjects() {
           });
         });
       } else {
-        prepareSubjectsTable();
+        prepareSubjectsTable(false);
       }
       hideSpinner();
     },
@@ -43859,7 +43859,6 @@ var displaySubjectsData = function displaySubjectsData(data) {
   data.forEach(function (subject) {
     drawSingleSubject(subject);
   });
-  prepareSubjectsTable();
 };
 var addSubject = function addSubject(e) {
   $('#addEditSubjectModal .js-search-teacher-btn').on('click', function () {
@@ -43910,7 +43909,7 @@ var saveSubject = function saveSubject(e) {
       _token: $(e.target).data('token')
     },
     success: function success(response) {
-      prepareSubjectsTable();
+      prepareSubjectsTable(true);
       drawSingleSubject(response.data);
       $('#addEditSubjectModal').removeAttr('data-subjectid');
       $('#addEditSubjectModal .js-subject-title').val('');
@@ -43925,9 +43924,11 @@ var saveSubject = function saveSubject(e) {
   });
 };
 var prepareSubjectsTable = function prepareSubjectsTable() {
-  if ($('#subjects-table').hasClass('hidden')) {
+  var isShow = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+  if (isShow) {
     $('#subjects-table').removeClass('hidden');
     $('.js-subjects-message').text('');
+    $('.js-pagination').removeClass('hidden');
   } else {
     $('#subjects-table').addClass('hidden');
     $('.js-pagination').addClass('hidden');

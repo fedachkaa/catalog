@@ -31,10 +31,9 @@ const getSubjects = function (searchParams = {}) {
         url: '/api/university/' + universityId +'/subjects?' + queryString,
         method: 'GET',
         success: function (response) {
-            if (response.data.subjects) {
-                prepareSubjectsTable();
-
+            if (response.data.subjects.length) {
                 displaySubjectsData(response.data.subjects);
+                prepareSubjectsTable(true);
 
                 initPagination(response.data.pagination);
                 $('.js-pagination .pagination-first').off().on('click', function () {
@@ -50,7 +49,7 @@ const getSubjects = function (searchParams = {}) {
                     getSubjects({page: response.data.pagination.last});
                 });
             } else {
-                prepareSubjectsTable();
+                prepareSubjectsTable(false);
             }
 
             hideSpinner();
@@ -69,8 +68,6 @@ const displaySubjectsData = function (data) {
     data.forEach(subject => {
         drawSingleSubject(subject)
     });
-
-    prepareSubjectsTable();
 }
 
 const addSubject = function (e) {
@@ -129,7 +126,7 @@ const saveSubject = function (e) {
             _token: $(e.target).data('token'),
         },
         success: function (response) {
-            prepareSubjectsTable();
+            prepareSubjectsTable(true);
 
             drawSingleSubject(response.data);
             $('#addEditSubjectModal').removeAttr('data-subjectid');
@@ -146,10 +143,11 @@ const saveSubject = function (e) {
     });
 }
 
-const prepareSubjectsTable = function () {
-    if ( $('#subjects-table').hasClass('hidden')) {
+const prepareSubjectsTable = function (isShow = false) {
+    if (isShow) {
         $('#subjects-table').removeClass('hidden');
         $('.js-subjects-message').text('');
+        $('.js-pagination').removeClass('hidden');
     } else {
         $('#subjects-table').addClass('hidden');
         $('.js-pagination').addClass('hidden');

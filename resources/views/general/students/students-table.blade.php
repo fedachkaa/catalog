@@ -14,4 +14,7 @@
     </tbody>
 </table>
 
+<div class="js-students-message"></div>
+
+
 @include('general.pagination')

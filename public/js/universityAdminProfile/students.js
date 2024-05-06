@@ -2219,20 +2219,25 @@ var getStudents = function getStudents() {
     url: '/api/university/' + universityId + '/students?' + query,
     method: 'GET',
     success: function success(response) {
-      displayStudentsData(response.data.students);
-      initPagination(response.data.pagination);
-      $('.js-pagination .pagination-first').off().on('click', function () {
-        getStudents();
-      });
-      $('.js-pagination .pagination-next').off().on('click', function () {
-        getStudents("page=".concat(response.data.pagination.next));
-      });
-      $('.js-pagination .pagination-previous').off().on('click', function () {
-        getStudents("page=".concat(response.data.pagination.before));
-      });
-      $('.js-pagination .pagination-last').off().on('click', function () {
-        getStudents("page=".concat(response.data.pagination.last));
-      });
+      if (response.data.students.length) {
+        displayStudentsData(response.data.students);
+        prepareStudentsTable(true);
+        initPagination(response.data.pagination);
+        $('.js-pagination .pagination-first').off().on('click', function () {
+          getStudents();
+        });
+        $('.js-pagination .pagination-next').off().on('click', function () {
+          getStudents("page=".concat(response.data.pagination.next));
+        });
+        $('.js-pagination .pagination-previous').off().on('click', function () {
+          getStudents("page=".concat(response.data.pagination.before));
+        });
+        $('.js-pagination .pagination-last').off().on('click', function () {
+          getStudents("page=".concat(response.data.pagination.last));
+        });
+      } else {
+        prepareStudentsTable(false);
+      }
       hideSpinner();
     },
     error: function error(xhr, status, _error) {
@@ -2295,10 +2300,23 @@ var createStudentRow = function createStudentRow(student) {
   row.addClass(($('#students-table tbody tr').length + 1) % 2 === 0 ? 'row-gray' : 'row-beige');
   return row;
 };
+var prepareStudentsTable = function prepareStudentsTable() {
+  var isShow = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+  if (isShow) {
+    $('#students-table').removeClass('hidden');
+    $('.js-pagination').removeClass('hidden');
+    $('.js-students-message').text('');
+  } else {
+    $('#students-table').addClass('hidden');
+    $('.js-pagination').addClass('hidden');
+    $('.js-students-message').append('<p>Ще немає студентів</p>');
+  }
+};
 module.exports = {
   getStudents: getStudents,
   searchStudents: searchStudents,
-  drawSingleStudent: drawSingleStudent
+  drawSingleStudent: drawSingleStudent,
+  prepareStudentsTable: prepareStudentsTable
 };
 
 /***/ }),
@@ -43908,7 +43926,8 @@ var _require2 = __webpack_require__(/*! ./common.js */ "./resources/js/universit
 var _require3 = __webpack_require__(/*! ../common/students.js */ "./resources/js/common/students.js"),
   searchStudents = _require3.searchStudents,
   getStudents = _require3.getStudents,
-  drawSingleStudent = _require3.drawSingleStudent;
+  drawSingleStudent = _require3.drawSingleStudent,
+  prepareStudentsTable = _require3.prepareStudentsTable;
 document.addEventListener('DOMContentLoaded', function () {
   toggleTabsSideBar('js-students');
   getStudents();
@@ -44027,6 +44046,7 @@ var saveStudent = function saveStudent(e) {
       _token: $(e.target).data('token')
     },
     success: function success(response) {
+      prepareStudentsTable(true);
       drawSingleStudent(response.data);
       hideModal('addStudentModal');
       clearModal('addStudentModal');

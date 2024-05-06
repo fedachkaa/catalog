@@ -2,6 +2,7 @@ const { showModal, hideModal, clearModal, toggleTabsSideBar, showErrors } = requ
 const { searchGroups, searchFaculties, searchCourses, searchTeachers } = require('./common.js');
 const { getCatalogs, drawCatalogCommonDataRow, prepareCatalogsTable } = require('../common/catalogs.js');
 
+
 document.addEventListener('DOMContentLoaded', function () {
     toggleTabsSideBar('js-catalogs');
 
@@ -72,7 +73,7 @@ const saveCatalog = function (e) {
             _token: $(e.target).data('token'),
         },
         success: function (response) {
-            prepareCatalogsTable();
+            prepareCatalogsTable(true);
 
             drawSingleCatalog(response.data);
             clearModal('addCatalogModal')

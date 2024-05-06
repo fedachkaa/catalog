@@ -12,7 +12,7 @@ const getCatalogs = function (searchParams ={}, callback = () => {}) {
             if (response.data.catalogs.length) {
                 callback(response.data.catalogs);
 
-                prepareCatalogsTable();
+                prepareCatalogsTable(true);
 
                 initPagination(response.data.pagination);
                 $('.js-pagination .pagination-first').off().on('click', function () {
@@ -39,8 +39,8 @@ const getCatalogs = function (searchParams ={}, callback = () => {}) {
     });
 }
 
-const prepareCatalogsTable = function () {
-    if ($('#catalogs-table').hasClass('hidden')) {
+const prepareCatalogsTable = function (isShow = false) {
+    if (isShow) {
         $('#catalogs-table').removeClass('hidden');
         $('.js-catalogs-message').text('');
     } else {

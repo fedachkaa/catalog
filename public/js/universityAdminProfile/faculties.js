@@ -43941,6 +43941,7 @@ var displayFacultiesData = function displayFacultiesData(data) {
   data.faculties.forEach(function (faculty) {
     drawSingleFaculty(faculty);
   });
+  prepareFacultyTable();
 };
 var drawSingleFaculty = function drawSingleFaculty(faculty) {
   prepareFacultyTable();

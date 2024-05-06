@@ -1,6 +1,6 @@
 const { showModal, hideModal, toggleTabsSideBar, showSpinner, hideSpinner, showErrors, clearModal, getUserBaseInfo } = require('./../general.js');
 const { searchGroups, searchFaculties, searchCourses } = require('./common.js');
-const { searchStudents, getStudents, drawSingleStudent } = require('../common/students.js');
+const { searchStudents, getStudents, drawSingleStudent, prepareStudentsTable } = require('../common/students.js');
 
 document.addEventListener('DOMContentLoaded', function () {
     toggleTabsSideBar('js-students');
@@ -140,6 +140,7 @@ const saveStudent = function (e) {
             _token: $(e.target).data('token'),
         },
         success: function (response) {
+            prepareStudentsTable(true);
             drawSingleStudent(response.data);
             hideModal('addStudentModal')
             clearModal('addStudentModal');
