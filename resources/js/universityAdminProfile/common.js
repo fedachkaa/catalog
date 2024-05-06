@@ -96,7 +96,7 @@ const searchTeachers = function (block, searchParams = {}, callback = () => {}) 
             teachersSelect.empty();
             teachersSelect.append($('<option >').attr('value', '').text('Виберіть викладача'));
 
-            response.data.forEach(teacher => {
+            response.data.teachers.forEach(teacher => {
                 teachersSelect.append($('<option class="js-teacher-item">').attr('value', teacher.user_id).text(teacher.user.full_name));
             });
 

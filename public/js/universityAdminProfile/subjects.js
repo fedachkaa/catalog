@@ -2314,6 +2314,15 @@ var showErrors = function showErrors(errors, selectorBlock) {
     errorParagraph.text(errorMessage);
   });
 };
+var initPagination = function initPagination(pagination) {
+  var paginationBlock = $('.js-pagination');
+  paginationBlock.find('.pagination-first').attr('data-page', 1);
+  paginationBlock.find('.pagination-previous').attr('data-page', pagination.before);
+  paginationBlock.find('.pagination-next').attr('data-page', pagination.next);
+  paginationBlock.find('.pagination-last').attr('data-page', pagination.last);
+  paginationBlock.find('.pagination-message').text("You are on the page ".concat(pagination.current, " of ").concat(pagination.totalPages));
+  paginationBlock.removeClass('hidden');
+};
 module.exports = {
   toggleTabsSideBar: toggleTabsSideBar,
   getUserData: getUserData,
@@ -2324,7 +2333,8 @@ module.exports = {
   showSpinner: showSpinner,
   hideSpinner: hideSpinner,
   showErrors: showErrors,
-  getUserBaseInfo: getUserBaseInfo
+  getUserBaseInfo: getUserBaseInfo,
+  initPagination: initPagination
 };
 
 /***/ }),
@@ -2421,7 +2431,7 @@ var searchTeachers = function searchTeachers(block) {
       var teachersSelect = $(block).find('.js-teachers-select');
       teachersSelect.empty();
       teachersSelect.append($('<option >').attr('value', '').text('Виберіть викладача'));
-      response.data.forEach(function (teacher) {
+      response.data.teachers.forEach(function (teacher) {
         teachersSelect.append($('<option class="js-teacher-item">').attr('value', teacher.user_id).text(teacher.user.full_name));
       });
       initTeachersSelectClick(block, teachersSelect);
@@ -43787,7 +43797,8 @@ var _require = __webpack_require__(/*! ./../general.js */ "./resources/js/genera
   toggleTabsSideBar = _require.toggleTabsSideBar,
   showSpinner = _require.showSpinner,
   hideSpinner = _require.hideSpinner,
-  showErrors = _require.showErrors;
+  showErrors = _require.showErrors,
+  initPagination = _require.initPagination;
 var _require2 = __webpack_require__(/*! ./common.js */ "./resources/js/universityAdminProfile/common.js"),
   searchTeachers = _require2.searchTeachers,
   initRemoveTeacherClick = _require2.initRemoveTeacherClick;
@@ -43797,14 +43808,43 @@ document.addEventListener('DOMContentLoaded', function () {
   $(document).on('click', '.js-add-subject', addSubject);
   $(document).on('click', '.js-save-subject', saveSubject);
   $(document).on('click', '.js-edit-subject', editSubject);
+  $(document).on('click', '.js-delete-subject', deleteSubject);
 });
 var getSubjects = function getSubjects() {
+  var searchParams = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
   showSpinner();
+  var queryString = Object.keys(searchParams).map(function (key) {
+    return "".concat(encodeURIComponent(key), "=").concat(encodeURIComponent(searchParams[key]));
+  }).join('&');
   $.ajax({
-    url: '/api/university/' + universityId + '/subjects',
+    url: '/api/university/' + universityId + '/subjects?' + queryString,
     method: 'GET',
     success: function success(response) {
-      displaySubjectsData(response.data);
+      if (response.data.subjects.length) {
+        displaySubjectsData(response.data.subjects);
+        prepareSubjectsTable(true);
+        initPagination(response.data.pagination);
+        $('.js-pagination .pagination-first').off().on('click', function () {
+          getSubjects();
+        });
+        $('.js-pagination .pagination-next').off().on('click', function () {
+          getSubjects({
+            page: response.data.pagination.next
+          });
+        });
+        $('.js-pagination .pagination-previous').off().on('click', function () {
+          getSubjects({
+            page: response.data.pagination.before
+          });
+        });
+        $('.js-pagination .pagination-last').off().on('click', function () {
+          getSubjects({
+            page: response.data.pagination.last
+          });
+        });
+      } else {
+        prepareSubjectsTable(false);
+      }
       hideSpinner();
     },
     error: function error(xhr, status, _error) {
@@ -43834,8 +43874,8 @@ var editSubject = function editSubject(e) {
       searchText: $('#addEditSubjectModal .js-teacher-search').val()
     });
   });
-  $('#addEditSubjectModal').attr('data-subjectid', $(e.target).data('subjectid'));
   var row = $(e.target).closest('tr');
+  $('#addEditSubjectModal').attr('data-subjectid', row.data('subjectid'));
   $('#addEditSubjectModal .js-subject-title').val(row.find('.js-single-subject-title').text());
   var teachersList = row.find('.js-subject-teachers');
   var editTeachersList = $('#addEditSubjectModal .js-teachers-list ul');
@@ -43869,6 +43909,7 @@ var saveSubject = function saveSubject(e) {
       _token: $(e.target).data('token')
     },
     success: function success(response) {
+      prepareSubjectsTable(true);
       drawSingleSubject(response.data);
       $('#addEditSubjectModal').removeAttr('data-subjectid');
       $('#addEditSubjectModal .js-subject-title').val('');
@@ -43882,8 +43923,20 @@ var saveSubject = function saveSubject(e) {
     }
   });
 };
+var prepareSubjectsTable = function prepareSubjectsTable() {
+  var isShow = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+  if (isShow) {
+    $('#subjects-table').removeClass('hidden');
+    $('.js-subjects-message').text('');
+    $('.js-pagination').removeClass('hidden');
+  } else {
+    $('#subjects-table').addClass('hidden');
+    $('.js-pagination').addClass('hidden');
+    $('.js-subjects-message').append('<p>Ще немає предметів</p>');
+  }
+};
 var drawSingleSubject = function drawSingleSubject(subject) {
-  var existingRow = $('#subjects-table tbody tr[data-id="' + subject.id + '"]');
+  var existingRow = $('#subjects-table tbody tr[data-subject="' + subject.id + '"]');
   if (existingRow.length > 0) {
     existingRow.find('.js-single-subject-title').text(subject.title);
     var teachersList = existingRow.find('.js-subject-teachers');
@@ -43893,7 +43946,7 @@ var drawSingleSubject = function drawSingleSubject(subject) {
       teachersList.append(listItem);
     });
   } else {
-    var newRow = $('<tr>').attr('data-id', subject.id);
+    var newRow = $('<tr>').attr('data-subject', subject.id);
     newRow.append($('<td>').text(subject.id));
     newRow.append($('<td>').addClass('js-single-subject-title').text(subject.title));
     var _teachersList = $('<ul>').addClass('js-subject-teachers');
@@ -43902,13 +43955,32 @@ var drawSingleSubject = function drawSingleSubject(subject) {
       _teachersList.append(listItem);
     });
     newRow.append($('<td>').append(_teachersList));
-    var addActionCell = $('<td>');
-    var addActionIcon = $('<i>').addClass('fas fa-edit action-icon js-edit-subject').attr('title', 'Редагувати').attr('data-subjectid', subject.id);
-    addActionCell.append(addActionIcon);
+    var addActionCell = $('<td>').append($('<i>').addClass('fas fa-edit action-icon js-edit-subject').attr('title', 'Редагувати')).append($('<i>').addClass('fas fa-trash action-icon js-delete-subject').attr('title', 'Видалити'));
     newRow.append(addActionCell);
     newRow.addClass(($('#subjects-table tbody tr').length + 1) % 2 === 0 ? 'row-gray' : 'row-beige');
     $('#subjects-table tbody').append(newRow);
   }
+};
+var deleteSubject = function deleteSubject(e) {
+  if (!confirm("Are you sure you want to delete this subject?")) {
+    return;
+  }
+  var subjectId = $(e.target).closest('tr').data('subject');
+  $.ajax({
+    url: '/api/university/' + universityId + '/subjects/' + subjectId,
+    method: 'DELETE',
+    data: {
+      _token: $(e.target).closest('#subjects-table').data('token')
+    },
+    success: function success(response) {
+      $(e.target).closest('tr').remove();
+      hideSpinner();
+    },
+    error: function error(response) {
+      console.error(response);
+      hideSpinner();
+    }
+  });
 };
 })();
 

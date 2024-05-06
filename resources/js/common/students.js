@@ -1,4 +1,4 @@
-const {showSpinner, hideSpinner} = require("../general");
+const { showSpinner, hideSpinner, initPagination } = require("../general");
 
 const getStudents = function (query = '') {
     showSpinner();
@@ -7,7 +7,25 @@ const getStudents = function (query = '') {
         url: '/api/university/' + universityId +'/students?' + query,
         method: 'GET',
         success: function (response) {
-            displayStudentsData(response.data);
+            if (response.data.students.length) {
+                displayStudentsData(response.data.students);
+                prepareStudentsTable(true);
+                initPagination(response.data.pagination);
+                $('.js-pagination .pagination-first').off().on('click', function () {
+                    getStudents();
+                });
+                $('.js-pagination .pagination-next').off().on('click', function () {
+                    getStudents(`page=${response.data.pagination.next}`);
+                });
+                $('.js-pagination .pagination-previous').off().on('click', function () {
+                    getStudents(`page=${response.data.pagination.before}`);
+                });
+                $('.js-pagination .pagination-last').off().on('click', function () {
+                    getStudents(`page=${response.data.pagination.last}`);
+                });
+            } else {
+                prepareStudentsTable(false);
+            }
             hideSpinner();
         },
         error: function (xhr, status, error) {
@@ -48,6 +66,7 @@ const searchStudents = function () {
     getStudents(query);
 }
 
+
 const displayStudentsData = function (data) {
     const tbody = $('#students-table tbody');
     tbody.empty();
@@ -57,19 +76,52 @@ const displayStudentsData = function (data) {
     });
 }
 
-const drawSingleStudent = function (student) {
+const drawSingleStudent = (student) => {
+    const existingRow = $('#students-table tbody tr[data-userid="' + student.user_id + '"]');
+    if (existingRow.length > 0) {
+        existingRow.find('.js-student-name').text(student.user.full_name);
+        existingRow.find('.js-student-faculty').text(student.faculty.title);
+        existingRow.find('.js-student-course').text(student.course.course + ' курс');
+        existingRow.find('.js-student-group').text(student.group.title);
+    } else {
+        const newRow = createStudentRow(student);
+        $('#students-table tbody').append(newRow);
+    }
+};
+
+const createStudentRow = function (student) {
     const row = $('<tr>').attr('data-userid', student.user_id);
     row.append($('<td>').text(student.user_id));
-    row.append($('<td class="js-show-user-info action-icon">').text(student.user.full_name));
-    row.append($('<td>').text(student.faculty.title));
-    row.append($('<td>').text(student.course.course + ' курс'));
-    row.append($('<td>').text(student.group.title));
+    row.append($('<td class="js-show-user-info js-student-name action-icon">').text(student.user.full_name));
+    row.append($('<td class="js-student-faculty">').text(student.faculty.title));
+    row.append($('<td class="js-student-course">').text(student.course.course + ' курс'));
+    row.append($('<td class="js-student-group">').text(student.group.title));
+
+    row.append($('<td>')
+        .append($('<i>').addClass('fas fa-edit action-icon js-edit-student'))
+        .append($('<i>').addClass('fas fa-trash action-icon js-delete-student'))
+    );
+
     row.addClass(($('#students-table tbody tr').length + 1) % 2 === 0 ? 'row-gray' : 'row-beige');
-    $('#students-table tbody').append(row);
+
+    return row;
+}
+
+const prepareStudentsTable = function (isShow = false) {
+    if (isShow) {
+        $('#students-table').removeClass('hidden');
+        $('.js-pagination').removeClass('hidden');
+        $('.js-students-message').text('');
+    } else {
+        $('#students-table').addClass('hidden');
+        $('.js-pagination').addClass('hidden');
+        $('.js-students-message').append('<p>Ще немає студентів</p>')
+    }
 }
 
 module.exports = {
     getStudents,
     searchStudents,
     drawSingleStudent,
+    prepareStudentsTable,
 };

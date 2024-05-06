@@ -6,11 +6,11 @@
     @include('userProfile.universityAdminProfile.partials.sidebar-template')
 
     <div class="pl-56">
-        <div class="faculties-block js-faculties-container">
+        <div class="faculties-block">
             <button class="add-user-btn js-add-teacher">Додати викладача</button>
         </div>
         <div>
-            <table id="teachers-table" class="table-block">
+            <table id="teachers-table" class="table-block" data-token="{{ csrf_token() }}">
                 <thead>
                 <tr>
                     <th>№</th>
@@ -24,7 +24,9 @@
                 <!-- Table body will be populated dynamically -->
                 </tbody>
             </table>
+            @include('general.pagination')
         </div>
+        <div class="js-teachers-message"></div>
     </div>
 
     @include('userProfile.universityAdminProfile.partials.teachers.add-edit-teacher-modal')

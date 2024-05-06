@@ -25,6 +25,16 @@ class University extends Model implements UniversityInterface
         self::ACCREDITATION_LEVEL_FOURTH => 'IV рівень акредитації',
     ];
 
+    /** @var int */
+    const IS_ACTIVE_TRUE = 1;
+    const IS_ACTIVE_FALSE = 0;
+
+    /** @var string[] */
+    const AVAILABLE_STATUSES = [
+        self::IS_ACTIVE_TRUE => 'Active',
+        self::IS_ACTIVE_FALSE => 'Inactive',
+    ];
+
     /** @var array */
     protected $fillable = [
         'admin_id',

@@ -2,8 +2,8 @@
 
 namespace App\Services;
 
-use App\Models\Group;
 use App\Models\Interfaces\StudentInterface;
+use App\Models\Student;
 use App\Models\UserRole;
 use App\Repositories\Interfaces\StudentRepositoryInterface;
 
@@ -55,13 +55,32 @@ class StudentService
     }
 
     /**
-     * @param Group $group
-     * @return array
+     * @param Student $student
+     * @param array $data
+     * @return Student
+     * @throws \Throwable
      */
-    public function getStudentsByGroup(Group $group): array
+    public function updateStudent(Student $student, array $data): Student
     {
-        $students = $this->studentRepository->getAll(['group_id' => $group->getId()]);
+        $this->userService->updateUser($student->getUser(), $data);
 
-        return $this->studentRepository->exportAll($students, ['user']);
+        if (isset($data['group_id'])) {
+            $student->updateOrFail([
+                'group_id' => $data['group_id'],
+            ]);
+        }
+
+        return $student;
+    }
+
+    /**
+     * @param Student $student
+     * @return bool
+     */
+    public function deleteStudent(Student $student): bool
+    {
+        $student->getUser()->delete();
+
+        return true;
     }
 }

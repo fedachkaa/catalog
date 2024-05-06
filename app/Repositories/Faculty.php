@@ -63,6 +63,14 @@ class Faculty extends RepositoryAbstract implements FacultyRepositoryInterface
             $query = $query->where('university_id', (int) $filters['university_id']);
         }
 
+        if (!empty($filters['limit'])) {
+            $query = $query->limit($filters['limit']);
+        }
+
+        if (!empty($filters['offset'])) {
+            $query = $query->offset($filters['offset']);
+        }
+
         return $query->get();
     }
 }

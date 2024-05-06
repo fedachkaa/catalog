@@ -1,4 +1,14 @@
-const { showErrors, showModal, hideModal, clearModal, toggleTabsSideBar, showSpinner, hideSpinner, getUserBaseInfo} = require('../general.js');
+const {
+    showErrors,
+    showModal,
+    hideModal,
+    clearModal,
+    toggleTabsSideBar,
+    showSpinner,
+    hideSpinner,
+    getUserBaseInfo,
+    initPagination
+} = require('../general.js');
 const { searchFaculties } = require('./common.js');
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -8,6 +18,7 @@ document.addEventListener('DOMContentLoaded', function () {
     $(document).on('click', '.js-add-teacher', addTeacher);
     $(document).on('click', '.js-save-teacher', saveTeacher);
     $(document).on('click', '.js-edit-teacher', editTeacher);
+    $(document).on('click', '.js-delete-teacher', deleteTeacher);
     $(document).on('click', '.js-show-user-info', showUserInfo)
 });
 
@@ -15,14 +26,38 @@ const showUserInfo = function (e) {
     getUserBaseInfo($(e.target).closest('tr').data('userid'));
 }
 
-const getTeachers = function () {
+const getTeachers = function (searchParams = {}) {
     showSpinner();
 
+    const queryString = Object.keys(searchParams)
+        .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(searchParams[key])}`)
+        .join('&');
+
     $.ajax({
-        url: '/api/university/' + 1 +'/teachers',
+        url: '/api/university/' + universityId +'/teachers?' + queryString,
         method: 'GET',
         success: function (response) {
-            displayTeachersData(response.data);
+            if (response.data.teachers.length) {
+                displayTeachersData(response.data.teachers);
+                prepareTeachersTable(true);
+
+                initPagination(response.data.pagination);
+                $('.js-pagination .pagination-first').off().on('click', function () {
+                    getTeachers();
+                });
+                $('.js-pagination .pagination-next').off().on('click', function () {
+                    getTeachers({page: response.data.pagination.next});
+                });
+                $('.js-pagination .pagination-previous').off().on('click', function () {
+                    getTeachers({page: response.data.pagination.before});
+                });
+                $('.js-pagination .pagination-last').off().on('click', function () {
+                    getTeachers({page: response.data.pagination.last});
+                });
+            } else {
+                prepareTeachersTable();
+            }
+
             hideSpinner();
         },
         error: function (xhr, status, error) {
@@ -30,6 +65,17 @@ const getTeachers = function () {
             console.error('Помилка:', error);
         }
     });
+}
+
+const prepareTeachersTable = function (isShow = false) {
+    if (isShow) {
+        $('#teachers-table').removeClass('hidden');
+        $('.js-teachers-message').text('');
+    } else {
+        $('#teachers-table').addClass('hidden');
+        $('.js-pagination').addClass('hidden');
+        $('.js-teachers-message').append('<p>Ще немає викладачів</p>')
+    }
 }
 
 const displayTeachersData = function (data) {
@@ -118,6 +164,7 @@ const saveTeacher = function (e) {
             _token: $(e.target).data('token'),
         },
         success: function (response) {
+            prepareTeachersTable(true);
             displaySingleTeacher(response.data);
             hideSpinner();
             clearModal('addTeacherModal');
@@ -125,6 +172,30 @@ const saveTeacher = function (e) {
         },
         error: function (response) {
             showErrors(response.responseJSON.errors, '#addTeacherModal');
+            hideSpinner();
+        }
+    });
+}
+
+const deleteTeacher = function (e) {
+    if (!confirm("Are you sure you want to delete this teacher?")) {
+        return;
+    }
+
+    const teacherId = $(e.target).closest('tr').data('userid');
+
+    $.ajax({
+        url: '/api/university/' + universityId + '/teachers/' + teacherId,
+        method: 'DELETE',
+        data: {
+            _token: $(e.target).closest('#teachers-table').data('token'),
+        },
+        success: function (response) {
+            $(e.target).closest('tr').remove();
+            hideSpinner();
+        },
+        error: function (response) {
+            console.error(response);
             hideSpinner();
         }
     });
@@ -140,7 +211,7 @@ const searchSubjects = function () {
             const subjectsSelect = $('#addTeacherModal').find('.js-subjects-select');
             subjectsSelect.empty();
             subjectsSelect.append($('<option>').attr('value', '').text('Виберіть предмет'));
-            response.data.forEach(subject => {
+            response.data.subjects.forEach(subject => {
                 subjectsSelect.append($('<option>').attr('value', subject.id).text(subject.title));
             });
             subjectsSelect.removeClass('hidden');

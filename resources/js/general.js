@@ -112,6 +112,17 @@ const showErrors = function (errors, selectorBlock) {
         errorParagraph.text(errorMessage);
     });
 }
+
+const initPagination = function (pagination) {
+    const paginationBlock = $('.js-pagination');
+    paginationBlock.find('.pagination-first').attr('data-page', 1);
+    paginationBlock.find('.pagination-previous').attr('data-page', pagination.before);
+    paginationBlock.find('.pagination-next').attr('data-page', pagination.next);
+    paginationBlock.find('.pagination-last').attr('data-page', pagination.last);
+    paginationBlock.find('.pagination-message').text(`You are on the page ${pagination.current} of ${pagination.totalPages}`);
+    paginationBlock.removeClass('hidden');
+}
+
 module.exports = {
     toggleTabsSideBar,
     getUserData,
@@ -122,5 +133,6 @@ module.exports = {
     showSpinner,
     hideSpinner,
     showErrors,
-    getUserBaseInfo
+    getUserBaseInfo,
+    initPagination,
 }

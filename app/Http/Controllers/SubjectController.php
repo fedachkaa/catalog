@@ -12,9 +12,13 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
 
 class SubjectController extends Controller
 {
+    /** @var int */
+    const PAGINATION_LIMIT = 10;
+
     /** @var SubjectRepositoryInterface */
     private $subjectRepository;
 
@@ -42,7 +46,7 @@ class SubjectController extends Controller
         if (auth()->user()->isUniversityAdmin()) {
             return view('userProfile.universityAdminProfile.partials.subjects.subjects-block');
         } else if (auth()->user()->isTeacher()) {
-            $subjectsData = $this->subjectRepository->exportAll(auth()->user()->getTeacher()->getSubjects());
+            $subjectsData = $this->subjectRepository->exportAll(auth()->user()->getTeacher()->getSubjects()->get());
             return view('userProfile.teacherProfile.partials.subjects.subjects-block', compact('subjectsData'));
         } else {
             return view('404NotFound');
@@ -58,12 +62,16 @@ class SubjectController extends Controller
      */
     public function getSubjectsList(Request $request, University $university): JsonResponse
     {
-        $searchParams = array_merge($this->getSearchParams($request), ['university_id' => $university->getId()]);
-        $subjects = $this->subjectRepository->getAll($searchParams);
+        $searchParams = $this->getSearchParams($request);
+        $totalSubjects = count($this->subjectRepository->getAll(['university_id' => $university->getId()]));
+        $subjects = $this->subjectRepository->getAll(array_merge($searchParams, ['university_id' => $university->getId()]));
 
         return response()->json([
             'message' => 'Success',
-            'data' => $this->subjectRepository->exportAll($subjects, ['teachers'])
+            'data' => [
+                'subjects' => $this->subjectRepository->exportAll($subjects, ['teachers']),
+                'pagination' => $this->getPagination($searchParams, $totalSubjects),
+            ]
         ])->setStatusCode(200);
     }
 
@@ -144,6 +152,30 @@ class SubjectController extends Controller
     }
 
     /**
+     * @param University $university
+     * @param Subject $subject
+     * @return JsonResponse
+     */
+    public function deleteSubject(University $university, Subject $subject): JsonResponse
+    {
+        DB::beginTransaction();
+        try {
+            $subject->delete();
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Internal serve error',
+                'error' => $e->getMessage()
+            ])->setStatusCode(500);
+        }
+        DB::commit();
+
+        return response()->json([
+            'message' => 'Success',
+        ])->setStatusCode(200);
+    }
+
+    /**
      * @param Request $request
      * @return array
      */
@@ -153,6 +185,16 @@ class SubjectController extends Controller
 
         if ($request->has('searchText')) {
             $searchParams['searchText'] = $request->get('searchText');
+        }
+
+        if ($request->has('page')) {
+            $searchParams['page'] = (int) $request->get('page');
+            $searchParams['limit'] = self::PAGINATION_LIMIT;
+            $searchParams['offset'] = ($request->get('page') - 1) * self::PAGINATION_LIMIT;
+        } else {
+            $searchParams['page'] = 1;
+            $searchParams['limit'] = self::PAGINATION_LIMIT;
+            $searchParams['offset'] = 0;
         }
 
         return $searchParams;

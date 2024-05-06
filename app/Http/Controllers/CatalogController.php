@@ -12,7 +12,6 @@ use App\Models\TopicRequest;
 use App\Models\University;
 use App\Repositories\Interfaces\CatalogRepositoryInterface;
 use App\Repositories\Interfaces\CatalogTopicRepositoryInterface;
-use App\Repositories\Interfaces\FacultyRepositoryInterface;
 use App\Services\CatalogService;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
@@ -23,14 +22,14 @@ use Illuminate\Support\Facades\DB;
 
 class CatalogController extends Controller
 {
+    /** @var int */
+    const PAGINATION_LIMIT = 1;
+
     /** @var CatalogRepositoryInterface */
     private $catalogRepository;
 
     /** @var CatalogTopicRepositoryInterface */
     private $catalogTopicRepository;
-
-    /** @var FacultyRepositoryInterface */
-    private $facultyRepository;
 
     /** @var CatalogService */
     private $catalogService;
@@ -38,18 +37,15 @@ class CatalogController extends Controller
     /**
      * @param CatalogRepositoryInterface $catalogRepository
      * @param CatalogTopicRepositoryInterface $catalogTopicRepository
-     * @param FacultyRepositoryInterface $facultyRepository
      * @param CatalogService $catalogService
      */
     public function __construct(
         CatalogRepositoryInterface $catalogRepository,
         CatalogTopicRepositoryInterface $catalogTopicRepository,
-        FacultyRepositoryInterface $facultyRepository,
         CatalogService $catalogService
     ){
         $this->catalogRepository = $catalogRepository;
         $this->catalogTopicRepository = $catalogTopicRepository;
-        $this->facultyRepository = $facultyRepository;
         $this->catalogService = $catalogService;
     }
 
@@ -77,13 +73,16 @@ class CatalogController extends Controller
      */
     public function getCatalogsList(Request $request, University $university): JsonResponse
     {
-        $searchParams = array_merge($this->getSearchParams($request),  ['university_id' => $university->getId()]);
-
-        $catalogs = $this->catalogRepository->getAll($searchParams);
+        $searchParams = $this->getSearchParams($request);
+        $totalCatalogs = count($this->catalogRepository->getAll(['university_id' => $university->getId()]));
+        $catalogs = $this->catalogRepository->getAll(array_merge($searchParams, ['university_id' => $university->getId()]));
 
         return response()->json([
             'message' => 'Success',
-            'data' => $this->catalogRepository->exportAll($catalogs, ['groups', 'supervisors', 'faculty', 'course']),
+            'data' => [
+                'catalogs' => $this->catalogRepository->exportAll($catalogs, ['groups', 'supervisors', 'faculty', 'course']),
+                'pagination' => $this->getPagination($searchParams, $totalCatalogs),
+            ],
         ])->setStatusCode(200);
     }
 
@@ -341,6 +340,16 @@ class CatalogController extends Controller
 
         if ($request->has('studentId')) {
             $searchParams['student_id'] = $request->get('studentId');
+        }
+
+        if ($request->has('page')) {
+            $searchParams['page'] = (int) $request->get('page');
+            $searchParams['limit'] = self::PAGINATION_LIMIT;
+            $searchParams['offset'] = ($request->get('page') - 1) * self::PAGINATION_LIMIT;
+        } else {
+            $searchParams['page'] = 1;
+            $searchParams['limit'] = self::PAGINATION_LIMIT;
+            $searchParams['offset'] = 0;
         }
 
         return $searchParams;

@@ -12,8 +12,8 @@
 @section('content')
     @include('userProfile.universityAdminProfile.partials.sidebar-template')
 
-    <div class="pl-56 js-edit-catalog-block" data-catalogid="<?= $catalogData['id']; ?>">
-        <a href="/university/<?= $user['university']['id']; ?>/catalogs">
+    <div class="pl-56 js-edit-catalog-block" data-catalogid="{{ $catalogData['id'] }}">
+        <a href="/university/{{ $user['university']['id'] }}/catalogs">
             <i class="fa fa-circle-arrow-left text-3xl mt-4 action-icon" title="Повернутись"></i>
         </a>
 
@@ -21,24 +21,24 @@
         <div class="flex flex-row w-full items-center mb-4">
             <div class="flex flex-col w-full">
                 <h1>Тип каталогу: <span
-                        class="font-bold"><?= \App\Models\Catalog::AVAILABLE_CATALOG_TYPES[$catalogData['type']]; ?></span>
+                        class="font-bold">{{ \App\Models\Catalog::AVAILABLE_CATALOG_TYPES[$catalogData['type']] }}</span>
                 </h1>
             </div>
             <div class="flex flex-row w-full">
                 <input type="checkbox"
-                       class="js-is-active form-checkbox" <?= $catalogData['is_active'] ? 'checked' : ''; ?>>
+                       class="js-is-active form-checkbox" {{ $catalogData['is_active'] ? 'checked' : '' }}>
                 <label>Активувати</label>
             </div>
         </div>
 
         <div class="flex flex-row w-full mb-4">
-            <div class="flex flex-col w-full js-faculty" data-facultyid="<?= $catalogData['faculty']['id']; ?>">
-                <h1>Факультет: <span class="font-bold"><?= $catalogData['faculty']['title']; ?></span></h1>
+            <div class="flex flex-col w-full js-faculty" data-facultyid="{{ $catalogData['faculty']['id'] }}">
+                <h1>Факультет: <span class="font-bold">{{ $catalogData['faculty']['title'] }}</span></h1>
             </div>
         </div>
         <div class="flex flex-row w-full mb-4">
-            <div class="flex flex-col w-full js-course" data-courseid="<?= $catalogData['course']['id']; ?>">
-                <h1>Курс: <span class="font-bold"><?= $catalogData['course']['course'] . ' курс'; ?></span></h1>
+            <div class="flex flex-col w-full js-course" data-courseid="{{ $catalogData['course']['id'] }}">
+                <h1>Курс: <span class="font-bold">{{ $catalogData['course']['course'] . ' курс' }}</span></h1>
             </div>
         </div>
 
@@ -50,12 +50,12 @@
                 </div>
                 <div class="js-groups-list">
                     <ul>
-                        <?php foreach ($catalogData['groups'] as $group) : ?>
-                        <li data-groupid="<?= $group['id']; ?>">
-                                <?= $group['title']; ?>
-                            <i class="fas fa-times js-delete-group"></i>
-                        </li>
-                        <?php endforeach; ?>
+                        @foreach($catalogData['groups'] as $group)
+                            <li data-groupid="{{ $group['id'] }}">
+                                {{ $group['title'] }}
+                                <i class="fas fa-times js-delete-group"></i>
+                            </li>
+                        @endforeach
                     </ul>
                 </div>
             </div>
@@ -66,12 +66,12 @@
                 </div>
                 <div class="js-teachers-list">
                     <ul>
-                        <?php foreach ($catalogData['supervisors'] as $supervisor) : ?>
-                        <li data-teacherid="<?= $supervisor['user_id']; ?>">
-                                <?= $supervisor['user']['full_name']; ?>
-                            <i class="fas fa-times js-delete-teacher"></i>
-                        </li>
-                        <?php endforeach; ?>
+                        @foreach($catalogData['supervisors'] as $supervisor)
+                            <li data-teacherid="{{ $supervisor['user_id'] }}">
+                                {{ $supervisor['user']['full_name'] }}
+                                <i class="fas fa-times js-delete-teacher"></i>
+                            </li>
+                        @endforeach
                     </ul>
                 </div>
             </div>

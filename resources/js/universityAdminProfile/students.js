@@ -1,6 +1,6 @@
 const { showModal, hideModal, toggleTabsSideBar, showSpinner, hideSpinner, showErrors, clearModal, getUserBaseInfo } = require('./../general.js');
 const { searchGroups, searchFaculties, searchCourses } = require('./common.js');
-const { searchStudents, getStudents, drawSingleStudent } = require('../common/students.js');
+const { searchStudents, getStudents, drawSingleStudent, prepareStudentsTable } = require('../common/students.js');
 
 document.addEventListener('DOMContentLoaded', function () {
     toggleTabsSideBar('js-students');
@@ -11,6 +11,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     $(document).on('click', '.js-add-student', addStudent);
     $(document).on('click', '.js-save-student', saveStudent);
+    $(document).on('click', '.js-edit-student', editStudent);
+    $(document).on('click', '.js-delete-student', deleteStudent);
 
     $(document).on('click', '.js-show-user-info', showUserInfo);
 
@@ -23,6 +25,11 @@ const showUserInfo = function (e) {
 }
 
 const addStudent = function (e) {
+    initAddEditStudentModal();
+    showModal('addStudentModal');
+};
+
+const initAddEditStudentModal = function () {
     searchFaculties('addStudentModal');
 
     $('#addStudentModal .js-faculty').on('change', function() {
@@ -33,8 +40,67 @@ const addStudent = function (e) {
     $('#addStudentModal .js-course').on('change', function () {
         searchGroups({ courseId: $(this).val() }, 'addStudentModal', fillGroupSelect);
     });
-    showModal('addStudentModal');
-};
+}
+
+const editStudent = function (e) {
+    showSpinner();
+
+    initAddEditStudentModal();
+
+    $.ajax({
+        url: '/api/university/' + universityId + '/students/' + $(e.target).closest('tr').data('userid'),
+        method: 'GET',
+        success: function (response) {
+            const addEditStudentModal = $('#addStudentModal');
+            addEditStudentModal.attr('data-studentid', response.data.user_id);
+            addEditStudentModal.find('.js-first-name').val(response.data.user.first_name);
+            addEditStudentModal.find('.js-last-name').val(response.data.user.last_name);
+            addEditStudentModal.find('.js-email').val(response.data.user.email);
+            addEditStudentModal.find('.js-phone-number').val(response.data.user.phone_number);
+
+            // TODO add student data like text with edit icon
+            // searchFaculties('addStudentModal');
+            // addEditStudentModal.find('.js-faculty option[value="' + response.data.faculty.faculty_id + '"]').prop('selected', true);
+            //
+            // searchCourses(response.data.faculty.faculty_id, 'addStudentModal');
+            // addEditStudentModal.find('.js-course option[value="' + response.data.course.course_id + '"]').prop('selected', true);
+            //
+            // searchGroups({ courseId: response.data.course.course_id }, 'addStudentModal', fillGroupSelect);
+            // addEditStudentModal.find('.js-group option[value="' + response.data.group_id + '"]').prop('selected', true);
+
+            hideSpinner();
+            showModal('addStudentModal');
+        },
+        error: function (xhr, status, error) {
+            hideSpinner();
+            console.error('Помилка:', error);
+        }
+    });
+}
+
+const deleteStudent = function (e) {
+    if (!confirm("Are you sure you want to delete this student?")) {
+        return;
+    }
+
+    const studentId = $(e.target).closest('tr').data('userid');
+
+    $.ajax({
+        url: '/api/university/' + universityId + '/students/' + studentId,
+        method: 'DELETE',
+        data: {
+            _token: $(e.target).closest('#students-table').data('token'),
+        },
+        success: function (response) {
+            $(e.target).closest('tr').remove();
+            hideSpinner();
+        },
+        error: function (response) {
+            console.error(response);
+            hideSpinner();
+        }
+    });
+}
 
 const fillGroupSelect = function (groups, block) {
     const groupsSelect = $('#' + block).find('.js-group');
@@ -50,12 +116,19 @@ const fillGroupSelect = function (groups, block) {
 
 const saveStudent = function (e) {
     showSpinner();
-
     const modal = $('#addStudentModal');
 
+    const studentId =modal.data('studentid');
+    let url = '/api/university/' + universityId + '/students';
+    let method = 'POST';
+    if (studentId) {
+        url = '/api/university/' + universityId + '/students/' + studentId;
+        method = 'PUT';
+    }
+
     $.ajax({
-        url: '/api/university/' + universityId + '/students',
-        method: 'POST',
+        url: url,
+        method: method,
         data: {
             first_name: modal.find('.js-first-name').val(),
             last_name: modal.find('.js-last-name').val(),
@@ -67,6 +140,7 @@ const saveStudent = function (e) {
             _token: $(e.target).data('token'),
         },
         success: function (response) {
+            prepareStudentsTable(true);
             drawSingleStudent(response.data);
             hideModal('addStudentModal')
             clearModal('addStudentModal');

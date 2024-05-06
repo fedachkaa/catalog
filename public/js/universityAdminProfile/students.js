@@ -2210,7 +2210,8 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
 var _require = __webpack_require__(/*! ../general */ "./resources/js/general.js"),
   showSpinner = _require.showSpinner,
-  hideSpinner = _require.hideSpinner;
+  hideSpinner = _require.hideSpinner,
+  initPagination = _require.initPagination;
 var getStudents = function getStudents() {
   var query = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
   showSpinner();
@@ -2218,7 +2219,25 @@ var getStudents = function getStudents() {
     url: '/api/university/' + universityId + '/students?' + query,
     method: 'GET',
     success: function success(response) {
-      displayStudentsData(response.data);
+      if (response.data.students.length) {
+        displayStudentsData(response.data.students);
+        prepareStudentsTable(true);
+        initPagination(response.data.pagination);
+        $('.js-pagination .pagination-first').off().on('click', function () {
+          getStudents();
+        });
+        $('.js-pagination .pagination-next').off().on('click', function () {
+          getStudents("page=".concat(response.data.pagination.next));
+        });
+        $('.js-pagination .pagination-previous').off().on('click', function () {
+          getStudents("page=".concat(response.data.pagination.before));
+        });
+        $('.js-pagination .pagination-last').off().on('click', function () {
+          getStudents("page=".concat(response.data.pagination.last));
+        });
+      } else {
+        prepareStudentsTable(false);
+      }
       hideSpinner();
     },
     error: function error(xhr, status, _error) {
@@ -2259,19 +2278,45 @@ var displayStudentsData = function displayStudentsData(data) {
   });
 };
 var drawSingleStudent = function drawSingleStudent(student) {
+  var existingRow = $('#students-table tbody tr[data-userid="' + student.user_id + '"]');
+  if (existingRow.length > 0) {
+    existingRow.find('.js-student-name').text(student.user.full_name);
+    existingRow.find('.js-student-faculty').text(student.faculty.title);
+    existingRow.find('.js-student-course').text(student.course.course + ' курс');
+    existingRow.find('.js-student-group').text(student.group.title);
+  } else {
+    var newRow = createStudentRow(student);
+    $('#students-table tbody').append(newRow);
+  }
+};
+var createStudentRow = function createStudentRow(student) {
   var row = $('<tr>').attr('data-userid', student.user_id);
   row.append($('<td>').text(student.user_id));
-  row.append($('<td class="js-show-user-info action-icon">').text(student.user.full_name));
-  row.append($('<td>').text(student.faculty.title));
-  row.append($('<td>').text(student.course.course + ' курс'));
-  row.append($('<td>').text(student.group.title));
+  row.append($('<td class="js-show-user-info js-student-name action-icon">').text(student.user.full_name));
+  row.append($('<td class="js-student-faculty">').text(student.faculty.title));
+  row.append($('<td class="js-student-course">').text(student.course.course + ' курс'));
+  row.append($('<td class="js-student-group">').text(student.group.title));
+  row.append($('<td>').append($('<i>').addClass('fas fa-edit action-icon js-edit-student')).append($('<i>').addClass('fas fa-trash action-icon js-delete-student')));
   row.addClass(($('#students-table tbody tr').length + 1) % 2 === 0 ? 'row-gray' : 'row-beige');
-  $('#students-table tbody').append(row);
+  return row;
+};
+var prepareStudentsTable = function prepareStudentsTable() {
+  var isShow = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+  if (isShow) {
+    $('#students-table').removeClass('hidden');
+    $('.js-pagination').removeClass('hidden');
+    $('.js-students-message').text('');
+  } else {
+    $('#students-table').addClass('hidden');
+    $('.js-pagination').addClass('hidden');
+    $('.js-students-message').append('<p>Ще немає студентів</p>');
+  }
 };
 module.exports = {
   getStudents: getStudents,
   searchStudents: searchStudents,
-  drawSingleStudent: drawSingleStudent
+  drawSingleStudent: drawSingleStudent,
+  prepareStudentsTable: prepareStudentsTable
 };
 
 /***/ }),
@@ -2388,6 +2433,15 @@ var showErrors = function showErrors(errors, selectorBlock) {
     errorParagraph.text(errorMessage);
   });
 };
+var initPagination = function initPagination(pagination) {
+  var paginationBlock = $('.js-pagination');
+  paginationBlock.find('.pagination-first').attr('data-page', 1);
+  paginationBlock.find('.pagination-previous').attr('data-page', pagination.before);
+  paginationBlock.find('.pagination-next').attr('data-page', pagination.next);
+  paginationBlock.find('.pagination-last').attr('data-page', pagination.last);
+  paginationBlock.find('.pagination-message').text("You are on the page ".concat(pagination.current, " of ").concat(pagination.totalPages));
+  paginationBlock.removeClass('hidden');
+};
 module.exports = {
   toggleTabsSideBar: toggleTabsSideBar,
   getUserData: getUserData,
@@ -2398,7 +2452,8 @@ module.exports = {
   showSpinner: showSpinner,
   hideSpinner: hideSpinner,
   showErrors: showErrors,
-  getUserBaseInfo: getUserBaseInfo
+  getUserBaseInfo: getUserBaseInfo,
+  initPagination: initPagination
 };
 
 /***/ }),
@@ -2495,7 +2550,7 @@ var searchTeachers = function searchTeachers(block) {
       var teachersSelect = $(block).find('.js-teachers-select');
       teachersSelect.empty();
       teachersSelect.append($('<option >').attr('value', '').text('Виберіть викладача'));
-      response.data.forEach(function (teacher) {
+      response.data.teachers.forEach(function (teacher) {
         teachersSelect.append($('<option class="js-teacher-item">').attr('value', teacher.user_id).text(teacher.user.full_name));
       });
       initTeachersSelectClick(block, teachersSelect);
@@ -43871,13 +43926,16 @@ var _require2 = __webpack_require__(/*! ./common.js */ "./resources/js/universit
 var _require3 = __webpack_require__(/*! ../common/students.js */ "./resources/js/common/students.js"),
   searchStudents = _require3.searchStudents,
   getStudents = _require3.getStudents,
-  drawSingleStudent = _require3.drawSingleStudent;
+  drawSingleStudent = _require3.drawSingleStudent,
+  prepareStudentsTable = _require3.prepareStudentsTable;
 document.addEventListener('DOMContentLoaded', function () {
   toggleTabsSideBar('js-students');
   getStudents();
   $(document).on('click', '.js-search-students', searchStudents);
   $(document).on('click', '.js-add-student', addStudent);
   $(document).on('click', '.js-save-student', saveStudent);
+  $(document).on('click', '.js-edit-student', editStudent);
+  $(document).on('click', '.js-delete-student', deleteStudent);
   $(document).on('click', '.js-show-user-info', showUserInfo);
   $(document).on('click', '.js-import-students', importStudents);
   $(document).on('click', '.js-import-students-save', importStudentsStore);
@@ -43886,6 +43944,10 @@ var showUserInfo = function showUserInfo(e) {
   getUserBaseInfo($(e.target).closest('tr').data('userid'));
 };
 var addStudent = function addStudent(e) {
+  initAddEditStudentModal();
+  showModal('addStudentModal');
+};
+var initAddEditStudentModal = function initAddEditStudentModal() {
   searchFaculties('addStudentModal');
   $('#addStudentModal .js-faculty').on('change', function () {
     var selectedFacultyId = $(this).val();
@@ -43896,7 +43958,60 @@ var addStudent = function addStudent(e) {
       courseId: $(this).val()
     }, 'addStudentModal', fillGroupSelect);
   });
-  showModal('addStudentModal');
+};
+var editStudent = function editStudent(e) {
+  showSpinner();
+  initAddEditStudentModal();
+  $.ajax({
+    url: '/api/university/' + universityId + '/students/' + $(e.target).closest('tr').data('userid'),
+    method: 'GET',
+    success: function success(response) {
+      var addEditStudentModal = $('#addStudentModal');
+      addEditStudentModal.attr('data-studentid', response.data.user_id);
+      addEditStudentModal.find('.js-first-name').val(response.data.user.first_name);
+      addEditStudentModal.find('.js-last-name').val(response.data.user.last_name);
+      addEditStudentModal.find('.js-email').val(response.data.user.email);
+      addEditStudentModal.find('.js-phone-number').val(response.data.user.phone_number);
+
+      // TODO add student data like text with edit icon
+      // searchFaculties('addStudentModal');
+      // addEditStudentModal.find('.js-faculty option[value="' + response.data.faculty.faculty_id + '"]').prop('selected', true);
+      //
+      // searchCourses(response.data.faculty.faculty_id, 'addStudentModal');
+      // addEditStudentModal.find('.js-course option[value="' + response.data.course.course_id + '"]').prop('selected', true);
+      //
+      // searchGroups({ courseId: response.data.course.course_id }, 'addStudentModal', fillGroupSelect);
+      // addEditStudentModal.find('.js-group option[value="' + response.data.group_id + '"]').prop('selected', true);
+
+      hideSpinner();
+      showModal('addStudentModal');
+    },
+    error: function error(xhr, status, _error) {
+      hideSpinner();
+      console.error('Помилка:', _error);
+    }
+  });
+};
+var deleteStudent = function deleteStudent(e) {
+  if (!confirm("Are you sure you want to delete this student?")) {
+    return;
+  }
+  var studentId = $(e.target).closest('tr').data('userid');
+  $.ajax({
+    url: '/api/university/' + universityId + '/students/' + studentId,
+    method: 'DELETE',
+    data: {
+      _token: $(e.target).closest('#students-table').data('token')
+    },
+    success: function success(response) {
+      $(e.target).closest('tr').remove();
+      hideSpinner();
+    },
+    error: function error(response) {
+      console.error(response);
+      hideSpinner();
+    }
+  });
 };
 var fillGroupSelect = function fillGroupSelect(groups, block) {
   var groupsSelect = $('#' + block).find('.js-group');
@@ -43910,9 +44025,16 @@ var fillGroupSelect = function fillGroupSelect(groups, block) {
 var saveStudent = function saveStudent(e) {
   showSpinner();
   var modal = $('#addStudentModal');
+  var studentId = modal.data('studentid');
+  var url = '/api/university/' + universityId + '/students';
+  var method = 'POST';
+  if (studentId) {
+    url = '/api/university/' + universityId + '/students/' + studentId;
+    method = 'PUT';
+  }
   $.ajax({
-    url: '/api/university/' + universityId + '/students',
-    method: 'POST',
+    url: url,
+    method: method,
     data: {
       first_name: modal.find('.js-first-name').val(),
       last_name: modal.find('.js-last-name').val(),
@@ -43924,6 +44046,7 @@ var saveStudent = function saveStudent(e) {
       _token: $(e.target).data('token')
     },
     success: function success(response) {
+      prepareStudentsTable(true);
       drawSingleStudent(response.data);
       hideModal('addStudentModal');
       clearModal('addStudentModal');
@@ -43971,8 +44094,8 @@ var importStudentsStore = function importStudentsStore(e) {
       $(e.target).addClass('hidden');
       hideSpinner();
     },
-    error: function error(xhr, status, _error) {
-      console.error('Помилка:', _error);
+    error: function error(xhr, status, _error2) {
+      console.error('Помилка:', _error2);
       hideSpinner();
     }
   });

@@ -11,8 +11,8 @@
     @include('userProfile.universityAdminProfile.partials.sidebar-template')
 
     <div class="pl-56">
-        <div class="js-university-name text-3xl"><?= $university['name']; ?></div>
-        <div class="js-university-acc-level text-3xl"><?= \App\Models\University::AVAILABLE_ACCREDITATION_LEVELS[$university['accreditation_level']]; ?></div>
+        <div class="js-university-name text-3xl">{{ $university['name'] }}</div>
+        <div class="js-university-acc-level text-3xl">{{ \App\Models\University::AVAILABLE_ACCREDITATION_LEVELS[$university['accreditation_level']] }}</div>
         <div class="js-university-founded-at text-3xl"></div>
 
         <div class="address-info">

@@ -2202,144 +2202,6 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
 /***/ }),
 
-/***/ "./resources/js/common/catalogs.js":
-/*!*****************************************!*\
-  !*** ./resources/js/common/catalogs.js ***!
-  \*****************************************/
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
-
-var _require = __webpack_require__(/*! ../general */ "./resources/js/general.js"),
-  showModal = _require.showModal,
-  showSpinner = _require.showSpinner,
-  hideSpinner = _require.hideSpinner,
-  showErrors = _require.showErrors,
-  initPagination = _require.initPagination;
-var getCatalogs = function getCatalogs() {
-  var searchParams = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-  var callback = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : function () {};
-  showSpinner();
-  var queryString = Object.keys(searchParams).map(function (key) {
-    return key + '=' + encodeURIComponent(searchParams[key]);
-  }).join('&');
-  $.ajax({
-    url: '/api/university/' + universityId + '/catalogs?' + queryString,
-    method: 'GET',
-    success: function success(response) {
-      if (response.data.catalogs.length) {
-        callback(response.data.catalogs);
-        prepareCatalogsTable(true);
-        initPagination(response.data.pagination);
-        $('.js-pagination .pagination-first').off().on('click', function () {
-          getCatalogs({}, callback);
-        });
-        $('.js-pagination .pagination-next').off().on('click', function () {
-          getCatalogs({
-            page: response.data.pagination.next
-          }, callback);
-        });
-        $('.js-pagination .pagination-previous').off().on('click', function () {
-          getCatalogs({
-            page: response.data.pagination.before
-          }, callback);
-        });
-        $('.js-pagination .pagination-last').off().on('click', function () {
-          getCatalogs({
-            page: response.data.pagination.last
-          }, callback);
-        });
-      } else {
-        prepareCatalogsTable();
-      }
-      hideSpinner();
-    },
-    error: function error(xhr, status, _error) {
-      console.error('Помилка:', _error);
-      hideSpinner();
-    }
-  });
-};
-var prepareCatalogsTable = function prepareCatalogsTable() {
-  var isShow = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
-  if (isShow) {
-    $('#catalogs-table').removeClass('hidden');
-    $('.js-catalogs-message').text('');
-  } else {
-    $('#catalogs-table').addClass('hidden');
-    $('.js-pagination').addClass('hidden');
-    $('.js-catalogs-message').append('<p>Ще немає каталогів</p>');
-  }
-};
-var drawCatalogCommonDataRow = function drawCatalogCommonDataRow(catalog) {
-  var row = $("<tr data-catalogid=" + catalog.id + ">");
-  row.append($('<td>').text(catalog.id));
-  row.append($('<td class="js-single-catalog-type">').text(catalog.typeTitle));
-  row.append($('<td class="js-single-catalog-faculty">').text(catalog.faculty.title));
-  row.append($('<td class="js-single-catalog-course">').text(catalog.course.course + ' курс'));
-  var groupsList = $('<ul class="js-list-groups">');
-  catalog.groups.forEach(function (group) {
-    var listItem = $("<li class=\"list-group-item\" data-id=\"" + group.id + "\">").text(group.title);
-    groupsList.append(listItem);
-  });
-  row.append($('<td>').append(groupsList));
-  var teachersList = $('<ul class="js-list-teachers">');
-  catalog.supervisors.forEach(function (supervisor) {
-    var listItem = $("<li class=\"list-supervisor-item\" data-id=\"" + supervisor.user_id + "\">").text(supervisor.user.full_name);
-    teachersList.append(listItem);
-  });
-  row.append($('<td>').append(teachersList));
-  row.append($('<td class="js-single-catalog-created-at">').text(catalog.created_at));
-  row.addClass(($('#catalogs-table tr').length + 1) % 2 === 0 ? 'row-gray' : 'row-beige');
-  return row;
-};
-var addTopic = function addTopic() {
-  showModal('addTopicModal');
-};
-var saveTopic = function saveTopic(e) {
-  showSpinner();
-  var catalogId = $('#addTopicModal').data('catalogid');
-  var topicId = $('#addTopicModal').data('topicid');
-  var method = 'POST';
-  var url = '/api/university/' + universityId + '/catalogs/' + catalogId + '/topics';
-  if (topicId) {
-    method = 'PUT';
-    url = '/api/university/' + universityId + '/catalogs/' + catalogId + '/topics/' + topicId;
-  }
-  $.ajax({
-    url: url,
-    method: method,
-    data: {
-      topic: $('#addTopicModal .js-topic').val(),
-      teacher_id: $('#addTopicModal .js-teacher').val(),
-      _token: $(e.target).data('token')
-    },
-    success: function success() {
-      window.location.reload();
-    },
-    error: function error(response) {
-      showErrors(response.responseJSON.errors, '#addTopicModal');
-      hideSpinner();
-    }
-  });
-};
-var editTopic = function editTopic(e) {
-  var topicRow = $(e.target).closest('tr');
-  var topicId = topicRow.data('topicid');
-  $('#addTopicModal').attr('data-topicid', topicId);
-  $('#addTopicModal .js-topic').val(topicRow.find('.js-single-topic-topic').text());
-  $('#addTopicModal .js-teacher').val(topicRow.find('.js-single-topic-teacher').data('teacherid'));
-  showModal('addTopicModal');
-};
-module.exports = {
-  getCatalogs: getCatalogs,
-  drawCatalogCommonDataRow: drawCatalogCommonDataRow,
-  addTopic: addTopic,
-  saveTopic: saveTopic,
-  editTopic: editTopic,
-  prepareCatalogsTable: prepareCatalogsTable
-};
-
-/***/ }),
-
 /***/ "./resources/js/general.js":
 /*!*********************************!*\
   !*** ./resources/js/general.js ***!
@@ -2473,285 +2335,6 @@ module.exports = {
   showErrors: showErrors,
   getUserBaseInfo: getUserBaseInfo,
   initPagination: initPagination
-};
-
-/***/ }),
-
-/***/ "./resources/js/universityAdminProfile/catalogs.js":
-/*!*********************************************************!*\
-  !*** ./resources/js/universityAdminProfile/catalogs.js ***!
-  \*********************************************************/
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
-
-var _require = __webpack_require__(/*! ./../general.js */ "./resources/js/general.js"),
-  showModal = _require.showModal,
-  hideModal = _require.hideModal,
-  clearModal = _require.clearModal,
-  toggleTabsSideBar = _require.toggleTabsSideBar,
-  showErrors = _require.showErrors;
-var _require2 = __webpack_require__(/*! ./common.js */ "./resources/js/universityAdminProfile/common.js"),
-  searchGroups = _require2.searchGroups,
-  searchFaculties = _require2.searchFaculties,
-  searchCourses = _require2.searchCourses,
-  searchTeachers = _require2.searchTeachers;
-var _require3 = __webpack_require__(/*! ../common/catalogs.js */ "./resources/js/common/catalogs.js"),
-  getCatalogs = _require3.getCatalogs,
-  drawCatalogCommonDataRow = _require3.drawCatalogCommonDataRow,
-  prepareCatalogsTable = _require3.prepareCatalogsTable;
-document.addEventListener('DOMContentLoaded', function () {
-  toggleTabsSideBar('js-catalogs');
-  getCatalogs({}, displayCatalogsData);
-  $(document).on('click', '.js-add-catalog', addCatalog);
-  $(document).on('click', '.js-save-catalog', saveCatalog);
-  $(document).on('click', '.js-edit-catalog', editCatalog);
-});
-var displayCatalogsData = function displayCatalogsData(data) {
-  var tbody = $('#catalogs-table tbody');
-  tbody.empty();
-  data.forEach(function (catalog) {
-    drawSingleCatalog(catalog);
-  });
-};
-var drawSingleCatalog = function drawSingleCatalog(catalog) {
-  var tbody = $('#catalogs-table tbody');
-  var row = drawCatalogCommonDataRow(catalog);
-  var addActionCell = $('<td>');
-  var editActionIcon = $('<i>').addClass('fas fa-edit action-icon js-edit-catalog').attr('title', 'Редагувати');
-  addActionCell.append(editActionIcon);
-  row.append(addActionCell);
-  tbody.append(row);
-};
-var addCatalog = function addCatalog() {
-  searchFaculties('addCatalogModal');
-  $('#addCatalogModal .js-faculty').on('change', function () {
-    var selectedFacultyId = $(this).val();
-    searchCourses(selectedFacultyId, 'addCatalogModal');
-  });
-  $('#addCatalogModal .js-course').on('change', function () {
-    searchGroups({
-      courseId: $(this).val()
-    }, 'addCatalogModal', fillGroupSelect);
-  });
-  $('#addCatalogModal .js-search-supervisor-btn').on('click', function () {
-    searchTeachers('#addCatalogModal', {
-      facultyId: $('#addCatalogModal .js-faculty').val(),
-      searchText: $('#addCatalogModal .js-teacher-search').val()
-    });
-  });
-  showModal('addCatalogModal');
-};
-var saveCatalog = function saveCatalog(e) {
-  var groupsIds = $('#addCatalogModal .js-groups-list li').map(function () {
-    return $(this).data('groupid');
-  }).get();
-  var teacherIds = $('#addCatalogModal .js-teachers-list li').map(function () {
-    return $(this).data('teacherid');
-  }).get();
-  $.ajax({
-    url: '/api/university/' + universityId + '/catalogs',
-    method: 'POST',
-    data: {
-      type: $('#addCatalogModal .js-catalog-type').val(),
-      faculty_id: $('#addCatalogModal .js-faculty').val(),
-      course_id: $('#addCatalogModal .js-course').val(),
-      groupsIds: groupsIds,
-      teachersIds: teacherIds,
-      _token: $(e.target).data('token')
-    },
-    success: function success(response) {
-      prepareCatalogsTable(true);
-      drawSingleCatalog(response.data);
-      clearModal('addCatalogModal');
-      hideModal('addCatalogModal');
-    },
-    error: function error(response) {
-      showErrors(response.responseJSON.errors, '#addCatalogModal');
-    }
-  });
-};
-var fillGroupSelect = function fillGroupSelect(groups, block) {
-  var groupsSelect = $('#' + block).find('.js-group');
-  groupsSelect.empty();
-  groupsSelect.append($('<option>').attr('value', '').text('Виберіть групу'));
-  groups.forEach(function (group) {
-    groupsSelect.append($('<option>').attr('value', group.id).text(group.title));
-  });
-  initGroupSelectClick(groupsSelect, $('#addCatalogModal .js-groups-list ul'));
-  initRemoveGroupClick(groupsSelect, $('#addCatalogModal .js-groups-list'));
-};
-var initGroupSelectClick = function initGroupSelectClick(groupsSelect, groupsList) {
-  groupsSelect.on('change', function () {
-    var selectedGroupId = $(this).val();
-    if (selectedGroupId === '') {
-      return;
-    }
-    var selectedGroupTitle = $(this).find('option:selected').text();
-    var listItem = $("<li data-groupid=\"" + selectedGroupId + "\">").text(selectedGroupTitle);
-    var deleteIcon = $('<i>').addClass('fas fa-times js-delete-group');
-    listItem.append(deleteIcon);
-    groupsList.append(listItem);
-    $(this).find('option:selected').hide();
-    $(this).val('');
-  });
-};
-var initRemoveGroupClick = function initRemoveGroupClick(groupsSelect, groupsList) {
-  groupsList.on('click', '.js-delete-group', function () {
-    var groupId = parseInt($(this).parent().data('groupid'), 10);
-    groupsSelect.find('option').each(function () {
-      if (parseInt($(this).val(), 10) === groupId) {
-        $(this).show();
-      }
-    });
-    $(this).parent().remove();
-  });
-};
-var editCatalog = function editCatalog(e) {
-  window.open('/university/' + universityId + '/catalogs/' + $(e.target).closest('tr').data('catalogid'), '_blank');
-};
-module.exports = {
-  initGroupSelectClick: initGroupSelectClick,
-  initRemoveGroupClick: initRemoveGroupClick
-};
-
-/***/ }),
-
-/***/ "./resources/js/universityAdminProfile/common.js":
-/*!*******************************************************!*\
-  !*** ./resources/js/universityAdminProfile/common.js ***!
-  \*******************************************************/
-/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
-
-var _require = __webpack_require__(/*! ../general */ "./resources/js/general.js"),
-  showSpinner = _require.showSpinner,
-  hideSpinner = _require.hideSpinner;
-var searchFaculties = function searchFaculties(block) {
-  showSpinner();
-  $.ajax({
-    url: '/api/university/' + universityId + '/faculties',
-    method: 'GET',
-    success: function success(response) {
-      var facultySelect = $('#' + block).find('.js-faculty');
-      facultySelect.empty();
-      facultySelect.append($('<option>').attr('value', '').text('Виберіть факультет'));
-      response.data.faculties.forEach(function (faculty) {
-        facultySelect.append($('<option>').attr('value', faculty.id).text(faculty.title));
-      });
-      facultySelect.trigger('click');
-      hideSpinner();
-    },
-    error: function error(xhr, status, _error) {
-      console.error('Помилка:', _error);
-      hideSpinner();
-    }
-  });
-};
-var searchGroups = function searchGroups(searchParams, block) {
-  var callback = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : function () {};
-  showSpinner();
-  var queryString = '';
-  for (var key in searchParams) {
-    if (searchParams.hasOwnProperty(key)) {
-      var value = searchParams[key];
-      queryString += encodeURIComponent(key) + '=' + encodeURIComponent(value) + '&';
-    }
-  }
-  $.ajax({
-    url: '/api/university/' + universityId + '/groups?' + queryString,
-    method: 'GET',
-    success: function success(response) {
-      callback(response.data, block);
-      hideSpinner();
-    },
-    error: function error(xhr, status, _error2) {
-      console.error('Помилка:', _error2);
-      hideSpinner();
-    }
-  });
-};
-var searchCourses = function searchCourses(facultyId, block) {
-  showSpinner();
-  $.ajax({
-    url: '/api/university/' + universityId + '/courses?facultyId=' + facultyId,
-    method: 'GET',
-    success: function success(response) {
-      var coursesSelect = $('#' + block).find('.js-course');
-      coursesSelect.empty();
-      coursesSelect.append($('<option>').attr('value', '').text('Виберіть курс'));
-      response.data.forEach(function (course) {
-        coursesSelect.append($('<option>').attr('value', course.id).text(course.course + ' курс'));
-      });
-      coursesSelect.trigger('click');
-      hideSpinner();
-    },
-    error: function error(xhr, status, _error3) {
-      console.error('Помилка:', _error3);
-      hideSpinner();
-    }
-  });
-};
-var searchTeachers = function searchTeachers(block) {
-  var searchParams = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-  var callback = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : function () {};
-  showSpinner();
-  var queryString = '';
-  for (var key in searchParams) {
-    if (searchParams.hasOwnProperty(key)) {
-      var value = searchParams[key];
-      queryString += encodeURIComponent(key) + '=' + encodeURIComponent(value) + '&';
-    }
-  }
-  $.ajax({
-    url: '/api/university/' + universityId + '/teachers?' + queryString,
-    method: 'GET',
-    success: function success(response) {
-      var teachersSelect = $(block).find('.js-teachers-select');
-      teachersSelect.empty();
-      teachersSelect.append($('<option >').attr('value', '').text('Виберіть викладача'));
-      response.data.teachers.forEach(function (teacher) {
-        teachersSelect.append($('<option class="js-teacher-item">').attr('value', teacher.user_id).text(teacher.user.full_name));
-      });
-      initTeachersSelectClick(block, teachersSelect);
-      initRemoveTeacherClick(block);
-      teachersSelect.removeClass('hidden');
-      hideSpinner();
-      callback();
-    },
-    error: function error(xhr, status, _error4) {
-      console.error('Помилка:', _error4);
-      hideSpinner();
-    }
-  });
-};
-var initTeachersSelectClick = function initTeachersSelectClick(block, teachersSelect) {
-  teachersSelect.on('change', function () {
-    var selectedTeacherId = $(this).val();
-    var selectedTeacherName = $(this).find('option:selected').text();
-    var teachersList = $(block + ' .js-teachers-list ul');
-    var listItem = $("<li data-teacherid=\"" + selectedTeacherId + "\">").text(selectedTeacherName);
-    var deleteIcon = $('<i>').addClass('fas fa-times js-delete-teacher');
-    listItem.append(deleteIcon);
-    teachersList.append(listItem);
-    $(this).find('option:selected').hide();
-    $(this).val('');
-  });
-};
-var initRemoveTeacherClick = function initRemoveTeacherClick(block) {
-  $(block + ' .js-teachers-list').on('click', '.js-delete-teacher', function () {
-    var teacherId = parseInt($(this).parent().data('teacherid'), 10);
-    $(block + ' .js-teachers-select').find('option').each(function () {
-      if (parseInt($(this).val(), 10) === teacherId) {
-        $(this).show();
-      }
-    });
-    $(this).parent().remove();
-  });
-};
-module.exports = {
-  searchGroups: searchGroups,
-  searchFaculties: searchFaculties,
-  searchCourses: searchCourses,
-  searchTeachers: searchTeachers,
-  initRemoveTeacherClick: initRemoveTeacherClick
 };
 
 /***/ }),
@@ -44061,12 +43644,100 @@ $.each( DataTable, function ( prop, val ) {
 /******/ 	})();
 /******/ 	
 /************************************************************************/
-/******/ 	
-/******/ 	// startup
-/******/ 	// Load entry module and return exports
-/******/ 	// This entry module is referenced by other modules so it can't be inlined
-/******/ 	var __webpack_exports__ = __webpack_require__("./resources/js/universityAdminProfile/catalogs.js");
-/******/ 	
+var __webpack_exports__ = {};
+// This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
+(() => {
+/*!****************************************!*\
+  !*** ./resources/js/common/profile.js ***!
+  \****************************************/
+var _require = __webpack_require__(/*! ../general */ "./resources/js/general.js"),
+  toggleTabsSideBar = _require.toggleTabsSideBar,
+  showSpinner = _require.showSpinner,
+  hideSpinner = _require.hideSpinner;
+document.addEventListener("DOMContentLoaded", function () {
+  toggleTabsSideBar('js-user-profile');
+  initClearErrors();
+  initLockPasswordBlock();
+  $('.js-change-password').on('click', function () {
+    if (!validatePasswordFields()) {
+      return;
+    }
+    showSpinner();
+    $.ajax({
+      url: '/user/api/change-password',
+      method: 'PUT',
+      data: getFormData(),
+      success: function success(response) {
+        $('.password-block').addClass('locked');
+        $(this).removeClass('fa-unlock').addClass('fa-lock');
+        hideSpinner();
+        console.log('Успішно!');
+      },
+      error: function error(xhr, status, _error) {
+        hideSpinner();
+        console.error('Помилка:', _error);
+      }
+    });
+  });
+});
+function initLockPasswordBlock() {
+  $('.js-lock-icon').on('click', function () {
+    if ($(this).hasClass('fa-lock')) {
+      $('.password-block').removeClass('locked');
+      $(this).removeClass('fa-lock').addClass('fa-unlock');
+    } else {
+      $('.password-block').addClass('locked');
+      $(this).removeClass('fa-unlock').addClass('fa-lock');
+    }
+  });
+}
+function validatePasswordFields() {
+  var oldPasswordEl = $('.js-old-password');
+  var newPasswordEl = $('.js-password');
+  var passwordConfirmEl = $('.js-password-confirm');
+  var fields = [newPasswordEl, passwordConfirmEl];
+  var errorMessage = 'Пароль має складатись з 8 символів та містити мінімуму 1 цифру та 1 букву латинського алфавіту';
+  if (oldPasswordEl.val().length === 0) {
+    oldPasswordEl.parent().find('.error-message').text('Старий пароль не може бути пустим');
+    oldPasswordEl.css('border-color', 'red');
+    return false;
+  }
+  for (var _i = 0, _fields = fields; _i < _fields.length; _i++) {
+    var field = _fields[_i];
+    var value = field.val();
+    if (!validatePasswordField(value)) {
+      field.parent().find('.error-message').text(errorMessage);
+      field.css('border-color', 'red');
+      return false;
+    }
+  }
+  if (newPasswordEl.val() !== passwordConfirmEl.val()) {
+    passwordConfirmEl.parent().find('.error-message').text('Паролі не співпадають');
+    passwordConfirmEl.css('border-color', 'red');
+    return false;
+  }
+  return true;
+}
+function validatePasswordField(value) {
+  var passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+  return passwordRegex.test(value);
+}
+function getFormData() {
+  return {
+    '_token': $('input[name="_token"]').val(),
+    'old_password': $('.js-old-password').val(),
+    'password': $('.js-password').val(),
+    'password_confirmation': $('.js-password-confirm').val()
+  };
+}
+function initClearErrors() {
+  $('input').on('focus', function () {
+    $(this).parent().find('.error-message').text('');
+    $(this).css('border-color', 'rgba(17, 24, 39, var(--tw-border-opacity))');
+  });
+}
+})();
+
 /******/ 	return __webpack_exports__;
 /******/ })()
 ;

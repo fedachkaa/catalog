@@ -19,7 +19,8 @@
         <div class="search-field">
             <label for="accLevel">Рівень акредитації:</label>
             <select name="accLevel">
-                 @foreach(\App\Models\University::AVAILABLE_ACCREDITATION_LEVELS as $key => $level)
+                <option value=""></option>
+                @foreach(\App\Models\University::AVAILABLE_ACCREDITATION_LEVELS as $key => $level)
                      <option value="{{ $key }}">{{ $level }}</option>
                  @endforeach
             </select>
@@ -28,6 +29,16 @@
         <div class="search-field">
             <label for="email">Пошта:</label>
             <input type="email" id="email" name="email">
+        </div>
+
+        <div class="search-field">
+            <label for="status">Статус:</label>
+            <select name="status">
+                <option value=""></option>
+                @foreach(\App\Models\University::AVAILABLE_STATUSES as $key => $status)
+                    <option value="{{ $key }}">{{ $status }}</option>
+                @endforeach
+            </select>
         </div>
     </div>
 

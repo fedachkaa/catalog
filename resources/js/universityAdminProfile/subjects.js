@@ -1,4 +1,12 @@
-const { showModal, hideModal, toggleTabsSideBar, showSpinner, hideSpinner, showErrors } = require('./../general.js');
+const {
+    showModal,
+    hideModal,
+    toggleTabsSideBar,
+    showSpinner,
+    hideSpinner,
+    showErrors,
+    initPagination
+} = require('./../general.js');
 const { searchTeachers, initRemoveTeacherClick } =  require('./common.js');
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -9,16 +17,41 @@ document.addEventListener('DOMContentLoaded', function () {
     $(document).on('click', '.js-add-subject', addSubject);
     $(document).on('click', '.js-save-subject', saveSubject);
     $(document).on('click', '.js-edit-subject', editSubject);
+    $(document).on('click', '.js-delete-subject', deleteSubject);
 })
 
-const getSubjects = function () {
+const getSubjects = function (searchParams = {}) {
     showSpinner();
 
+    const queryString = Object.keys(searchParams)
+        .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(searchParams[key])}`)
+        .join('&');
+
     $.ajax({
-        url: '/api/university/' + universityId +'/subjects',
+        url: '/api/university/' + universityId +'/subjects?' + queryString,
         method: 'GET',
         success: function (response) {
-            displaySubjectsData(response.data);
+            if (response.data.subjects.length) {
+                displaySubjectsData(response.data.subjects);
+                prepareSubjectsTable(true);
+
+                initPagination(response.data.pagination);
+                $('.js-pagination .pagination-first').off().on('click', function () {
+                    getSubjects();
+                });
+                $('.js-pagination .pagination-next').off().on('click', function () {
+                    getSubjects({page: response.data.pagination.next});
+                });
+                $('.js-pagination .pagination-previous').off().on('click', function () {
+                    getSubjects({page: response.data.pagination.before});
+                });
+                $('.js-pagination .pagination-last').off().on('click', function () {
+                    getSubjects({page: response.data.pagination.last});
+                });
+            } else {
+                prepareSubjectsTable(false);
+            }
+
             hideSpinner();
         },
         error: function (xhr, status, error) {
@@ -49,8 +82,9 @@ const editSubject = function (e) {
         searchTeachers('#addEditSubjectModal', { searchText: $('#addEditSubjectModal .js-teacher-search').val() });
     });
 
-    $('#addEditSubjectModal').attr('data-subjectid', $(e.target).data('subjectid'));
     const row = $(e.target).closest('tr');
+
+    $('#addEditSubjectModal').attr('data-subjectid', row.data('subjectid'));
 
     $('#addEditSubjectModal .js-subject-title').val(row.find('.js-single-subject-title').text());
 
@@ -92,6 +126,8 @@ const saveSubject = function (e) {
             _token: $(e.target).data('token'),
         },
         success: function (response) {
+            prepareSubjectsTable(true);
+
             drawSingleSubject(response.data);
             $('#addEditSubjectModal').removeAttr('data-subjectid');
             $('#addEditSubjectModal .js-subject-title').val('');
@@ -107,8 +143,20 @@ const saveSubject = function (e) {
     });
 }
 
+const prepareSubjectsTable = function (isShow = false) {
+    if (isShow) {
+        $('#subjects-table').removeClass('hidden');
+        $('.js-subjects-message').text('');
+        $('.js-pagination').removeClass('hidden');
+    } else {
+        $('#subjects-table').addClass('hidden');
+        $('.js-pagination').addClass('hidden');
+        $('.js-subjects-message').append('<p>Ще немає предметів</p>')
+    }
+}
+
 const drawSingleSubject = function (subject) {
-    const existingRow = $('#subjects-table tbody tr[data-id="' + subject.id + '"]');
+    const existingRow = $('#subjects-table tbody tr[data-subject="' + subject.id + '"]');
     if (existingRow.length > 0) {
         existingRow.find('.js-single-subject-title').text(subject.title);
         const teachersList = existingRow.find('.js-subject-teachers');
@@ -118,7 +166,7 @@ const drawSingleSubject = function (subject) {
             teachersList.append(listItem);
         });
     } else {
-        const newRow = $('<tr>').attr('data-id', subject.id);
+        const newRow = $('<tr>').attr('data-subject', subject.id);
         newRow.append($('<td>').text(subject.id));
         newRow.append($('<td>').addClass('js-single-subject-title').text(subject.title));
         const teachersList = $('<ul>').addClass('js-subject-teachers');
@@ -127,11 +175,36 @@ const drawSingleSubject = function (subject) {
             teachersList.append(listItem);
         });
         newRow.append($('<td>').append(teachersList));
-        const addActionCell = $('<td>');
-        const addActionIcon = $('<i>').addClass('fas fa-edit action-icon js-edit-subject').attr('title', 'Редагувати').attr('data-subjectid', subject.id);
-        addActionCell.append(addActionIcon);
+        const addActionCell = $('<td>')
+            .append($('<i>').addClass('fas fa-edit action-icon js-edit-subject').attr('title', 'Редагувати'))
+            .append($('<i>').addClass('fas fa-trash action-icon js-delete-subject').attr('title', 'Видалити'))
+
         newRow.append(addActionCell);
         newRow.addClass(($('#subjects-table tbody tr').length + 1) % 2 === 0 ? 'row-gray' : 'row-beige');
         $('#subjects-table tbody').append(newRow);
     }
+}
+
+const deleteSubject = function (e) {
+    if (!confirm("Are you sure you want to delete this subject?")) {
+        return;
+    }
+
+    const subjectId = $(e.target).closest('tr').data('subject');
+
+    $.ajax({
+        url: '/api/university/' + universityId + '/subjects/' + subjectId,
+        method: 'DELETE',
+        data: {
+            _token: $(e.target).closest('#subjects-table').data('token'),
+        },
+        success: function (response) {
+            $(e.target).closest('tr').remove();
+            hideSpinner();
+        },
+        error: function (response) {
+            console.error(response);
+            hideSpinner();
+        }
+    });
 }

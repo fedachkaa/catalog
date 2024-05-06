@@ -2211,13 +2211,13 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 var _require = __webpack_require__(/*! ../general */ "./resources/js/general.js"),
   showModal = _require.showModal,
   showSpinner = _require.showSpinner,
-  clearModal = _require.clearModal,
-  hideModal = _require.hideModal,
   hideSpinner = _require.hideSpinner,
-  showErrors = _require.showErrors;
+  showErrors = _require.showErrors,
+  initPagination = _require.initPagination;
 var getCatalogs = function getCatalogs() {
   var searchParams = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
   var callback = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : function () {};
+  showSpinner();
   var queryString = Object.keys(searchParams).map(function (key) {
     return key + '=' + encodeURIComponent(searchParams[key]);
   }).join('&');
@@ -2225,14 +2225,49 @@ var getCatalogs = function getCatalogs() {
     url: '/api/university/' + universityId + '/catalogs?' + queryString,
     method: 'GET',
     success: function success(response) {
-      if (response.data.length !== 0) {
-        callback(response.data);
+      if (response.data.catalogs.length) {
+        callback(response.data.catalogs);
+        prepareCatalogsTable(true);
+        initPagination(response.data.pagination);
+        $('.js-pagination .pagination-first').off().on('click', function () {
+          getCatalogs({}, callback);
+        });
+        $('.js-pagination .pagination-next').off().on('click', function () {
+          getCatalogs({
+            page: response.data.pagination.next
+          }, callback);
+        });
+        $('.js-pagination .pagination-previous').off().on('click', function () {
+          getCatalogs({
+            page: response.data.pagination.before
+          }, callback);
+        });
+        $('.js-pagination .pagination-last').off().on('click', function () {
+          getCatalogs({
+            page: response.data.pagination.last
+          }, callback);
+        });
+      } else {
+        prepareCatalogsTable();
       }
+      hideSpinner();
     },
     error: function error(xhr, status, _error) {
       console.error('Помилка:', _error);
+      hideSpinner();
     }
   });
+};
+var prepareCatalogsTable = function prepareCatalogsTable() {
+  var isShow = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+  if (isShow) {
+    $('#catalogs-table').removeClass('hidden');
+    $('.js-catalogs-message').text('');
+  } else {
+    $('#catalogs-table').addClass('hidden');
+    $('.js-pagination').addClass('hidden');
+    $('.js-catalogs-message').append('<p>Ще немає каталогів</p>');
+  }
 };
 var drawCatalogCommonDataRow = function drawCatalogCommonDataRow(catalog) {
   var row = $("<tr data-catalogid=" + catalog.id + ">");
@@ -2265,11 +2300,9 @@ var saveTopic = function saveTopic(e) {
   var topicId = $('#addTopicModal').data('topicid');
   var method = 'POST';
   var url = '/api/university/' + universityId + '/catalogs/' + catalogId + '/topics';
-  var attrToRemove = [];
   if (topicId) {
     method = 'PUT';
     url = '/api/university/' + universityId + '/catalogs/' + catalogId + '/topics/' + topicId;
-    attrToRemove = ['topicid'];
   }
   $.ajax({
     url: url,
@@ -2279,11 +2312,8 @@ var saveTopic = function saveTopic(e) {
       teacher_id: $('#addTopicModal .js-teacher').val(),
       _token: $(e.target).data('token')
     },
-    success: function success(response) {
-      drawSingleTopic(response.data);
-      clearModal('addTopicModal', attrToRemove);
-      hideModal('addTopicModal');
-      hideSpinner();
+    success: function success() {
+      window.location.reload();
     },
     error: function error(response) {
       showErrors(response.responseJSON.errors, '#addTopicModal');
@@ -2299,40 +2329,13 @@ var editTopic = function editTopic(e) {
   $('#addTopicModal .js-teacher').val(topicRow.find('.js-single-topic-teacher').data('teacherid'));
   showModal('addTopicModal');
 };
-var drawSingleTopic = function drawSingleTopic(topic) {
-  var existingRow = $('#topics-table tbody tr[data-topicid="' + topic.id + '"]');
-  if (existingRow.length > 0) {
-    existingRow.find('.js-single-topic-topic').text(topic.topic);
-    existingRow.find('.js-single-topic-teacher').text(topic.teacher.user.full_name).attr('data-teacherid', topic.teacher.user_id);
-    if (topic.student.length > 0) {
-      existingRow.find('.js-single-topic-student').text(topic.student.user.full_name).attr('data-studentid', topic.student.user_id);
-    } else {
-      existingRow.find('.js-single-topic-student').text('-').removeAttr('data-studentid');
-    }
-  } else {
-    var newRow = $('<tr>').attr('data-topicid', topic.id);
-    newRow.append($('<td>').text(topic.id));
-    newRow.append($('<td>').addClass('js-single-topic-topic').text(topic.topic));
-    newRow.append($('<td>').addClass('js-single-topic-teacher').text(topic.teacher.user.full_name).attr('data-teacherid', topic.teacher.user_id));
-    if (topic.student.length > 0) {
-      newRow.append($('<td>').addClass('js-single-topic-student').text(topic.student.user.full_name).attr('data-studentid', topic.student.user_id));
-    } else {
-      newRow.append($('<td>').addClass('js-single-topic-student').text('-'));
-    }
-    var addActionCell = $('<td>');
-    var addActionIcon = $('<i>').addClass('fas fa-edit action-icon js-edit-topic').attr('title', 'Редагувати');
-    addActionCell.append(addActionIcon);
-    newRow.append(addActionCell);
-    newRow.addClass(($('#topics-table tbody tr').length + 1) % 2 === 0 ? 'row-gray' : 'row-beige');
-    $('#topics-table tbody').append(newRow);
-  }
-};
 module.exports = {
   getCatalogs: getCatalogs,
   drawCatalogCommonDataRow: drawCatalogCommonDataRow,
   addTopic: addTopic,
   saveTopic: saveTopic,
-  editTopic: editTopic
+  editTopic: editTopic,
+  prepareCatalogsTable: prepareCatalogsTable
 };
 
 /***/ }),
@@ -2449,6 +2452,15 @@ var showErrors = function showErrors(errors, selectorBlock) {
     errorParagraph.text(errorMessage);
   });
 };
+var initPagination = function initPagination(pagination) {
+  var paginationBlock = $('.js-pagination');
+  paginationBlock.find('.pagination-first').attr('data-page', 1);
+  paginationBlock.find('.pagination-previous').attr('data-page', pagination.before);
+  paginationBlock.find('.pagination-next').attr('data-page', pagination.next);
+  paginationBlock.find('.pagination-last').attr('data-page', pagination.last);
+  paginationBlock.find('.pagination-message').text("You are on the page ".concat(pagination.current, " of ").concat(pagination.totalPages));
+  paginationBlock.removeClass('hidden');
+};
 module.exports = {
   toggleTabsSideBar: toggleTabsSideBar,
   getUserData: getUserData,
@@ -2459,7 +2471,8 @@ module.exports = {
   showSpinner: showSpinner,
   hideSpinner: hideSpinner,
   showErrors: showErrors,
-  getUserBaseInfo: getUserBaseInfo
+  getUserBaseInfo: getUserBaseInfo,
+  initPagination: initPagination
 };
 
 /***/ }),
@@ -2483,7 +2496,8 @@ var _require2 = __webpack_require__(/*! ./common.js */ "./resources/js/universit
   searchTeachers = _require2.searchTeachers;
 var _require3 = __webpack_require__(/*! ../common/catalogs.js */ "./resources/js/common/catalogs.js"),
   getCatalogs = _require3.getCatalogs,
-  drawCatalogCommonDataRow = _require3.drawCatalogCommonDataRow;
+  drawCatalogCommonDataRow = _require3.drawCatalogCommonDataRow,
+  prepareCatalogsTable = _require3.prepareCatalogsTable;
 document.addEventListener('DOMContentLoaded', function () {
   toggleTabsSideBar('js-catalogs');
   getCatalogs({}, displayCatalogsData);
@@ -2545,6 +2559,7 @@ var saveCatalog = function saveCatalog(e) {
       _token: $(e.target).data('token')
     },
     success: function success(response) {
+      prepareCatalogsTable(true);
       drawSingleCatalog(response.data);
       clearModal('addCatalogModal');
       hideModal('addCatalogModal');
@@ -2692,7 +2707,7 @@ var searchTeachers = function searchTeachers(block) {
       var teachersSelect = $(block).find('.js-teachers-select');
       teachersSelect.empty();
       teachersSelect.append($('<option >').attr('value', '').text('Виберіть викладача'));
-      response.data.forEach(function (teacher) {
+      response.data.teachers.forEach(function (teacher) {
         teachersSelect.append($('<option class="js-teacher-item">').attr('value', teacher.user_id).text(teacher.user.full_name));
       });
       initTeachersSelectClick(block, teachersSelect);

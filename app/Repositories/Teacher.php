@@ -75,6 +75,14 @@ class Teacher extends RepositoryAbstract implements TeacherRepositoryInterface
                 ->orWhere(\App\Models\User::TABLE_NAME . '.last_name', 'LIKE', '%' . $filters['searchText'] . '%');
         }
 
+        if (!empty($filters['limit'])) {
+            $query = $query->limit($filters['limit']);
+        }
+
+        if (!empty($filters['offset'])) {
+            $query = $query->offset($filters['offset']);
+        }
+
         return $query->get();
     }
 }

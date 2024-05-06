@@ -2210,7 +2210,8 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
 var _require = __webpack_require__(/*! ../general */ "./resources/js/general.js"),
   showSpinner = _require.showSpinner,
-  hideSpinner = _require.hideSpinner;
+  hideSpinner = _require.hideSpinner,
+  initPagination = _require.initPagination;
 var getStudents = function getStudents() {
   var query = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
   showSpinner();
@@ -2218,7 +2219,25 @@ var getStudents = function getStudents() {
     url: '/api/university/' + universityId + '/students?' + query,
     method: 'GET',
     success: function success(response) {
-      displayStudentsData(response.data);
+      if (response.data.students.length) {
+        displayStudentsData(response.data.students);
+        prepareStudentsTable(true);
+        initPagination(response.data.pagination);
+        $('.js-pagination .pagination-first').off().on('click', function () {
+          getStudents();
+        });
+        $('.js-pagination .pagination-next').off().on('click', function () {
+          getStudents("page=".concat(response.data.pagination.next));
+        });
+        $('.js-pagination .pagination-previous').off().on('click', function () {
+          getStudents("page=".concat(response.data.pagination.before));
+        });
+        $('.js-pagination .pagination-last').off().on('click', function () {
+          getStudents("page=".concat(response.data.pagination.last));
+        });
+      } else {
+        prepareStudentsTable(false);
+      }
       hideSpinner();
     },
     error: function error(xhr, status, _error) {
@@ -2259,19 +2278,45 @@ var displayStudentsData = function displayStudentsData(data) {
   });
 };
 var drawSingleStudent = function drawSingleStudent(student) {
+  var existingRow = $('#students-table tbody tr[data-userid="' + student.user_id + '"]');
+  if (existingRow.length > 0) {
+    existingRow.find('.js-student-name').text(student.user.full_name);
+    existingRow.find('.js-student-faculty').text(student.faculty.title);
+    existingRow.find('.js-student-course').text(student.course.course + ' курс');
+    existingRow.find('.js-student-group').text(student.group.title);
+  } else {
+    var newRow = createStudentRow(student);
+    $('#students-table tbody').append(newRow);
+  }
+};
+var createStudentRow = function createStudentRow(student) {
   var row = $('<tr>').attr('data-userid', student.user_id);
   row.append($('<td>').text(student.user_id));
-  row.append($('<td class="js-show-user-info action-icon">').text(student.user.full_name));
-  row.append($('<td>').text(student.faculty.title));
-  row.append($('<td>').text(student.course.course + ' курс'));
-  row.append($('<td>').text(student.group.title));
+  row.append($('<td class="js-show-user-info js-student-name action-icon">').text(student.user.full_name));
+  row.append($('<td class="js-student-faculty">').text(student.faculty.title));
+  row.append($('<td class="js-student-course">').text(student.course.course + ' курс'));
+  row.append($('<td class="js-student-group">').text(student.group.title));
+  row.append($('<td>').append($('<i>').addClass('fas fa-edit action-icon js-edit-student')).append($('<i>').addClass('fas fa-trash action-icon js-delete-student')));
   row.addClass(($('#students-table tbody tr').length + 1) % 2 === 0 ? 'row-gray' : 'row-beige');
-  $('#students-table tbody').append(row);
+  return row;
+};
+var prepareStudentsTable = function prepareStudentsTable() {
+  var isShow = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+  if (isShow) {
+    $('#students-table').removeClass('hidden');
+    $('.js-pagination').removeClass('hidden');
+    $('.js-students-message').text('');
+  } else {
+    $('#students-table').addClass('hidden');
+    $('.js-pagination').addClass('hidden');
+    $('.js-students-message').append('<p>Ще немає студентів</p>');
+  }
 };
 module.exports = {
   getStudents: getStudents,
   searchStudents: searchStudents,
-  drawSingleStudent: drawSingleStudent
+  drawSingleStudent: drawSingleStudent,
+  prepareStudentsTable: prepareStudentsTable
 };
 
 /***/ }),
@@ -2388,6 +2433,15 @@ var showErrors = function showErrors(errors, selectorBlock) {
     errorParagraph.text(errorMessage);
   });
 };
+var initPagination = function initPagination(pagination) {
+  var paginationBlock = $('.js-pagination');
+  paginationBlock.find('.pagination-first').attr('data-page', 1);
+  paginationBlock.find('.pagination-previous').attr('data-page', pagination.before);
+  paginationBlock.find('.pagination-next').attr('data-page', pagination.next);
+  paginationBlock.find('.pagination-last').attr('data-page', pagination.last);
+  paginationBlock.find('.pagination-message').text("You are on the page ".concat(pagination.current, " of ").concat(pagination.totalPages));
+  paginationBlock.removeClass('hidden');
+};
 module.exports = {
   toggleTabsSideBar: toggleTabsSideBar,
   getUserData: getUserData,
@@ -2398,7 +2452,8 @@ module.exports = {
   showSpinner: showSpinner,
   hideSpinner: hideSpinner,
   showErrors: showErrors,
-  getUserBaseInfo: getUserBaseInfo
+  getUserBaseInfo: getUserBaseInfo,
+  initPagination: initPagination
 };
 
 /***/ }),

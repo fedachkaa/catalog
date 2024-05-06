@@ -6,8 +6,8 @@
 
 <div class="pl-56">
     <div class="name-info">
-        <div class="text-3xl js-user-role"><?= \App\Models\UserRole::AVAILABLE_USER_ROLES[$userData['role_id']]; ?></div>
-        <div class="text-3xl js-user-name"><?= $userData['full_name']; ?></div>
+        <div class="text-3xl js-user-role">{{ \App\Models\UserRole::AVAILABLE_USER_ROLES[$userData['role_id']] }}</div>
+        <div class="text-3xl js-user-name">{{ $userData['full_name'] }}</div>
     </div>
 
     <div class="contact-info">
@@ -16,7 +16,7 @@
         <div>Номер телефону: <span class="js-phone-number">{{ $userData['phone_number'] ?? '' }}</span></div>
     </div>
 
-    <i class="fa-solid fa-lock js-lock-icon"></i>
+    <i class="fa-solid fa-lock js-lock-icon action-icon"></i>
     <div class="password-block locked">
         <div>Пароль</div>
         <div class="password-form-group">

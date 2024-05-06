@@ -1,20 +1,53 @@
-const { showModal, showSpinner, clearModal, hideModal, hideSpinner, showErrors} = require("../general");
+const { showModal, showSpinner, hideSpinner, showErrors, initPagination } = require("../general");
 
 const getCatalogs = function (searchParams ={}, callback = () => {}) {
+    showSpinner();
+
     const queryString = Object.keys(searchParams).map(key => key + '=' + encodeURIComponent(searchParams[key])).join('&');
 
     $.ajax({
         url: '/api/university/' + universityId + '/catalogs?' + queryString,
         method: 'GET',
         success: function (response) {
-            if (response.data.length !== 0) {
-                callback(response.data);
+            if (response.data.catalogs.length) {
+                callback(response.data.catalogs);
+
+                prepareCatalogsTable(true);
+
+                initPagination(response.data.pagination);
+                $('.js-pagination .pagination-first').off().on('click', function () {
+                    getCatalogs({}, callback);
+                });
+                $('.js-pagination .pagination-next').off().on('click', function () {
+                    getCatalogs({page: response.data.pagination.next}, callback);
+                });
+                $('.js-pagination .pagination-previous').off().on('click', function () {
+                    getCatalogs({page: response.data.pagination.before}, callback);
+                });
+                $('.js-pagination .pagination-last').off().on('click', function () {
+                    getCatalogs({page: response.data.pagination.last}, callback);
+                });
+            } else {
+                prepareCatalogsTable();
             }
+            hideSpinner();
         },
         error: function (xhr, status, error) {
             console.error('Помилка:', error);
+            hideSpinner();
         }
     });
+}
+
+const prepareCatalogsTable = function (isShow = false) {
+    if (isShow) {
+        $('#catalogs-table').removeClass('hidden');
+        $('.js-catalogs-message').text('');
+    } else {
+        $('#catalogs-table').addClass('hidden');
+        $('.js-pagination').addClass('hidden');
+        $('.js-catalogs-message').append('<p>Ще немає каталогів</p>');
+    }
 }
 
 const drawCatalogCommonDataRow = function (catalog) {
@@ -57,11 +90,9 @@ const saveTopic = function (e) {
 
     let method = 'POST';
     let url = '/api/university/' + universityId + '/catalogs/' + catalogId + '/topics';
-    let attrToRemove = [];
     if (topicId) {
         method = 'PUT';
         url = '/api/university/' + universityId + '/catalogs/' + catalogId + '/topics/' + topicId;
-        attrToRemove = ['topicid'];
     }
     $.ajax({
         url: url,
@@ -71,11 +102,8 @@ const saveTopic = function (e) {
             teacher_id: $('#addTopicModal .js-teacher').val(),
             _token: $(e.target).data('token'),
         },
-        success: function (response) {
-            drawSingleTopic(response.data);
-            clearModal('addTopicModal', attrToRemove)
-            hideModal('addTopicModal');
-            hideSpinner();
+        success: function () {
+            window.location.reload();
         },
         error: function (response) {
             showErrors(response.responseJSON.errors, '#addTopicModal');
@@ -94,44 +122,11 @@ const editTopic = function (e) {
     showModal('addTopicModal');
 }
 
-const drawSingleTopic = function (topic) {
-    const existingRow = $('#topics-table tbody tr[data-topicid="' + topic.id + '"]');
-    if (existingRow.length > 0) {
-        existingRow.find('.js-single-topic-topic').text(topic.topic);
-        existingRow.find('.js-single-topic-teacher').text(topic.teacher.user.full_name)
-            .attr('data-teacherid', topic.teacher.user_id);
-        if (topic.student.length > 0) {
-            existingRow.find('.js-single-topic-student').text(topic.student.user.full_name)
-                .attr('data-studentid', topic.student.user_id);
-        } else {
-            existingRow.find('.js-single-topic-student').text('-').removeAttr('data-studentid');
-        }
-    } else {
-        const newRow = $('<tr>').attr('data-topicid', topic.id);
-        newRow.append($('<td>').text(topic.id));
-        newRow.append($('<td>').addClass('js-single-topic-topic').text(topic.topic));
-        newRow.append($('<td>').addClass('js-single-topic-teacher').text(topic.teacher.user.full_name)
-            .attr('data-teacherid', topic.teacher.user_id));
-        if (topic.student.length > 0) {
-            newRow.append($('<td>').addClass('js-single-topic-student').text(topic.student.user.full_name)
-                .attr('data-studentid', topic.student.user_id));
-        } else {
-            newRow.append($('<td>').addClass('js-single-topic-student').text('-'));
-        }
-
-        const addActionCell = $('<td>');
-        const addActionIcon = $('<i>').addClass('fas fa-edit action-icon js-edit-topic').attr('title', 'Редагувати');
-        addActionCell.append(addActionIcon);
-        newRow.append(addActionCell);
-        newRow.addClass(($('#topics-table tbody tr').length + 1) % 2 === 0 ? 'row-gray' : 'row-beige');
-        $('#topics-table tbody').append(newRow);
-    }
-}
-
 module.exports = {
     getCatalogs,
     drawCatalogCommonDataRow,
     addTopic,
     saveTopic,
     editTopic,
+    prepareCatalogsTable,
 };

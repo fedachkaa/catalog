@@ -67,6 +67,7 @@ class Kernel extends HttpKernel
 
         'university.get' => \App\Http\Middleware\GetUniversityRequest::class,
         'teacher.get' =>  \App\Http\Middleware\GetTeacherRequest::class,
+        'student.get' =>  \App\Http\Middleware\GetStudentRequest::class,
         'subject.get' => \App\Http\Middleware\GetSubjectRequest::class,
         'faculty.get' =>  \App\Http\Middleware\GetFacultyRequest::class,
         'catalog.get' => \App\Http\Middleware\GetCatalogRequest::class,

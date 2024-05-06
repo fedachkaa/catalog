@@ -12,6 +12,9 @@ const mix = require('laravel-mix');
  */
 
 mix.js('resources/js/general.js', 'public/js/general.js');
+
+mix.js('resources/js/common/profile.js', 'public/js/common/profile.js');
+
 mix.js('resources/js/universityAdminProfile/teachers.js', 'public/js/universityAdminProfile/teachers.js');
 mix.js('resources/js/universityAdminProfile/subjects.js', 'public/js/universityAdminProfile/subjects.js');
 mix.js('resources/js/universityAdminProfile/students.js', 'public/js/universityAdminProfile/students.js');
