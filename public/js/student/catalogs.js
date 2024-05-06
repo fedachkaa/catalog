@@ -2211,8 +2211,6 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 var _require = __webpack_require__(/*! ../general */ "./resources/js/general.js"),
   showModal = _require.showModal,
   showSpinner = _require.showSpinner,
-  clearModal = _require.clearModal,
-  hideModal = _require.hideModal,
   hideSpinner = _require.hideSpinner,
   showErrors = _require.showErrors,
   initPagination = _require.initPagination;
@@ -2302,11 +2300,9 @@ var saveTopic = function saveTopic(e) {
   var topicId = $('#addTopicModal').data('topicid');
   var method = 'POST';
   var url = '/api/university/' + universityId + '/catalogs/' + catalogId + '/topics';
-  var attrToRemove = [];
   if (topicId) {
     method = 'PUT';
     url = '/api/university/' + universityId + '/catalogs/' + catalogId + '/topics/' + topicId;
-    attrToRemove = ['topicid'];
   }
   $.ajax({
     url: url,
@@ -2316,11 +2312,8 @@ var saveTopic = function saveTopic(e) {
       teacher_id: $('#addTopicModal .js-teacher').val(),
       _token: $(e.target).data('token')
     },
-    success: function success(response) {
-      drawSingleTopic(response.data);
-      clearModal('addTopicModal', attrToRemove);
-      hideModal('addTopicModal');
-      hideSpinner();
+    success: function success() {
+      window.location.reload();
     },
     error: function error(response) {
       showErrors(response.responseJSON.errors, '#addTopicModal');
@@ -2335,34 +2328,6 @@ var editTopic = function editTopic(e) {
   $('#addTopicModal .js-topic').val(topicRow.find('.js-single-topic-topic').text());
   $('#addTopicModal .js-teacher').val(topicRow.find('.js-single-topic-teacher').data('teacherid'));
   showModal('addTopicModal');
-};
-var drawSingleTopic = function drawSingleTopic(topic) {
-  var existingRow = $('#topics-table tbody tr[data-topicid="' + topic.id + '"]');
-  if (existingRow.length > 0) {
-    existingRow.find('.js-single-topic-topic').text(topic.topic);
-    existingRow.find('.js-single-topic-teacher').text(topic.teacher.user.full_name).attr('data-teacherid', topic.teacher.user_id);
-    if (topic.student.length > 0) {
-      existingRow.find('.js-single-topic-student').text(topic.student.user.full_name).attr('data-studentid', topic.student.user_id);
-    } else {
-      existingRow.find('.js-single-topic-student').text('-').removeAttr('data-studentid');
-    }
-  } else {
-    var newRow = $('<tr>').attr('data-topicid', topic.id);
-    newRow.append($('<td>').text(topic.id));
-    newRow.append($('<td>').addClass('js-single-topic-topic').text(topic.topic));
-    newRow.append($('<td>').addClass('js-single-topic-teacher').text(topic.teacher.user.full_name).attr('data-teacherid', topic.teacher.user_id));
-    if (topic.student.length > 0) {
-      newRow.append($('<td>').addClass('js-single-topic-student').text(topic.student.user.full_name).attr('data-studentid', topic.student.user_id));
-    } else {
-      newRow.append($('<td>').addClass('js-single-topic-student').text('-'));
-    }
-    var addActionCell = $('<td>');
-    var addActionIcon = $('<i>').addClass('fas fa-edit action-icon js-edit-topic').attr('title', 'Редагувати');
-    addActionCell.append(addActionIcon);
-    newRow.append(addActionCell);
-    newRow.addClass(($('#topics-table tbody tr').length + 1) % 2 === 0 ? 'row-gray' : 'row-beige');
-    $('#topics-table tbody').append(newRow);
-  }
 };
 module.exports = {
   getCatalogs: getCatalogs,

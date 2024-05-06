@@ -51,12 +51,12 @@ Route::get('/university-registration-success', [UniversityController::class, 're
 
 
 Route::get('/profile', [UserProfileController::class, 'userProfile'])->middleware('auth')->name('user.profile');
+Route::get('/topic-requests', [StudentController::class, 'getStudentTopicRequests']);
 
 Route::prefix('/university/{universityId}')->middleware(['auth', 'university.get'])->group(function () {
     Route::get('/', [UniversityController::class, 'getUniversity']);
     Route::get('/faculties', [FacultyController::class, 'getFaculties']);
     Route::get('/students', [StudentController::class, 'getStudents']);
-    Route::get('/topic-requests', [StudentController::class, 'getStudentTopicRequests']);
 
     Route::get('/subjects', [SubjectController::class, 'getSubjects']);
 

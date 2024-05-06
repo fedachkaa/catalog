@@ -6,8 +6,8 @@
 
 <div class="pl-56">
     <div class="name-info">
-        <div class="text-3xl js-user-role"><?= \App\Models\UserRole::AVAILABLE_USER_ROLES[$userData['role_id']]; ?></div>
-        <div class="text-3xl js-user-name"><?= $userData['full_name']; ?></div>
+        <div class="text-3xl js-user-role">{{ \App\Models\UserRole::AVAILABLE_USER_ROLES[$userData['role_id']] }}</div>
+        <div class="text-3xl js-user-name">{{ $userData['full_name'] }}</div>
     </div>
 
     <div class="contact-info">

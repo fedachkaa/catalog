@@ -659,6 +659,10 @@ video {
   display: table;
 }
 
+.list-item {
+  display: list-item;
+}
+
 .hidden {
   display: none;
 }
@@ -695,6 +699,10 @@ video {
 
 .animate-spin {
   animation: spin 1s linear infinite;
+}
+
+.list-decimal {
+  list-style-type: decimal;
 }
 
 .flex-row {
@@ -767,16 +775,16 @@ video {
   padding: 1rem;
 }
 
-.pl-48 {
-  padding-left: 12rem;
-}
-
 .pl-52 {
   padding-left: 13rem;
 }
 
 .pl-56 {
   padding-left: 14rem;
+}
+
+.pl-60 {
+  padding-left: 15rem;
 }
 
 .text-center {

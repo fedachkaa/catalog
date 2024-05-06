@@ -6,9 +6,9 @@
 
             <label>Тип каталогу:</label>
             <select class="form-control js-catalog-type">
-                <?php foreach (\App\Models\Catalog::AVAILABLE_CATALOG_TYPES as $key => $value): ?>
-                    <option value="<?= $key; ?>"><?= $value; ?></option>
-                <?php endforeach; ?>
+                @foreach(\App\Models\Catalog::AVAILABLE_CATALOG_TYPES as $key => $value)
+                    <option value="{{ $key }}">{{ $value }}</option>
+                @endforeach
             </select>
             <p class="error-message type-error-message"></p>
 

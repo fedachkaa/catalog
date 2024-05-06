@@ -10,25 +10,13 @@
 @section('content')
     @include('userProfile.teacherProfile.partials.sidebar-template')
 
-    <div class="pl-48">
-        <div>
-            <table id="subjects-table" class="table-block">
-                <thead>
-                <tr>
-                    <th>№</th>
-                    <th>Предмет</th>
-                </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($subjectsData as $key => $subject): ?>
-                        <tr data-subjectid="<?= $subject['id']; ?>" class="<?= $key % 2 === 0 ? 'row-gray' : 'row-beige'?>">
-                            <td><?= $subject['id']; ?></td>
-                            <td><?= $subject['title']; ?></td>
-                        </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
-        </div>
+    <div class="pl-60">
+        <h1 class="title">Предмети</h1>
+        <ol class="list-decimal text-xl">
+            @foreach($subjectsData as $subject)
+                <li class="list-item">{{ $subject['title'] }}</li>
+            @endforeach
+        </ol>
     </div>
 @endsection
 

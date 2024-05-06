@@ -14,19 +14,19 @@
                 </a>
             </li>
             <li class="sidebar-menu-title js-subjects">
-                <a href="/university/<?= $user['university']['id']; ?>/subjects">
+                <a href="/university/{{ $user['university']['id'] }}/subjects">
                     <i class="fa-solid fa-book-open"></i>
                     <span>Мої предмети</span>
                 </a>
             </li>
             <li class="sidebar-menu-title js-students">
-                <a href="/university/<?= $user['university']['id']; ?>/students">
+                <a href="/university/{{ $user['university']['id'] }}/students">
                     <i class="fa-solid fa-user-graduate"></i>
                     <span>Мої студенти</span>
                 </a>
             </li>
             <li class="sidebar-menu-title js-catalogs">
-                <a href="/university/<?= $user['university']['id']; ?>/catalogs">
+                <a href="/university/{{ $user['university']['id'] }}/catalogs">
                     <i class="fa-solid fa-book-bookmark"></i>
                     <span>Каталоги робіт</span>
                 </a>

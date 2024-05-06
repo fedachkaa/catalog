@@ -1,4 +1,4 @@
-const { showModal, showSpinner, clearModal, hideModal, hideSpinner, showErrors, initPagination } = require("../general");
+const { showModal, showSpinner, hideSpinner, showErrors, initPagination } = require("../general");
 
 const getCatalogs = function (searchParams ={}, callback = () => {}) {
     showSpinner();
@@ -90,11 +90,9 @@ const saveTopic = function (e) {
 
     let method = 'POST';
     let url = '/api/university/' + universityId + '/catalogs/' + catalogId + '/topics';
-    let attrToRemove = [];
     if (topicId) {
         method = 'PUT';
         url = '/api/university/' + universityId + '/catalogs/' + catalogId + '/topics/' + topicId;
-        attrToRemove = ['topicid'];
     }
     $.ajax({
         url: url,
@@ -104,11 +102,8 @@ const saveTopic = function (e) {
             teacher_id: $('#addTopicModal .js-teacher').val(),
             _token: $(e.target).data('token'),
         },
-        success: function (response) {
-            drawSingleTopic(response.data);
-            clearModal('addTopicModal', attrToRemove)
-            hideModal('addTopicModal');
-            hideSpinner();
+        success: function () {
+            window.location.reload();
         },
         error: function (response) {
             showErrors(response.responseJSON.errors, '#addTopicModal');
@@ -125,40 +120,6 @@ const editTopic = function (e) {
     $('#addTopicModal .js-topic').val(topicRow.find('.js-single-topic-topic').text());
     $('#addTopicModal .js-teacher').val(topicRow.find('.js-single-topic-teacher').data('teacherid'))
     showModal('addTopicModal');
-}
-
-const drawSingleTopic = function (topic) {
-    const existingRow = $('#topics-table tbody tr[data-topicid="' + topic.id + '"]');
-    if (existingRow.length > 0) {
-        existingRow.find('.js-single-topic-topic').text(topic.topic);
-        existingRow.find('.js-single-topic-teacher').text(topic.teacher.user.full_name)
-            .attr('data-teacherid', topic.teacher.user_id);
-        if (topic.student.length > 0) {
-            existingRow.find('.js-single-topic-student').text(topic.student.user.full_name)
-                .attr('data-studentid', topic.student.user_id);
-        } else {
-            existingRow.find('.js-single-topic-student').text('-').removeAttr('data-studentid');
-        }
-    } else {
-        const newRow = $('<tr>').attr('data-topicid', topic.id);
-        newRow.append($('<td>').text(topic.id));
-        newRow.append($('<td>').addClass('js-single-topic-topic').text(topic.topic));
-        newRow.append($('<td>').addClass('js-single-topic-teacher').text(topic.teacher.user.full_name)
-            .attr('data-teacherid', topic.teacher.user_id));
-        if (topic.student.length > 0) {
-            newRow.append($('<td>').addClass('js-single-topic-student').text(topic.student.user.full_name)
-                .attr('data-studentid', topic.student.user_id));
-        } else {
-            newRow.append($('<td>').addClass('js-single-topic-student').text('-'));
-        }
-
-        const addActionCell = $('<td>');
-        const addActionIcon = $('<i>').addClass('fas fa-edit action-icon js-edit-topic').attr('title', 'Редагувати');
-        addActionCell.append(addActionIcon);
-        newRow.append(addActionCell);
-        newRow.addClass(($('#topics-table tbody tr').length + 1) % 2 === 0 ? 'row-gray' : 'row-beige');
-        $('#topics-table tbody').append(newRow);
-    }
 }
 
 module.exports = {

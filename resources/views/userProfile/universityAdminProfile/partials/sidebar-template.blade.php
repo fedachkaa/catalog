@@ -14,37 +14,37 @@
                 </a>
             </li>
             <li class="sidebar-menu-title js-university">
-                <a href="/university/<?= $user['university']['id']; ?>">
+                <a href="/university/{{ $user['university']['id'] }}">
                     <i class="fa-solid fa-building-columns"></i>
                     <span>Університет</span>
                 </a>
             </li>
             <li class="sidebar-menu-title js-faculties">
-                <a href="/university/<?= $user['university']['id']; ?>/faculties">
+                <a href="/university/{{ $user['university']['id'] }}/faculties">
                     <i class="fa-solid fa-building-columns"></i>
                     <span>Факультети</span>
                 </a>
             </li>
             <li class="sidebar-menu-title js-teachers">
-                <a href="/university/<?= $user['university']['id']; ?>/teachers">
+                <a href="/university/{{ $user['university']['id'] }}/teachers">
                     <i class="fa-solid fa-user-tie"></i>
                     <span>Викладачі</span>
                 </a>
             </li>
             <li class="sidebar-menu-title js-students">
-                <a href="/university/<?= $user['university']['id']; ?>/students">
+                <a href="/university/{{ $user['university']['id'] }}/students">
                     <i class="fa-solid fa-user-graduate"></i>
                     <span>Студенти</span>
                 </a>
             </li>
             <li class="sidebar-menu-title js-subjects">
-                <a href="/university/<?= $user['university']['id']; ?>/subjects">
+                <a href="/university/{{ $user['university']['id'] }}/subjects">
                     <i class="fa-solid fa-book-open"></i>
                     <span>Предмети</span>
                 </a>
             </li>
             <li class="sidebar-menu-title js-catalogs">
-                <a href="/university/<?= $user['university']['id']; ?>/catalogs">
+                <a href="/university/{{ $user['university']['id'] }}/catalogs">
                     <i class="fa-solid fa-book-bookmark"></i>
                     <span>Каталоги робіт</span>
                 </a>
