@@ -3,7 +3,7 @@ const { searchStudents, getStudents } = require('../common/students.js');
 
 document.addEventListener('DOMContentLoaded', function () {
     toggleTabsSideBar('js-students');
-    getStudents('teacherId=' + teacherId);
+    getStudents();
 
     $(document).on('click', '.js-search-students', searchStudents);
 })

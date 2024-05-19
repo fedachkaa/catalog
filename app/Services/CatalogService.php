@@ -187,6 +187,15 @@ class CatalogService
             $this->rejectRequest($otherTopicRequest);
         }
 
+        $otherStudentRequests = $this->topicRequestRepository->getAll([
+            'student_id' => $student->getUserId(),
+            'idNotIn' => [$topicRequest->getId()],
+        ]);
+
+        foreach ($otherStudentRequests as $otherStudentRequest) {
+            $this->rejectRequest($otherStudentRequest);
+        }
+
         return true;
     }
 

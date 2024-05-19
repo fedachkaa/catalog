@@ -19,5 +19,9 @@ interface CatalogTopicInterface
 
     public function getCatalogId(): int;
 
+    public function getTeacherId(): int;
+
+    public function getStudentId(): int;
+
     public function getTopic(): string;
 }

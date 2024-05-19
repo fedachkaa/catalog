@@ -25,10 +25,14 @@
                 <p class="error-message group_id-error-message"></p>
             </div>
 
-            <div class="js-form-import">
+            <div class="form-group js-form-import">
+                <label>Файл</label>
                 <input type="file" class="form-control js-students-file">
+                <p class="error-message file-error-message"></p>
             </div>
         </div>
-        <button class="add-user-btn text-center js-import-students-save" data-token="{{ csrf_token() }}">Зберегти</button>
+        <div class="flex justify-center">
+            <button class="add-user-btn text-center js-import-students-save" data-token="{{ csrf_token() }}">Зберегти</button>
+        </div>
     </div>
 </div>

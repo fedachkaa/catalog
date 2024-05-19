@@ -16,8 +16,8 @@ class TopicRequestProcessed extends Mailable
 
     /** @var string[] */
     const AVAILABLE_SUBJECTS_BY_STATUS = [
-        TopicRequest::STATUS_APPROVED => 'Your topic request was approved!',
-        TopicRequest::STATUS_REJECTED => 'Your topic request was rejected.',
+        TopicRequest::STATUS_APPROVED => 'Запит схвалено!',
+        TopicRequest::STATUS_REJECTED => 'Запит відхилено.',
     ];
 
     /** @var TopicRequest */
@@ -61,7 +61,7 @@ class TopicRequestProcessed extends Mailable
             with: [
                 'studentFullName' => $this->student->getUser()->getFullName(),
                 'topic' => $this->topicRequest->getTopic()->getTopic(),
-                'status' => $this->topicRequest->getStatus(),
+                'status' => TopicRequest::AVAILABLE_STATUSES[$this->topicRequest->getStatus()],
                 'catalogType' => \App\Models\Catalog::AVAILABLE_CATALOG_TYPES[$this->topicRequest->getTopic()->getCatalog()->getType()],
             ],
         );

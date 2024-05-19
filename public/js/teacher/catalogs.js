@@ -2329,13 +2329,47 @@ var editTopic = function editTopic(e) {
   $('#addTopicModal .js-teacher').val(topicRow.find('.js-single-topic-teacher').data('teacherid'));
   showModal('addTopicModal');
 };
+var showTopicRequests = function showTopicRequests(e) {
+  var topicId = $(e.target).closest('tr').data('topicid');
+  $.ajax({
+    url: '/api/topic/' + topicId + '/topic-requests',
+    method: 'GET',
+    success: function success(response) {
+      if (response.data.length !== 0) {
+        $('#topicRequestsModal').data('topicid', topicId);
+        var requestsList = $('#topicRequestsModal').find('.js-list-requests');
+        requestsList.empty();
+        var counter = 1;
+        response.data.requests.forEach(function (topicRequest) {
+          var li = $('<li>').attr('data-requestid', topicRequest.id);
+          li.text(counter + ') ' + topicRequest.student.user.full_name + ' (' + topicRequest.created_at + ')');
+          if (topicRequest.status === 'approved') {
+            li.append($('<span>').addClass('span-approved').text('СХВАЛЕНО'));
+          } else if (topicRequest.status === 'rejected') {
+            li.append($('<span>').addClass('span-rejected').text('ВІДХИЛЕНО'));
+          } else if (response.data.student !== 'undefined' && response.data.student.length === 0 && typeof teacherId !== 'undefined') {
+            li.append($('<i>').addClass('fa-regular fa-square-check action-icon js-approve-request').attr('title', 'Схвалити запит'));
+            li.append($('<i>').addClass('fa-regular fa-circle-xmark action-icon js-reject-request').attr('title', 'Відхилити запит'));
+          }
+          requestsList.append(li);
+          counter++;
+        });
+        showModal('topicRequestsModal');
+      }
+    },
+    error: function error(xhr, status, _error2) {
+      console.error('Помилка:', _error2);
+    }
+  });
+};
 module.exports = {
   getCatalogs: getCatalogs,
   drawCatalogCommonDataRow: drawCatalogCommonDataRow,
   addTopic: addTopic,
   saveTopic: saveTopic,
   editTopic: editTopic,
-  prepareCatalogsTable: prepareCatalogsTable
+  prepareCatalogsTable: prepareCatalogsTable,
+  showTopicRequests: showTopicRequests
 };
 
 /***/ }),
@@ -43789,16 +43823,14 @@ var __webpack_exports__ = {};
   !*** ./resources/js/teacher/catalogs.js ***!
   \******************************************/
 var _require = __webpack_require__(/*! ./../general.js */ "./resources/js/general.js"),
-  toggleTabsSideBar = _require.toggleTabsSideBar,
-  showModal = _require.showModal,
-  hideModal = _require.hideModal,
-  clearModal = _require.clearModal;
+  toggleTabsSideBar = _require.toggleTabsSideBar;
 var _require2 = __webpack_require__(/*! ../common/catalogs.js */ "./resources/js/common/catalogs.js"),
   getCatalogs = _require2.getCatalogs,
   drawCatalogCommonDataRow = _require2.drawCatalogCommonDataRow,
   addTopic = _require2.addTopic,
   saveTopic = _require2.saveTopic,
-  editTopic = _require2.editTopic;
+  editTopic = _require2.editTopic,
+  showTopicRequests = _require2.showTopicRequests;
 document.addEventListener('DOMContentLoaded', function () {
   toggleTabsSideBar('js-catalogs');
   getCatalogs({
@@ -43808,7 +43840,7 @@ document.addEventListener('DOMContentLoaded', function () {
   $(document).on('click', '.js-add-topic', addTopic);
   $(document).on('click', '.js-save-topic', saveTopic);
   $(document).on('click', '.js-edit-topic', editTopic);
-  $(document).on('click', '.js-view-requests', showTopicRequets);
+  $(document).on('click', '.js-view-requests', showTopicRequests);
   $(document).on('click', '.js-approve-request', approveRequest);
   $(document).on('click', '.js-reject-request', rejectRequest);
 });
@@ -43831,39 +43863,6 @@ var drawSingleCatalog = function drawSingleCatalog(catalog) {
 var viewCatalog = function viewCatalog(e) {
   window.open('/university/' + universityId + '/catalogs/' + $(e.target).closest('tr').data('catalogid'), '_blank');
 };
-var showTopicRequets = function showTopicRequets(e) {
-  var topicId = $(e.target).closest('tr').data('topicid');
-  $.ajax({
-    url: '/api/topic/' + topicId + '/topic-requests',
-    method: 'GET',
-    success: function success(response) {
-      if (response.data.length !== 0) {
-        $('#topicRequestsModal').data('topicid', topicId);
-        var requestsList = $('#topicRequestsModal').find('.js-list-requests');
-        requestsList.empty();
-        var counter = 1;
-        response.data.requests.forEach(function (topicRequest) {
-          var li = $('<li>').attr('data-requestid', topicRequest.id);
-          li.text(counter + ') ' + topicRequest.student.user.full_name + ' (' + topicRequest.created_at + ')');
-          if (topicRequest.status === 'approved') {
-            li.append($('<span>').addClass('span-approved').text('APPROVED'));
-          } else if (topicRequest.status === 'rejected') {
-            li.append($('<span>').addClass('span-rejected').text('REJECTED'));
-          } else if (response.data.student !== 'undefined' && response.data.student.length === 0) {
-            li.append($('<i>').addClass('fa-regular fa-square-check action-icon js-approve-request').attr('title', 'Схвалити запит'));
-            li.append($('<i>').addClass('fa-regular fa-circle-xmark action-icon js-reject-request').attr('title', 'Відхилити запит'));
-          }
-          requestsList.append(li);
-          counter++;
-        });
-        showModal('topicRequestsModal');
-      }
-    },
-    error: function error(xhr, status, _error) {
-      console.error('Помилка:', _error);
-    }
-  });
-};
 var approveRequest = function approveRequest(e) {
   var requestId = $(e.target).closest('li').attr('data-requestid');
   var confirmed = confirm('Ви впевнені, що хочете схвалити цей запит?');
@@ -43877,8 +43876,8 @@ var approveRequest = function approveRequest(e) {
       success: function success(response) {
         window.location.reload();
       },
-      error: function error(xhr, status, _error2) {
-        console.error('Помилка:', _error2);
+      error: function error(xhr, status, _error) {
+        console.error('Помилка:', _error);
       }
     });
   }
@@ -43896,8 +43895,8 @@ var rejectRequest = function rejectRequest(e) {
       success: function success(response) {
         window.location.reload();
       },
-      error: function error(xhr, status, _error3) {
-        console.error('Помилка:', _error3);
+      error: function error(xhr, status, _error2) {
+        console.error('Помилка:', _error2);
       }
     });
   }

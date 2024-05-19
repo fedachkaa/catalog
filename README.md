@@ -11,6 +11,12 @@
 - ~~**Add table name in model class for using it in repositories**~~
 - ~~**Add pagination to tables in university admin profile**~~
 - **Import teachers via file**
+- **Check all js**
+- **Add selects in student search form**
+- **Add selects in student edit form**
+- **Ukr lang in emails**
+clear subject modal
+- 
 
 
 

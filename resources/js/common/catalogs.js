@@ -122,6 +122,42 @@ const editTopic = function (e) {
     showModal('addTopicModal');
 }
 
+const showTopicRequests = function (e) {
+    const topicId = $(e.target).closest('tr').data('topicid');
+
+    $.ajax({
+        url: '/api/topic/' + topicId + '/topic-requests',
+        method: 'GET',
+        success: function (response) {
+            if (response.data.length !== 0) {
+                $('#topicRequestsModal').data('topicid', topicId);
+                const requestsList = $('#topicRequestsModal').find('.js-list-requests');
+                requestsList.empty();
+                let counter = 1;
+                response.data.requests.forEach(topicRequest => {
+                    let li = $('<li>').attr('data-requestid', topicRequest.id);
+                    li.text(counter + ') ' + topicRequest.student.user.full_name + ' (' +  topicRequest.created_at +')');
+                    if (topicRequest.status === 'approved') {
+                        li.append($('<span>').addClass('span-approved').text('СХВАЛЕНО'));
+                    } else if (topicRequest.status === 'rejected') {
+                        li.append($('<span>').addClass('span-rejected').text('ВІДХИЛЕНО'));
+                    } else if (response.data.student !== 'undefined' && response.data.student.length === 0 && typeof teacherId !== 'undefined') {
+                        li.append($('<i>').addClass('fa-regular fa-square-check action-icon js-approve-request').attr('title', 'Схвалити запит'));
+                        li.append($('<i>').addClass('fa-regular fa-circle-xmark action-icon js-reject-request').attr('title', 'Відхилити запит'));
+                    }
+                    requestsList.append(li);
+                    counter++;
+                });
+
+                showModal('topicRequestsModal');
+            }
+        },
+        error: function (xhr, status, error) {
+            console.error('Помилка:', error);
+        }
+    });
+}
+
 module.exports = {
     getCatalogs,
     drawCatalogCommonDataRow,
@@ -129,4 +165,5 @@ module.exports = {
     saveTopic,
     editTopic,
     prepareCatalogsTable,
+    showTopicRequests,
 };

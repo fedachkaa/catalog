@@ -43855,9 +43855,8 @@ var getFaculties = function getFaculties() {
             page: response.data.pagination.last
           });
         });
-      } else {
-        prepareFacultyTable();
       }
+      prepareFacultyTable(response.data.faculties.length);
       hideSpinner();
     },
     error: function error(xhr, status, _error) {
@@ -43867,7 +43866,8 @@ var getFaculties = function getFaculties() {
   });
 };
 var prepareFacultyTable = function prepareFacultyTable() {
-  if ($('#faculties-table').hasClass('hidden')) {
+  var isShow = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
+  if (isShow) {
     $('#faculties-table').removeClass('hidden');
     $('.js-faculties-message').text('');
   } else {
@@ -43903,6 +43903,7 @@ var saveFaculty = function saveFaculty(e) {
       _token: $(e.target).data('token')
     },
     success: function success(response) {
+      prepareFacultyTable();
       drawSingleFaculty(response.data);
       hideModal('addEditFacultyModal');
       clearModal('addEditFacultyModal', ['facultyid']);
@@ -43941,10 +43942,8 @@ var displayFacultiesData = function displayFacultiesData(data) {
   data.faculties.forEach(function (faculty) {
     drawSingleFaculty(faculty);
   });
-  prepareFacultyTable();
 };
 var drawSingleFaculty = function drawSingleFaculty(faculty) {
-  prepareFacultyTable();
   var existingRow = $('#faculties-table tbody tr[data-facultyid="' + faculty.id + '"]');
   if (existingRow.length > 0) {
     existingRow.find('.js-single-faculty-title').text(faculty.title);
@@ -43985,6 +43984,7 @@ var saveCourse = function saveCourse(e) {
       row.find('.js-list-courses').append("<li class=\"list-course-item js-view-course\" data-id=\"" + response.data.id + "\">" + response.data.course + ' курс' + "</li>");
       hideModal('addCourseModal');
       hideSpinner();
+      clearModal('addCourseModal', ['facultyid']);
     },
     error: function error(xhr, status, _error2) {
       console.error('Помилка:', _error2);
@@ -44056,7 +44056,7 @@ var getGroupStudents = function getGroupStudents(e) {
       if (response.data.length === 0) {
         modal.find('.js-students-content').append("<p>\u0429\u0435 \u043D\u0435\u043C\u0430\u0454 \u0441\u0442\u0443\u0434\u0435\u043D\u0442\u0456\u0432</p>");
       } else {
-        response.data.forEach(function (student) {
+        response.data.students.forEach(function (student) {
           modal.find('.js-students-content').append("<p>" + student.user.full_name + "</p>");
         });
       }

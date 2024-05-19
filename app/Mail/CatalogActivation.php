@@ -39,7 +39,7 @@ class CatalogActivation extends Mailable
     public function envelope()
     {
         return new Envelope(
-            subject: 'Catalog Activation',
+            subject: 'Каталог активовано!',
         );
     }
 
@@ -57,7 +57,7 @@ class CatalogActivation extends Mailable
             with: [
                 'studentFullName' => $this->student->getUser()->getFullName(),
                 'catalogType' => \App\Models\Catalog::AVAILABLE_CATALOG_TYPES[$this->catalog->getType()],
-                'url' => route('view.catalog', [
+                'url' => route('get.catalog', [
                     'universityId' => $university->getId(),
                     'catalogId' => $this->catalog->getId(),
                 ]),

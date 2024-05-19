@@ -59,8 +59,8 @@
         </div>
         @if (!$universityData['activated_at'])
             <div class="flex flex-row justify-end gap-4 m-4" data-token="{{ csrf_token() }}">
-                <a class="save-btn js-approve-university" data-approved="1">Approve</a>
-                <a class="remove-btn js-reject-university" data-approved="0">Decline</a>
+                <a class="save-btn js-approve-university" data-approved="1">Схвалити</a>
+                <a class="remove-btn js-reject-university" data-approved="0">Відхилити</a>
             </div>
         @endif
 

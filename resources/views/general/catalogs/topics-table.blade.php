@@ -3,6 +3,16 @@
  * @var array $user
  * @var array $topics
  */
+
+$hasStudentTopic = false;
+
+\logger($topics);
+
+if ($user['role_id'] === \App\Models\UserRole::USER_ROLE_STUDENT) {
+    $hasStudentTopic = !empty(array_filter($topics, function($topic) use ($user) {
+        return $topic['student_id'] === $user['id'];
+    }));
+}
 ?>
 <div class="flex flex-col mb-4">
     @if (!empty($topics))
@@ -34,7 +44,7 @@
                             @elseif ($user['role_id'] === \App\Models\UserRole::USER_ROLE_STUDENT)
                                 @if (in_array($user['id'], array_column($topic['requests'], 'student_id')))
                                     <i class="fas fa-envelope-circle-check action-icon" title="Запит надіслано"></i>
-                                @else
+                                @elseif (!$hasStudentTopic)
                                     <i class="fas fa-paper-plane action-icon js-send-request" title="Надіслати запит" data-token="{{ csrf_token() }}"></i>
                                 @endif
                             @endif

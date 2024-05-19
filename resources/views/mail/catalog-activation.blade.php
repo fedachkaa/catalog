@@ -1,14 +1,11 @@
 <x-mail::message>
-    # Hi, {{ $studentFullName }}!
-
-    Catalog {{ $catalogType }} has been activated.
-
-    Follow the link to view actual topics.
-
-    <x-mail::button :url="$url">
-        See catalog
-    </x-mail::button>
-
-    Thanks,<br>
-    {{ config('app.name') }}
+    <div style="font-family: Arial, sans-serif; font-size: 14px; color: #333;">
+        <h1>Привіт, {{ $studentFullName }}!</h1>
+        <p>Каталог {{ $catalogType }} був активований. Перейдіть за посиланням нижче, щоб переглянути актуальні теми.</p>
+        <x-mail::button :url="$url">
+            Перейти до каталогу
+        </x-mail::button>
+        <p>З повагою,<br>
+            {{ config('app.name') }}</p>
+    </div>
 </x-mail::message>

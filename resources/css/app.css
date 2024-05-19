@@ -257,10 +257,14 @@
 .pagination-block .pagination-item {
     @apply cursor-pointer;
 }
+
+.subject-item {
+    @apply bg-amber-200 p-5 text-center text-2xl rounded-md w-4/6;
+}
 /* ADMIN */
 
 .university-block {
-    @apply flex flex-row p-4 justify-between border-2 border-amber-300 rounded-md hover:cursor-pointer hover:bg-amber-100 w-full;
+    @apply mb-5 flex flex-row p-4 justify-between border-2 border-amber-300 rounded-md hover:cursor-pointer hover:bg-amber-100 w-full;
 }
 
 .university-block .actions-block {

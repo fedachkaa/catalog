@@ -1,7 +1,7 @@
 const { toggleTabsSideBar, showSpinner, hideSpinner, showErrors } = require('./../general.js');
 const { searchGroups, searchTeachers} = require('./common.js');
 const { initGroupSelectClick, initRemoveGroupClick } = require('./catalogs.js');
-const { addTopic, editTopic, saveTopic } = require('../common/catalogs.js');
+const { addTopic, editTopic, saveTopic, showTopicRequests } = require('../common/catalogs.js');
 
 document.addEventListener('DOMContentLoaded', function () {
     toggleTabsSideBar('js-catalogs');
@@ -9,7 +9,8 @@ document.addEventListener('DOMContentLoaded', function () {
     $(document).on('click', '.js-add-topic', addTopic);
     $(document).on('click', '.js-save-topic', saveTopic);
     $(document).on('click', '.js-edit-topic', editTopic);
-    $(document).on('click', '.js-update-catalog', updateCatalog)
+    $(document).on('click', '.js-update-catalog', updateCatalog);
+    $(document).on('click', '.js-view-requests', showTopicRequests);
 
     searchGroups({ courseId: $('.js-course').data('courseid') }, 'js-edit-catalog-block', initGroups);
     searchTeachers('.js-edit-catalog-block', { facultyId:  $('.js-faculty').data('facultyid') }, initTeachers);

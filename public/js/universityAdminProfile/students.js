@@ -2290,13 +2290,18 @@ var drawSingleStudent = function drawSingleStudent(student) {
   }
 };
 var createStudentRow = function createStudentRow(student) {
+  var allowActions = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
   var row = $('<tr>').attr('data-userid', student.user_id);
   row.append($('<td>').text(student.user_id));
   row.append($('<td class="js-show-user-info js-student-name action-icon">').text(student.user.full_name));
   row.append($('<td class="js-student-faculty">').text(student.faculty.title));
   row.append($('<td class="js-student-course">').text(student.course.course + ' курс'));
   row.append($('<td class="js-student-group">').text(student.group.title));
-  row.append($('<td>').append($('<i>').addClass('fas fa-edit action-icon js-edit-student')).append($('<i>').addClass('fas fa-trash action-icon js-delete-student')));
+  if (typeof teacherId !== 'undefined') {
+    row.append($('<td>'));
+  } else {
+    row.append($('<td>').append($('<i>').addClass('fas fa-edit action-icon js-edit-student')).append($('<i>').addClass('fas fa-trash action-icon js-delete-student')));
+  }
   row.addClass(($('#students-table tbody tr').length + 1) % 2 === 0 ? 'row-gray' : 'row-beige');
   return row;
 };

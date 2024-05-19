@@ -2329,13 +2329,47 @@ var editTopic = function editTopic(e) {
   $('#addTopicModal .js-teacher').val(topicRow.find('.js-single-topic-teacher').data('teacherid'));
   showModal('addTopicModal');
 };
+var showTopicRequests = function showTopicRequests(e) {
+  var topicId = $(e.target).closest('tr').data('topicid');
+  $.ajax({
+    url: '/api/topic/' + topicId + '/topic-requests',
+    method: 'GET',
+    success: function success(response) {
+      if (response.data.length !== 0) {
+        $('#topicRequestsModal').data('topicid', topicId);
+        var requestsList = $('#topicRequestsModal').find('.js-list-requests');
+        requestsList.empty();
+        var counter = 1;
+        response.data.requests.forEach(function (topicRequest) {
+          var li = $('<li>').attr('data-requestid', topicRequest.id);
+          li.text(counter + ') ' + topicRequest.student.user.full_name + ' (' + topicRequest.created_at + ')');
+          if (topicRequest.status === 'approved') {
+            li.append($('<span>').addClass('span-approved').text('СХВАЛЕНО'));
+          } else if (topicRequest.status === 'rejected') {
+            li.append($('<span>').addClass('span-rejected').text('ВІДХИЛЕНО'));
+          } else if (response.data.student !== 'undefined' && response.data.student.length === 0 && typeof teacherId !== 'undefined') {
+            li.append($('<i>').addClass('fa-regular fa-square-check action-icon js-approve-request').attr('title', 'Схвалити запит'));
+            li.append($('<i>').addClass('fa-regular fa-circle-xmark action-icon js-reject-request').attr('title', 'Відхилити запит'));
+          }
+          requestsList.append(li);
+          counter++;
+        });
+        showModal('topicRequestsModal');
+      }
+    },
+    error: function error(xhr, status, _error2) {
+      console.error('Помилка:', _error2);
+    }
+  });
+};
 module.exports = {
   getCatalogs: getCatalogs,
   drawCatalogCommonDataRow: drawCatalogCommonDataRow,
   addTopic: addTopic,
   saveTopic: saveTopic,
   editTopic: editTopic,
-  prepareCatalogsTable: prepareCatalogsTable
+  prepareCatalogsTable: prepareCatalogsTable,
+  showTopicRequests: showTopicRequests
 };
 
 /***/ }),

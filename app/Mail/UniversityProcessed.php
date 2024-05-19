@@ -16,6 +16,18 @@ class UniversityProcessed extends Mailable
     /** @var University */
     private $university;
 
+    /** @var string[] */
+    private const AVAILABLE_CONTENT_BY_STATUS = [
+        'approved' => 'Університет %%UNIVERSITY_NAME%% було %%STATUS%%. Скористайтесь скиданням паролю для створення нового та авторизації в системі для доступу до подальшого налаштуванням університету.',
+        'rejected' => 'Університет %%UNIVERSITY_NAME%% було %%STATUS%%. У разі питань звертайтесь за електронною поштою admin@unispace.com.',
+    ];
+
+    /** @var string[] */
+    private const AVAILABLE_STATUSES = [
+        'approved' => 'схвалено',
+        'rejected' => 'відхилено',
+    ];
+
     /**
      * Create a new message instance.
      *
@@ -34,7 +46,7 @@ class UniversityProcessed extends Mailable
     public function envelope()
     {
         return new Envelope(
-            subject: 'University ' . ucfirst($this->university->getActivatedAt() ? 'approved' : 'rejected'),
+            subject: 'Університет ' . ucfirst(self::AVAILABLE_STATUSES[$this->university->getActivatedAt() ? 'approved' : 'rejected']),
         );
     }
 
@@ -45,12 +57,13 @@ class UniversityProcessed extends Mailable
      */
     public function content()
     {
+        $status = $this->university->getActivatedAt() ? 'approved' : 'rejected';
         return new Content(
             markdown: 'mail.university-processed',
             with: [
-                'universityName' => $this->university->getName(),
                 'universityAdminName' => $this->university->getAdmin()->getFullName(),
-                'status' => $this->university->getActivatedAt() ? 'approved' : 'rejected',
+                'status' => $status,
+                'message' => $this->getMessage($status),
                 'url' => route('login'),
             ],
         );
@@ -64,5 +77,18 @@ class UniversityProcessed extends Mailable
     public function attachments()
     {
         return [];
+    }
+
+    /**
+     * @param string $status
+     * @return string
+     */
+    private function getMessage(string $status): string
+    {
+        $message = self::AVAILABLE_CONTENT_BY_STATUS[$status];
+
+        $message = str_replace('%%UNIVERSITY_NAME%%', $this->university->getName(), $message);
+
+        return str_replace('%%STATUS%%', self::AVAILABLE_STATUSES[$status], $message);
     }
 }

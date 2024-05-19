@@ -1,4 +1,4 @@
-<div class="search-tool">
+<div class="search-tool w-full">
     <div class="search-tool-title">Шукати студента</div>
     <div class="search-tool-body">
         <div class="search-field">
