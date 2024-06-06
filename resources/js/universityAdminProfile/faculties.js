@@ -282,6 +282,7 @@ const getCourseGroups = function(e) {
 
     $('#courseInfo').attr('data-facultyid', facultyId).attr('data-courseid', courseId);
 
+    clearModal('courseInfo');
     showModal('courseInfo');
 }
 

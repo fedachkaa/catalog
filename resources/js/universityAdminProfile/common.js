@@ -15,7 +15,6 @@ const searchFaculties = function (block) {
                 facultySelect.append($('<option>').attr('value', faculty.id).text(faculty.title));
             });
 
-            facultySelect.trigger('click');
             hideSpinner();
         },
         error: function (xhr, status, error) {
@@ -66,7 +65,6 @@ const searchCourses = function (facultyId, block) {
                 coursesSelect.append($('<option>').attr('value', course.id).text(course.course + ' курс'));
             });
 
-            coursesSelect.trigger('click');
             hideSpinner();
         },
         error: function (xhr, status, error) {

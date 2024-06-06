@@ -58,15 +58,15 @@ const editStudent = function (e) {
             addEditStudentModal.find('.js-email').val(response.data.user.email);
             addEditStudentModal.find('.js-phone-number').val(response.data.user.phone_number);
 
-            // TODO add student data like text with edit icon
-            // searchFaculties('addStudentModal');
-            // addEditStudentModal.find('.js-faculty option[value="' + response.data.faculty.faculty_id + '"]').prop('selected', true);
-            //
-            // searchCourses(response.data.faculty.faculty_id, 'addStudentModal');
-            // addEditStudentModal.find('.js-course option[value="' + response.data.course.course_id + '"]').prop('selected', true);
-            //
-            // searchGroups({ courseId: response.data.course.course_id }, 'addStudentModal', fillGroupSelect);
-            // addEditStudentModal.find('.js-group option[value="' + response.data.group_id + '"]').prop('selected', true);
+            addEditStudentModal.find('.js-faculty option[value="' + response.data.faculty.id + '"]').attr('selected', 'selected');
+
+            searchCourses(response.data.faculty.id, 'addStudentModal');
+            searchGroups({ courseId: response.data.course.id }, 'addStudentModal', fillGroupSelect);
+
+            setTimeout(function() {
+                addEditStudentModal.find('.js-course option[value="' + response.data.course.id + '"]').attr('selected', 'selected');
+                addEditStudentModal.find('.js-group option[value="' + response.data.group_id + '"]').attr('selected', 'selected');
+            }, 2000);
 
             hideSpinner();
             showModal('addStudentModal');
@@ -110,8 +110,6 @@ const fillGroupSelect = function (groups, block) {
     groups.forEach(group => {
         groupsSelect.append($('<option>').attr('value', group.id).text(group.title));
     });
-
-    groupsSelect.trigger('click');
 }
 
 const saveStudent = function (e) {

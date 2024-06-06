@@ -2670,7 +2670,6 @@ var searchFaculties = function searchFaculties(block) {
       response.data.faculties.forEach(function (faculty) {
         facultySelect.append($('<option>').attr('value', faculty.id).text(faculty.title));
       });
-      facultySelect.trigger('click');
       hideSpinner();
     },
     error: function error(xhr, status, _error) {
@@ -2714,7 +2713,6 @@ var searchCourses = function searchCourses(facultyId, block) {
       response.data.forEach(function (course) {
         coursesSelect.append($('<option>').attr('value', course.id).text(course.course + ' курс'));
       });
-      coursesSelect.trigger('click');
       hideSpinner();
     },
     error: function error(xhr, status, _error3) {
