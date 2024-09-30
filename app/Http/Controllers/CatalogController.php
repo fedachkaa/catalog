@@ -23,7 +23,7 @@ use Illuminate\Support\Facades\DB;
 class CatalogController extends Controller
 {
     /** @var int */
-    const PAGINATION_LIMIT = 1;
+    const PAGINATION_LIMIT = 10;
 
     /** @var CatalogRepositoryInterface */
     private $catalogRepository;

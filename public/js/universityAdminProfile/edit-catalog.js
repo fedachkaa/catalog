@@ -2329,13 +2329,47 @@ var editTopic = function editTopic(e) {
   $('#addTopicModal .js-teacher').val(topicRow.find('.js-single-topic-teacher').data('teacherid'));
   showModal('addTopicModal');
 };
+var showTopicRequests = function showTopicRequests(e) {
+  var topicId = $(e.target).closest('tr').data('topicid');
+  $.ajax({
+    url: '/api/topic/' + topicId + '/topic-requests',
+    method: 'GET',
+    success: function success(response) {
+      if (response.data.length !== 0) {
+        $('#topicRequestsModal').data('topicid', topicId);
+        var requestsList = $('#topicRequestsModal').find('.js-list-requests');
+        requestsList.empty();
+        var counter = 1;
+        response.data.requests.forEach(function (topicRequest) {
+          var li = $('<li>').attr('data-requestid', topicRequest.id);
+          li.text(counter + ') ' + topicRequest.student.user.full_name + ' (' + topicRequest.created_at + ')');
+          if (topicRequest.status === 'approved') {
+            li.append($('<span>').addClass('span-approved').text('СХВАЛЕНО'));
+          } else if (topicRequest.status === 'rejected') {
+            li.append($('<span>').addClass('span-rejected').text('ВІДХИЛЕНО'));
+          } else if (response.data.student !== 'undefined' && response.data.student.length === 0 && typeof teacherId !== 'undefined') {
+            li.append($('<i>').addClass('fa-regular fa-square-check action-icon js-approve-request').attr('title', 'Схвалити запит'));
+            li.append($('<i>').addClass('fa-regular fa-circle-xmark action-icon js-reject-request').attr('title', 'Відхилити запит'));
+          }
+          requestsList.append(li);
+          counter++;
+        });
+        showModal('topicRequestsModal');
+      }
+    },
+    error: function error(xhr, status, _error2) {
+      console.error('Помилка:', _error2);
+    }
+  });
+};
 module.exports = {
   getCatalogs: getCatalogs,
   drawCatalogCommonDataRow: drawCatalogCommonDataRow,
   addTopic: addTopic,
   saveTopic: saveTopic,
   editTopic: editTopic,
-  prepareCatalogsTable: prepareCatalogsTable
+  prepareCatalogsTable: prepareCatalogsTable,
+  showTopicRequests: showTopicRequests
 };
 
 /***/ }),
@@ -2636,7 +2670,6 @@ var searchFaculties = function searchFaculties(block) {
       response.data.faculties.forEach(function (faculty) {
         facultySelect.append($('<option>').attr('value', faculty.id).text(faculty.title));
       });
-      facultySelect.trigger('click');
       hideSpinner();
     },
     error: function error(xhr, status, _error) {
@@ -2680,7 +2713,6 @@ var searchCourses = function searchCourses(facultyId, block) {
       response.data.forEach(function (course) {
         coursesSelect.append($('<option>').attr('value', course.id).text(course.course + ' курс'));
       });
-      coursesSelect.trigger('click');
       hideSpinner();
     },
     error: function error(xhr, status, _error3) {
@@ -44081,13 +44113,15 @@ var _require3 = __webpack_require__(/*! ./catalogs.js */ "./resources/js/univers
 var _require4 = __webpack_require__(/*! ../common/catalogs.js */ "./resources/js/common/catalogs.js"),
   addTopic = _require4.addTopic,
   editTopic = _require4.editTopic,
-  saveTopic = _require4.saveTopic;
+  saveTopic = _require4.saveTopic,
+  showTopicRequests = _require4.showTopicRequests;
 document.addEventListener('DOMContentLoaded', function () {
   toggleTabsSideBar('js-catalogs');
   $(document).on('click', '.js-add-topic', addTopic);
   $(document).on('click', '.js-save-topic', saveTopic);
   $(document).on('click', '.js-edit-topic', editTopic);
   $(document).on('click', '.js-update-catalog', updateCatalog);
+  $(document).on('click', '.js-view-requests', showTopicRequests);
   searchGroups({
     courseId: $('.js-course').data('courseid')
   }, 'js-edit-catalog-block', initGroups);

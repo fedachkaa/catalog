@@ -67,9 +67,8 @@ const getFaculties = function(searchParams = {}) {
                 $('.js-pagination .pagination-last').off().on('click', function() {
                     getFaculties({page: response.data.pagination.last});
                 });
-            } else {
-                prepareFacultyTable();
             }
+            prepareFacultyTable(response.data.faculties.length);
             hideSpinner();
         },
         error: function (xhr, status, error) {
@@ -79,8 +78,8 @@ const getFaculties = function(searchParams = {}) {
     });
 }
 
-const prepareFacultyTable = function () {
-    if ($('#faculties-table').hasClass('hidden')) {
+const prepareFacultyTable = function (isShow = true) {
+    if (isShow) {
         $('#faculties-table').removeClass('hidden');
         $('.js-faculties-message').text('');
     } else {
@@ -121,6 +120,7 @@ const saveFaculty = function(e) {
             _token: $(e.target).data('token'),
         },
         success: function (response) {
+            prepareFacultyTable();
             drawSingleFaculty(response.data);
             hideModal('addEditFacultyModal');
             clearModal('addEditFacultyModal', ['facultyid']);
@@ -164,12 +164,9 @@ const displayFacultiesData = function(data) {
     data.faculties.forEach(faculty => {
         drawSingleFaculty(faculty);
     });
-    prepareFacultyTable();
 }
 
 const drawSingleFaculty = function (faculty) {
-    prepareFacultyTable();
-
     const existingRow = $('#faculties-table tbody tr[data-facultyid="' + faculty.id + '"]');
     if (existingRow.length > 0) {
         existingRow.find('.js-single-faculty-title').text(faculty.title);
@@ -227,6 +224,7 @@ const saveCourse = function(e) {
             row.find('.js-list-courses').append(`<li class="list-course-item js-view-course" data-id="`+ response.data.id + `">`+ response.data.course + ' курс' +`</li>`);
             hideModal('addCourseModal');
             hideSpinner();
+            clearModal('addCourseModal', ['facultyid']);
         },
         error: function (xhr, status, error) {
             console.error('Помилка:', error);
@@ -284,6 +282,7 @@ const getCourseGroups = function(e) {
 
     $('#courseInfo').attr('data-facultyid', facultyId).attr('data-courseid', courseId);
 
+    clearModal('courseInfo');
     showModal('courseInfo');
 }
 
@@ -321,7 +320,7 @@ const getGroupStudents = function (e) {
             if (response.data.length === 0) {
                 modal.find('.js-students-content').append(`<p>Ще немає студентів</p>`);
             } else {
-                response.data.forEach(function (student) {
+                response.data.students.forEach(function (student) {
                     modal.find('.js-students-content').append(`<p>`+ student.user.full_name +`</p>`);
                 });
             }

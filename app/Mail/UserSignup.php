@@ -31,7 +31,7 @@ class UserSignup extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Signup success!',
+            subject: 'Успішна реєстрація!',
         );
     }
 

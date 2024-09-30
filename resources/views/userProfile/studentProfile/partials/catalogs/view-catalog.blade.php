@@ -37,6 +37,35 @@
             </div>
         </div>
 
+        <div class="flex flex-row w-full mb-4">
+            <div class="flex flex-col w-full">
+                <div class="flex flex-col w-full">
+                    <label>Групи:</label>
+                </div>
+                <div class="js-groups-list">
+                    <ul>
+                        @foreach($catalogData['groups'] as $group)
+                            <li data-groupid="{{ $group['id'] }}">{{ $group['title'] }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            </div>
+            <div class="flex flex-col w-full">
+                <div class="flex flex-col w-full">
+                    <label>Наукові керівники:</label>
+                </div>
+                <div class="js-teachers-list">
+                    <ul>
+                        @foreach($catalogData['supervisors'] as $supervisor)
+                            <li data-teacherid="{{ $supervisor['user_id'] }}">
+                                {{ $supervisor['user']['full_name'] }}
+                            </li>
+                        @endforeach
+                    </ul>
+                </div>
+            </div>
+        </div>
+
         @include('general.catalogs.topics-table', ['topics' => $catalogData['topics']])
     </div>
 @endsection

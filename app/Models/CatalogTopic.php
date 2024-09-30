@@ -92,6 +92,14 @@ class CatalogTopic extends Model implements CatalogTopicInterface
     /**
      * @return int
      */
+    public function getTeacherId(): int
+    {
+        return (int)$this->getAttribute('teacher_id');
+    }
+
+    /**
+     * @return int
+     */
     public function getStudentId(): int
     {
         return (int)$this->getAttribute('student_id');

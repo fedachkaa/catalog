@@ -64,7 +64,6 @@ Route::prefix('/university/{universityId}')->middleware(['auth', 'university.get
 
     Route::get('/catalogs', [CatalogController::class, 'getCatalogs']);
     Route::get('/catalogs/{catalogId}', [CatalogController::class, 'editCatalog'])->middleware('catalog.get')->name('get.catalog');
-
 });
 
 Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {

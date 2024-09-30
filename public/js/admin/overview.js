@@ -43701,10 +43701,9 @@ var searchUniversity = function searchUniversity() {
     url: '/api/admin/universities?' + query,
     method: 'GET',
     success: function success(response) {
+      $('.universities-content').children(':not(.university-block-template)').remove();
       if (response.data.length !== 0) {
         displayUniversitiesData(response.data);
-      } else {
-        $('.universities-content').empty();
       }
       (0,_general_js__WEBPACK_IMPORTED_MODULE_0__.hideSpinner)();
     },

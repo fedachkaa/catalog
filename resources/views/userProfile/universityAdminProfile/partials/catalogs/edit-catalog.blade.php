@@ -78,6 +78,7 @@
         </div>
 
         @include('general.catalogs.topics-table', ['topics' => $catalogData['topics']])
+        @include('general.catalogs.topic-requests-modal')
 
         <div class="flex justify-end mt-2 me-4 mb-4">
             <button class="add-user-btn js-update-catalog" data-token="{{ csrf_token() }}">Зберегти</button>
