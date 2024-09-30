@@ -56,7 +56,7 @@ class University extends RepositoryAbstract implements UniversityRepositoryInter
         }
 
         if (!empty($filters['title'])) {
-            $query = $query->where('title','like','%' . $filters['title'] . '%');
+            $query = $query->where('name','like','%' . $filters['title'] . '%');
         }
 
         if (!empty($filters['city'])) {
@@ -72,7 +72,7 @@ class University extends RepositoryAbstract implements UniversityRepositoryInter
         }
 
         if (isset($filters['status']) && in_array($filters['status'], array_keys(UniversityModel::AVAILABLE_STATUSES))) {
-            if ($filters['status']) {
+            if ($filters['status'] === 1) {
                 $query = $query->whereNotNull('activated_at');
             } else {
                 $query = $query->whereNull('activated_at');

@@ -43,10 +43,9 @@ const searchUniversity = function () {
         url: '/api/admin/universities?' + query,
         method: 'GET',
         success: function (response) {
+            $('.universities-content').children(':not(.university-block-template)').remove();
             if (response.data.length !== 0) {
                 displayUniversitiesData(response.data);
-            } else {
-                $('.universities-content').empty();
             }
             hideSpinner();
         },
