@@ -47,7 +47,7 @@ class TopicRequest extends ExporterAbstract
         /** @var CatalogTopicRepositoryInterface $catalogTopicRepository */
         $catalogTopicRepository = App::get(CatalogTopicRepositoryInterface::class);
 
-        return $catalogTopicRepository->export($topicRequest->getTopic(), ['catalog', 'teacher', 'student']);
+        return $catalogTopicRepository->export($topicRequest->getCatalogTopic(), ['catalog', 'teacher', 'student']);
     }
 
     /**

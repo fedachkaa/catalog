@@ -9,9 +9,9 @@ interface CatalogTopicInterface
 {
     public function getCatalog(): Model;
 
-    public function getTeacher(): Model;
-
     public function getStudent(): ?Model;
+
+    public function getTopic(): Model;
 
     public function getStudentRequests(): Collection;
 
@@ -19,11 +19,7 @@ interface CatalogTopicInterface
 
     public function getCatalogId(): int;
 
-    public function getTeacherId(): int;
-
     public function getStudentId(): int;
-
-    public function getTopic(): string;
 
     public function getTopicId(): int;
 }

@@ -60,9 +60,9 @@ class TopicRequestProcessed extends Mailable
             markdown: 'mail.topic-processed',
             with: [
                 'studentFullName' => $this->student->getUser()->getFullName(),
-                'topic' => $this->topicRequest->getTopic()->getTopic(),
+                'topic' => $this->topicRequest->getCatalogTopic()->getTopic()->getTopic(),
                 'status' => TopicRequest::AVAILABLE_STATUSES[$this->topicRequest->getStatus()],
-                'catalogType' => \App\Models\Catalog::AVAILABLE_CATALOG_TYPES[$this->topicRequest->getTopic()->getCatalog()->getType()],
+                'catalogType' => \App\Models\Catalog::AVAILABLE_CATALOG_TYPES[$this->topicRequest->getCatalogTopic()->getCatalog()->getType()],
             ],
         );
     }

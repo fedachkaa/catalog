@@ -34,28 +34,28 @@ class MigrateCatalogTopicsData extends Command
      **/
     public function handle()
     {
-        $catalogTopics = $this->catalogTopicsRepository->getAll();
-
-        foreach ($catalogTopics as $catalogTopic) {
-            $topic = $this->topicsRepository->getOne([
-                'topic' => $catalogTopic->getTopic(),
-            ]);
-
-            if (empty($topic)) {
-                $topic = $this->topicsRepository->getNew([
-                    'teacher_id' => $catalogTopic->getTeacherId(),
-                    'topic' => $catalogTopic->getTopic(),
-                    'is_ai_generated' => 0,
-                ]);
-
-                $topic->saveOrFail();
-            }
-
-            $catalogTopic->updateOrFail([
-                'topic_id' => $topic->getId(),
-            ]);
-        }
-
-        $this->info('Catalog topics migrated successfully!');
+//        $catalogTopics = $this->catalogTopicsRepository->getAll();
+//
+//        foreach ($catalogTopics as $catalogTopic) {
+//            $topic = $this->topicsRepository->getOne([
+//                'topic' => $catalogTopic->getTopic(),
+//            ]);
+//
+//            if (empty($topic)) {
+//                $topic = $this->topicsRepository->getNew([
+//                    'teacher_id' => $catalogTopic->getTeacherId(),
+//                    'topic' => $catalogTopic->getTopic(),
+//                    'is_ai_generated' => 0,
+//                ]);
+//
+//                $topic->saveOrFail();
+//            }
+//
+//            $catalogTopic->updateOrFail([
+//                'topic_id' => $topic->getId(),
+//            ]);
+//        }
+//
+//        $this->info('Catalog topics migrated successfully!');
     }
 }

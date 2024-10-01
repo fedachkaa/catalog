@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 interface TopicRequestInterface
 {
-    public function getTopic(): Model;
+    public function getCatalogTopic(): Model;
 
     public function getStudent(): Model;
 

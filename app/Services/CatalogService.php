@@ -175,7 +175,7 @@ class CatalogService
         }
 
         $topicRequest->updateOrFail(['status' => TopicRequest::STATUS_APPROVED]);
-        $topic = $topicRequest->getTopic();
+        $topic = $topicRequest->getCatalogTopic();
         $topic->updateOrFail(['student_id' => $student->getUserId()]);
 
         $otherTopicRequests = $this->topicRequestRepository->getAll([

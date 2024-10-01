@@ -35,8 +35,6 @@ class CatalogTopic extends ExporterAbstract
             'id' => $model->getId(),
             'catalog_id' => $model->getCatalogId(),
             'student_id' => $model->getStudentId(),
-            'teacher_id' => $model->getTeacherId(),
-            'topic' => $model->getTopic(),
             'topic_id' => $model->getTopicId(),
         ];
     }

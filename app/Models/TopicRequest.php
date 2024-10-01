@@ -37,9 +37,9 @@ class TopicRequest extends Model implements TopicRequestInterface
     // --- Model relationships
 
     /**
-     * @return Model
+     * @return Model|CatalogTopic
      */
-    public function getTopic(): Model
+    public function getCatalogTopic(): Model|CatalogTopic
     {
         return $this->belongsTo(CatalogTopic::class, 'topic_id', 'id')->first();
     }
