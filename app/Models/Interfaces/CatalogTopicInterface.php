@@ -24,4 +24,6 @@ interface CatalogTopicInterface
     public function getStudentId(): int;
 
     public function getTopic(): string;
+
+    public function getTopicId(): int;
 }

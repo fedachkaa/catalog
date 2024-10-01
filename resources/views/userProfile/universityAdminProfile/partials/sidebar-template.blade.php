@@ -49,6 +49,12 @@
                     <span>Каталоги робіт</span>
                 </a>
             </li>
+            <li class="sidebar-menu-title js-catalogs">
+                <a href="/university/{{ $user['university']['id'] }}/topics">
+                    <i class="fa-solid fa-book-bookmark"></i>
+                    <span>Теми</span>
+                </a>
+            </li>
             <li class="sidebar-menu-title">
                 <a href="{{ route('logout') }}">
                     <span>Вийти</span>

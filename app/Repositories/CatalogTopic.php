@@ -67,6 +67,10 @@ class CatalogTopic extends RepositoryAbstract implements CatalogTopicRepositoryI
             $query = $query->where('catalog_id', (int) $filters['catalog_id']);
         }
 
+        if (!empty($filters['teacher_id'])) {
+            $query = $query->where('teacher_id', (int) $filters['teacher_id']);
+        }
+
         if (!empty($filters['topic'])) {
             $query = $query->where('topic','LIKE', '%' . $filters['topic'] . '%');
         }

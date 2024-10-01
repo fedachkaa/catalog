@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\TeacherController;
+use App\Http\Controllers\TopicController;
 use App\Http\Controllers\UniversityController;
 use App\Http\Controllers\UserProfileController;
 use App\Http\Controllers\FacultyController;
@@ -64,6 +65,7 @@ Route::prefix('/university/{universityId}')->middleware(['auth', 'university.get
 
     Route::get('/catalogs', [CatalogController::class, 'getCatalogs']);
     Route::get('/catalogs/{catalogId}', [CatalogController::class, 'editCatalog'])->middleware('catalog.get')->name('get.catalog');
+    Route::get('/topics', [TopicController::class, 'getTopics']);
 });
 
 Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {

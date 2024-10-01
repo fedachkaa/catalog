@@ -22,6 +22,7 @@ class CatalogTopic extends Model implements CatalogTopicInterface
         'teacher_id',
         'topic',
         'student_id',
+        'topic_id'
     ];
 
     /**
@@ -79,6 +80,14 @@ class CatalogTopic extends Model implements CatalogTopicInterface
     public function getCatalogId(): int
     {
         return (int) $this->getAttribute('catalog_id');
+    }
+
+    /**
+     * @return int
+     */
+    public function getTopicId(): int
+    {
+        return (int) $this->getAttribute('topic_id');
     }
 
     /**
