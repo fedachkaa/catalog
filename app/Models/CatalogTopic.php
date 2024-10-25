@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Models\Interfaces\CatalogTopicInterface;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -52,14 +51,6 @@ class CatalogTopic extends Model implements CatalogTopicInterface
     public function getTopic(): Model|Topic
     {
         return $this->belongsTo(Topic::class, 'topic_id', 'id')->first();
-    }
-
-    /**
-     * @return Collection
-     */
-    public function getStudentRequests(): Collection
-    {
-        return $this->hasMany(TopicRequest::class, 'topic_id', 'id')->get();
     }
 
     // --- Model getters

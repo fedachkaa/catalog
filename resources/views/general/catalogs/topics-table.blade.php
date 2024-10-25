@@ -28,17 +28,17 @@ if ($user['role_id'] === \App\Models\UserRole::USER_ROLE_STUDENT) {
             </thead>
             <tbody>
                 @foreach($topics as $topic)
-                    <tr data-topicid="{{ $topic['id'] }}">
+                    <tr data-topicid="{{ $topic['topic']['id'] }}" data-catalogtopicid="{{ $topic['id'] }}">
                         <td>{{ $topic['id'] }}</td>
-                        <td class="js-single-topic-topic">{{ $topic['topic'] }}</td>
-                        <td class="js-single-topic-teacher" data-teacherid="{{ $topic['teacher']['user_id'] }}">{{ $topic['teacher']['user']['full_name'] }}</td>
+                        <td class="js-single-topic-topic">{{ $topic['topic']['topic'] }}</td>
+                        <td class="js-single-topic-teacher" data-teacherid="{{ $topic['topic']['teacher']['user_id'] }}">{{ $topic['topic']['teacher']['user']['full_name'] }}</td>
                         @if (!empty($topic['student']))
                             <td class="js-single-topic-student" data-studentid="{{ $topic['student']['user_id'] }}">{{ $topic['student']['user']['full_name'] }}</td>
                         @else
                             <td class="js-single-topic-student">-</td>
                         @endif
                         <td>
-                            @if ($topic['teacher']['user_id'] === $user['id'] || $user['role_id'] === \App\Models\UserRole::USER_ROLE_UNIVERSITY_ADMIN)
+                            @if ($topic['topic']['teacher']['user_id'] === $user['id'] || $user['role_id'] === \App\Models\UserRole::USER_ROLE_UNIVERSITY_ADMIN)
                                 <i class="fas fa-edit action-icon js-edit-topic" title="Редагувати"></i>
                                 <i class="fa-solid fa-person-circle-question js-view-requests action-icon" title="Переглянути запити"></i>
                             @elseif ($user['role_id'] === \App\Models\UserRole::USER_ROLE_STUDENT)
@@ -60,6 +60,7 @@ if ($user['role_id'] === \App\Models\UserRole::USER_ROLE_STUDENT) {
     @if ($user['role_id'] !== \App\Models\UserRole::USER_ROLE_STUDENT)
         <div class="mt-2">
             <i class="fas fa-circle-plus action-icon text-3xl js-add-topic" title="Додати тему"></i>
+            <i class="fa-solid fa-wand-magic-sparkles action-icon text-3xl js-add-ai-topic" title="Згенерувати тему за допомогою AI"></i>
         </div>
     @endif
 </div>

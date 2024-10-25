@@ -4,6 +4,7 @@ namespace App\Exporters;
 
 use App\Models\Topic as TopicModel;
 use App\Repositories\Interfaces\TeacherRepositoryInterface;
+use App\Repositories\Interfaces\TopicRequestRepositoryInterface;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\App;
 
@@ -16,6 +17,7 @@ class Topic extends ExporterAbstract
     {
         return [
             'teacher' => 'teacher',
+            'requests' => 'requests',
         ];
     }
 
@@ -29,6 +31,7 @@ class Topic extends ExporterAbstract
             'id' => $model->getId(),
             'teacher_id' => $model->getTeacherId(),
             'topic' => $model->getTopic(),
+            'keyword' => $model->getKeyword(),
             'is_ai_generated' => $model->getIsAiGenerated(),
             'created_at' => $model->getCreatedAt(),
             'updated_at' => $model->getUpdatedAt(),
@@ -45,5 +48,17 @@ class Topic extends ExporterAbstract
         $teacherRepository = App::get(TeacherRepositoryInterface::class);
 
         return $teacherRepository->export($topic->getTeacher(), ['user']);
+    }
+
+    /**
+     * @param TopicModel $topic
+     * @return array
+     */
+    protected function expandRequests(TopicModel $topic): array
+    {
+        /** @var TopicRequestRepositoryInterface $topicRequestRepository */
+        $topicRequestRepository = App::get(TopicRequestRepositoryInterface::class);
+
+        return $topicRequestRepository->exportAll($topic->getStudentRequests(), ['student']);
     }
 }

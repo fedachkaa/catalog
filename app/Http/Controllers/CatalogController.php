@@ -8,11 +8,14 @@ use App\Http\Requests\PostPutCatalogRequest;
 use App\Http\Requests\PostPutTopicRequest;
 use App\Models\Catalog;
 use App\Models\CatalogTopic;
+use App\Models\Topic;
 use App\Models\TopicRequest;
 use App\Models\University;
 use App\Repositories\Interfaces\CatalogRepositoryInterface;
 use App\Repositories\Interfaces\CatalogTopicRepositoryInterface;
+use App\Repositories\Interfaces\TopicRepositoryInterface;
 use App\Services\CatalogService;
+use App\Services\OpenAiService;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -31,22 +34,35 @@ class CatalogController extends Controller
     /** @var CatalogTopicRepositoryInterface */
     private $catalogTopicRepository;
 
+    /** @var TopicRepositoryInterface */
+    private $topicRepository;
+
     /** @var CatalogService */
     private $catalogService;
+
+    /** @var OpenAiService */
+    private $openAiService;
 
     /**
      * @param CatalogRepositoryInterface $catalogRepository
      * @param CatalogTopicRepositoryInterface $catalogTopicRepository
+     * @param TopicRepositoryInterface $topicRepository
      * @param CatalogService $catalogService
+     * @param OpenAiService $openAiService
      */
     public function __construct(
         CatalogRepositoryInterface $catalogRepository,
         CatalogTopicRepositoryInterface $catalogTopicRepository,
-        CatalogService $catalogService
-    ){
+        TopicRepositoryInterface $topicRepository,
+        CatalogService $catalogService,
+        OpenAiService $openAiService
+    )
+    {
         $this->catalogRepository = $catalogRepository;
         $this->catalogTopicRepository = $catalogTopicRepository;
+        $this->topicRepository = $topicRepository;
         $this->catalogService = $catalogService;
+        $this->openAiService = $openAiService;
     }
 
     /**
@@ -136,7 +152,7 @@ class CatalogController extends Controller
             return view('userProfile.universityAdminProfile.partials.catalogs.edit-catalog', compact('catalogData'));
         } else if (auth()->user()->isTeacher()) {
             return view('userProfile.teacherProfile.partials.catalogs.view-catalog', compact('catalogData'));
-        } else if (auth()->user()->isStudent())  {
+        } else if (auth()->user()->isStudent()) {
             return view('userProfile.studentProfile.partials.catalogs.view-catalog', compact('catalogData'));
         } else {
             return view('404NotFound');
@@ -152,23 +168,29 @@ class CatalogController extends Controller
     public function saveCatalogTopic(PostPutTopicRequest $request, University $university, Catalog $catalog): JsonResponse
     {
         try {
-            $catalogTopic = $this->catalogTopicRepository->getNew([
-                'catalog_id' => $catalog->getId(),
+            /** @var Topic $topic */
+            $topic = $this->topicRepository->getNew([
                 'teacher_id' => $request->input('teacher_id'),
                 'topic' => $request->input('topic'),
             ]);
+            $topic->saveOrFail();
 
+            /** @var CatalogTopic $catalogTopic */
+            $catalogTopic = $this->catalogTopicRepository->getNew([
+                'catalog_id' => $catalog->getId(),
+                'topic_id' => $topic->getId(),
+            ]);
             $catalogTopic->saveOrFail();
         } catch (\Throwable $e) {
             return response()->json([
-                'message' => 'Internal serve error',
+                'message' => 'Internal server error',
                 'error' => $e->getMessage()
             ])->setStatusCode(500);
         }
 
         return response()->json([
             'message' => 'Success',
-            'data' => $this->catalogTopicRepository->export($catalogTopic, ['teacher', 'student']),
+            'data' => $this->catalogTopicRepository->export($catalogTopic, ['topic', 'student']),
         ])->setStatusCode(200);
     }
 
@@ -176,13 +198,13 @@ class CatalogController extends Controller
      * @param PostPutTopicRequest $request
      * @param University $university
      * @param Catalog $catalog
-     * @param CatalogTopic $catalogTopic
+     * @param Topic $topic
      * @return JsonResponse
      */
-    public function updateCatalogTopic(PostPutTopicRequest $request, University $university, Catalog $catalog, CatalogTopic $catalogTopic): JsonResponse
+    public function updateCatalogTopic(PostPutTopicRequest $request, University $university, Catalog $catalog, Topic $topic): JsonResponse
     {
         try {
-            $catalogTopic->updateOrFail([
+            $topic->updateOrFail([
                 'topic' => $request->input('topic'),
                 'teacher_id' => $request->input('teacher_id'),
             ]);
@@ -195,7 +217,6 @@ class CatalogController extends Controller
 
         return response()->json([
             'message' => 'Success',
-            'data' => $this->catalogTopicRepository->export($catalogTopic, ['teacher', 'student']),
         ])->setStatusCode(200);
     }
 
@@ -259,7 +280,7 @@ class CatalogController extends Controller
     {
         return response()->json([
             'message' => 'Success',
-            'data' => $this->catalogTopicRepository->export($catalogTopic, ['requests', 'student']),
+            'data' => $this->catalogTopicRepository->export($catalogTopic, ['topic', 'student']),
         ])->setStatusCode(200);
     }
 
@@ -324,6 +345,84 @@ class CatalogController extends Controller
 
         return response()->json([
             'message' => 'Success',
+        ])->setStatusCode(200);
+    }
+
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function generateTopics(Request $request): JsonResponse
+    {
+        $keyword = $request->get('keyword');
+
+        if (empty($keyword)) {
+            return response()->json([
+                'message' => 'Keyword is required.',
+            ])->setStatusCode(400);
+        }
+
+        try {
+            $data = $this->openAiService->sendRequest($keyword);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'Internal server error. Error: "' . $e->getMessage() . '".',
+            ])->setStatusCode(500);
+        }
+
+        return response()->json([
+            'message' => 'Success.',
+            'data' => explode("\n\n", $data),
+        ])->setStatusCode(200);
+    }
+
+    /**
+     * @param Request $request
+     * @param University $university
+     * @param Catalog $catalog
+     * @return JsonResponse
+     */
+    public function saveCatalogAiTopic(Request $request, University $university, Catalog $catalog): JsonResponse
+    {
+        $topics = $request->input('topics');
+        $teacherId = $request->input('teacher_id');
+
+        DB::beginTransaction();
+        try {
+            if (is_array($topics) && !empty($topics)) {
+                foreach ($topics as $topicData) {
+                    /** @var Topic $newTopic */
+                    $newTopic = $this->topicRepository->getNew([
+                        'teacher_id' => $teacherId,
+                        'topic' => $topicData['topic'] ?? null,
+                        'keyword' => $topicData['keyword'] ?? null,
+                        'is_ai_generated' => 1,
+                    ]);
+                    $newTopic->saveOrFail();
+
+                    /** @var CatalogTopic $catalogTopic */
+                    $catalogTopic = $this->catalogTopicRepository->getNew([
+                        'catalog_id' => $catalog->getId(),
+                        'topic_id' => $newTopic->getId(),
+                    ]);
+
+                    $catalogTopic->saveOrFail();
+                }
+                DB::commit();
+
+                return response()->json([
+                    'message' => 'Success'
+                ])->setStatusCode(200);
+            }
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Cant save topics. Error: "' . $e->getMessage() . '".',
+            ])->setStatusCode(500);
+        }
+
+        return response()->json([
+            'message' => 'Success'
         ])->setStatusCode(200);
     }
 

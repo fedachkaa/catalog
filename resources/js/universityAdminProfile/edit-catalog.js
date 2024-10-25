@@ -1,17 +1,25 @@
 const { toggleTabsSideBar, showSpinner, hideSpinner, showErrors } = require('./../general.js');
 const { searchGroups, searchTeachers} = require('./common.js');
 const { initGroupSelectClick, initRemoveGroupClick } = require('./catalogs.js');
-const { addTopic, editTopic, saveTopic, showTopicRequests } = require('../common/catalogs.js');
+const {
+    addTopic, addAiTopic, editTopic, saveTopic,
+    showTopicRequests, generateTopics, pinGeneratedTopic,
+    unpinGeneratedTopic, saveGeneratedTopics
+} = require('../common/catalogs.js');
 
 document.addEventListener('DOMContentLoaded', function () {
     toggleTabsSideBar('js-catalogs');
 
     $(document).on('click', '.js-add-topic', addTopic);
+    $(document).on('click', '.js-add-ai-topic', addAiTopic);
+    $(document).on('click', '.js-generate-topics', generateTopics)
     $(document).on('click', '.js-save-topic', saveTopic);
     $(document).on('click', '.js-edit-topic', editTopic);
     $(document).on('click', '.js-update-catalog', updateCatalog);
     $(document).on('click', '.js-view-requests', showTopicRequests);
-
+    $(document).on('click', '.js-pin-generated-topic', pinGeneratedTopic);
+    $(document).on('click', '.js-unpin-generated-topic', unpinGeneratedTopic);
+    $(document).on('click', '.js-save-ai-topics', saveGeneratedTopics);
     searchGroups({ courseId: $('.js-course').data('courseid') }, 'js-edit-catalog-block', initGroups);
     searchTeachers('.js-edit-catalog-block', { facultyId:  $('.js-faculty').data('facultyid') }, initTeachers);
 });

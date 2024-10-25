@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Interfaces\TopicInterface;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 class Topic extends Model implements TopicInterface
@@ -14,6 +15,7 @@ class Topic extends Model implements TopicInterface
     protected $fillable = [
         'teacher_id',
         'topic',
+        'keyword',
         'is_ai_generated',
     ];
 
@@ -23,6 +25,14 @@ class Topic extends Model implements TopicInterface
     public function getTeacher(): Model
     {
         return $this->belongsTo(Teacher::class, 'teacher_id', 'user_id')->first();
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getStudentRequests(): Collection
+    {
+        return $this->hasMany(TopicRequest::class, 'topic_id', 'id')->get();
     }
 
     // --- Model getters
@@ -49,6 +59,14 @@ class Topic extends Model implements TopicInterface
     public function getTopic(): string
     {
         return (string) $this->getAttribute('topic');
+    }
+
+    /**
+     * @return string
+     */
+    public function getKeyword(): string
+    {
+        return (string) $this->getAttribute('keyword');
     }
 
     /**

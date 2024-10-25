@@ -2,14 +2,14 @@
 
 namespace App\Http\Middleware;
 
-use App\Repositories\Interfaces\TopicRepositoryInterface;
+use App\Repositories\Interfaces\CatalogTopicRepositoryInterface;
 use Closure;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Response;
 
-class GetTopicRequest
+class GetCatalogTopicRequest
 {
     /**
      * @param Request $request
@@ -18,19 +18,21 @@ class GetTopicRequest
      */
     public function handle(Request $request, Closure $next): Response|JsonResponse
     {
-        $topicRepository = App::get(TopicRepositoryInterface::class);
+        $catalogTopicRepository = App::get(CatalogTopicRepositoryInterface::class);
 
-        $topicId = $request->route('topicId');
-        if (empty($topicId)) {
+        $catalogTopicId = $request->route('catalogTopicId');
+        \logger('jere');
+        \logger($catalogTopicId);
+        if (empty($catalogTopicId)) {
             return response()->json(['error' => 'Тему не знайдено'], 400);
         }
 
-        $topic = $topicRepository->getOne(['id' => $topicId]);
-        if (!$topic) {
+        $catalogTopic = $catalogTopicRepository->getOne(['id' => $catalogTopicId]);
+        if (!$catalogTopic) {
             return response()->json(['error' => 'Тему не знайдено'], 404);
         }
 
-        $request->route()->setParameter('topicId', $topic);
+        $request->route()->setParameter('catalogTopicId', $catalogTopic);
 
         return $next($request);
     }

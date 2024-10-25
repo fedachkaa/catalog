@@ -2294,6 +2294,68 @@ var drawCatalogCommonDataRow = function drawCatalogCommonDataRow(catalog) {
 var addTopic = function addTopic() {
   showModal('addTopicModal');
 };
+var addAiTopic = function addAiTopic() {
+  showModal('addAiTopicModal');
+};
+var generateTopics = function generateTopics() {
+  showSpinner();
+  var keyword = $('#addAiTopicModal .js-keyword').val();
+  $.ajax({
+    url: '/api/generate-topic?keyword=' + keyword,
+    method: 'GET',
+    success: function success(response) {
+      var container = $('#addAiTopicModal .js-generated-results');
+      container.empty();
+      response.data.forEach(function (topic) {
+        container.append("<li><span class=\"js-generated-topic\" data-keyword=\"" + keyword + "\">" + topic + "</span><i class=\"fa-solid fa-plus action-icon js-pin-generated-topic\"></i></li>");
+      });
+      hideSpinner();
+    },
+    error: function error(response) {
+      showErrors(response.responseJSON.errors, '#addAiTopicModal');
+      hideSpinner();
+    }
+  });
+};
+var pinGeneratedTopic = function pinGeneratedTopic(e) {
+  var topicEl = $(e.target).closest('li');
+  topicEl.find('.js-pin-generated-topic').removeClass('fa-plus js-pin-generated-topic').addClass('fa-trash js-unpin-generated-topic');
+  $('#addAiTopicModal .js-pinned-results').append(topicEl);
+};
+var unpinGeneratedTopic = function unpinGeneratedTopic(e) {
+  var topicEl = $(e.target).closest('li');
+  topicEl.find('.js-unpin-generated-topic').addClass('fa-plus js-pin-generated-topic').removeClass('fa-trash js-unpin-generated-topic');
+  $('#addAiTopicModal .js-generated-results').append(topicEl);
+};
+var saveGeneratedTopics = function saveGeneratedTopics(e) {
+  showSpinner();
+  var catalogId = $('#addAiTopicModal').data('catalogid');
+  var topicsArray = [];
+  $('#addAiTopicModal .js-pinned-results li').each(function () {
+    var keyword = $(this).find('.js-generated-topic').data('keyword');
+    var topic = $(this).find('.js-generated-topic').text();
+    topicsArray.push({
+      keyword: keyword,
+      topic: topic
+    });
+  });
+  $.ajax({
+    url: '/api/university/' + universityId + '/catalogs/' + catalogId + '/ai-topics',
+    method: 'POST',
+    data: {
+      topics: topicsArray,
+      teacher_id: $('#addTopicModal .js-teacher').val(),
+      _token: $(e.target).data('token')
+    },
+    success: function success() {
+      window.location.reload();
+    },
+    error: function error(response) {
+      showErrors(response.responseJSON.errors, '#addAiTopicModal');
+      hideSpinner();
+    }
+  });
+};
 var saveTopic = function saveTopic(e) {
   showSpinner();
   var catalogId = $('#addTopicModal').data('catalogid');
@@ -2330,17 +2392,18 @@ var editTopic = function editTopic(e) {
   showModal('addTopicModal');
 };
 var showTopicRequests = function showTopicRequests(e) {
+  var catalogTopicId = $(e.target).closest('tr').data('catalogtopicid');
   var topicId = $(e.target).closest('tr').data('topicid');
   $.ajax({
-    url: '/api/topic/' + topicId + '/topic-requests',
+    url: '/api/catalog-topic/' + catalogTopicId + '/topic-requests',
     method: 'GET',
     success: function success(response) {
       if (response.data.length !== 0) {
-        $('#topicRequestsModal').data('topicid', topicId);
+        $('#topicRequestsModal').data('topicid', topicId).data('catalogtopicid', catalogTopicId);
         var requestsList = $('#topicRequestsModal').find('.js-list-requests');
         requestsList.empty();
         var counter = 1;
-        response.data.requests.forEach(function (topicRequest) {
+        response.data.topic.requests.forEach(function (topicRequest) {
           var li = $('<li>').attr('data-requestid', topicRequest.id);
           li.text(counter + ') ' + topicRequest.student.user.full_name + ' (' + topicRequest.created_at + ')');
           if (topicRequest.status === 'approved') {
@@ -2366,10 +2429,15 @@ module.exports = {
   getCatalogs: getCatalogs,
   drawCatalogCommonDataRow: drawCatalogCommonDataRow,
   addTopic: addTopic,
+  addAiTopic: addAiTopic,
   saveTopic: saveTopic,
   editTopic: editTopic,
   prepareCatalogsTable: prepareCatalogsTable,
-  showTopicRequests: showTopicRequests
+  showTopicRequests: showTopicRequests,
+  generateTopics: generateTopics,
+  pinGeneratedTopic: pinGeneratedTopic,
+  unpinGeneratedTopic: unpinGeneratedTopic,
+  saveGeneratedTopics: saveGeneratedTopics
 };
 
 /***/ }),

@@ -2,14 +2,14 @@
 
 namespace App\Repositories;
 
-use App\Repositories\Interfaces\TopicRepositoryRepositoryInterface;
+use App\Repositories\Interfaces\TopicRepositoryInterface;
 use App\Models\Topic as TopicModel;
 use App\Exporters\Topic as TopicExporter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
-class Topic extends RepositoryAbstract implements TopicRepositoryRepositoryInterface
+class Topic extends RepositoryAbstract implements TopicRepositoryInterface
 {
     /**
      * @return string
@@ -35,9 +35,14 @@ class Topic extends RepositoryAbstract implements TopicRepositoryRepositoryInter
     {
         $query = TopicModel::query();
 
+        if (!empty($filters['id'])) {
+            $query = $query->where('id', (int) $filters['id']);
+        }
+
         if (!empty($filters['topic'])) {
             $query = $query->where('topic', (string) $filters['topic']);
         }
+
         return $query->first();
     }
 

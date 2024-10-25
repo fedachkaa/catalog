@@ -9,7 +9,7 @@ use App\Repositories\Interfaces\CatalogTopicRepositoryInterface;
 use App\Repositories\Interfaces\SubjectRepositoryInterface;
 use App\Repositories\Interfaces\TeacherRepositoryInterface;
 use App\Repositories\Interfaces\TeacherSubjectRepositoryInterface;
-use App\Repositories\Interfaces\TopicRepositoryRepositoryInterface;
+use App\Repositories\Interfaces\TopicRepositoryInterface;
 use App\Repositories\Interfaces\TopicRequestRepositoryInterface;
 use App\Repositories\Interfaces\UserRoleRepositoryInterface;
 use App\Repositories\Student as StudentRepository;
@@ -59,7 +59,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(CatalogSupervisorRepositoryInterface::class, CatalogSupervisorRepository::class);
         $this->app->bind(CatalogGroupRepositoryInterface::class, CatalogGroupRepository::class);
         $this->app->bind(TopicRequestRepositoryInterface::class, TopicRequestRepository::class);
-        $this->app->bind(TopicRepositoryRepositoryInterface::class, TopicRepository::class);
+        $this->app->bind(TopicRepositoryInterface::class, TopicRepository::class);
     }
 
     /**

@@ -23,10 +23,12 @@ class OpenAiService
      */
     public function sendRequest(string $message): ?string
     {
+        $requestText = 'Згенеруй 5 тем (українською мовою) для кваліфікаційних робіт за ключовим словом "' . $message . '", розділивши кожну тему переносом рядка без нумерації';
+
         $result = $this->openAiClient->chat()->create([
             'model' => 'gpt-4',
             'messages' => [
-                ['role' => 'user', 'content' => $message],
+                ['role' => 'user', 'content' => $requestText],
             ],
         ]);
 

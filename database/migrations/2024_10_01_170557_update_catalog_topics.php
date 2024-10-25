@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('teacher_id')->nullable()->constrained('teachers', 'user_id')->onUpdate('cascade')->onDelete('cascade');
             $table->string('topic', 256);
+            $table->string('keyword', 256)->default('');
             $table->unsignedSmallInteger('is_ai_generated')->default(0);
             $table->timestamps();
         });

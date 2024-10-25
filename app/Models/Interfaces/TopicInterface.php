@@ -2,6 +2,7 @@
 
 namespace App\Models\Interfaces;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 interface TopicInterface
@@ -14,9 +15,13 @@ interface TopicInterface
 
     public function getTopic(): string;
 
+    public function getKeyword(): string;
+
     public function getIsAiGenerated(): int;
 
     public function getCreatedAt() : string;
 
     public function getUpdatedAt() : string;
+
+    public function getStudentRequests(): Collection;
 }

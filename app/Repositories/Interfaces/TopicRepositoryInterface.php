@@ -2,7 +2,7 @@
 
 namespace App\Repositories\Interfaces;
 
-interface TopicRepositoryRepositoryInterface
+interface TopicRepositoryInterface
 {
     public function getOne(array $filters = []);
 

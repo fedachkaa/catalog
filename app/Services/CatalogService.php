@@ -141,13 +141,13 @@ class CatalogService
         }
 
         $topicRequest = $this->topicRequestRepository->getOne([
-            'topic_id' => $catalogTopic->getId(),
+            'topic_id' => $catalogTopic->getTopic()->getId(),
             'student_id' => $student->getUserId(),
         ]);
 
         if (empty($topicRequest)) {
             $topicRequest = $this->topicRequestRepository->getNew([
-                'topic_id' => $catalogTopic->getId(),
+                'topic_id' => $catalogTopic->getTopic()->getId(),
                 'student_id' => $student->getUserId(),
             ]);
 
