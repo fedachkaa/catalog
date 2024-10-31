@@ -2,15 +2,21 @@
 
 namespace App\Models\Interfaces;
 
+use App\Models\Catalog;
+use App\Models\Topic;
 use Illuminate\Database\Eloquent\Model;
 
 interface TopicRequestInterface
 {
-    public function getCatalogTopic(): Model;
+    public function getTopic(): Model|Topic;
 
     public function getStudent(): Model;
 
+    public function getCatalog(): Model|Catalog;
+
     public function getId(): int;
+
+    public function getCatalogId(): int;
 
     public function getTopicId(): int;
 

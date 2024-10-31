@@ -48,6 +48,10 @@ class TopicRequest extends RepositoryAbstract implements TopicRequestRepositoryI
             $query = $query->where('student_id', (int) $filters['student_id']);
         }
 
+        if (!empty($filters['catalog_id'])) {
+            $query = $query->where('catalog_id', (int) $filters['catalog_id']);
+        }
+
         return $query->first();
     }
 
@@ -65,6 +69,10 @@ class TopicRequest extends RepositoryAbstract implements TopicRequestRepositoryI
 
         if (!empty($filters['student_id'])) {
             $query = $query->where('student_id', (int) $filters['student_id']);
+        }
+
+        if (!empty($filters['catalog_id'])) {
+            $query = $query->where('catalog_id', (int) $filters['catalog_id']);
         }
 
         if (!empty($filters['idNotIn']) && is_array($filters['idNotIn'])) {

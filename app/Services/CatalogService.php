@@ -5,8 +5,8 @@ namespace App\Services;
 use App\Events\CatalogActivation;
 use App\Exceptions\ServiceUserException;
 use App\Models\Catalog;
-use App\Models\CatalogTopic;
 use App\Models\Student;
+use App\Models\Topic;
 use App\Models\TopicRequest;
 use App\Repositories\Interfaces\CatalogGroupRepositoryInterface;
 use App\Repositories\Interfaces\CatalogRepositoryInterface;
@@ -127,12 +127,14 @@ class CatalogService
     }
 
     /**
-     * @param CatalogTopic $catalogTopic
+     * @param Catalog $catalog
+     * @param Topic $topic
      * @param Student $student
      * @return bool
+     * @throws ServiceUserException
      * @throws \Throwable
      */
-    public function sendRequestTopic(CatalogTopic $catalogTopic, Student $student): bool
+    public function sendRequestTopic(Catalog $catalog, Topic $topic, Student $student): bool
     {
         $studentRequests = $student->getTopicRequests();
 
@@ -141,14 +143,16 @@ class CatalogService
         }
 
         $topicRequest = $this->topicRequestRepository->getOne([
-            'topic_id' => $catalogTopic->getTopic()->getId(),
+            'topic_id' => $topic->getId(),
             'student_id' => $student->getUserId(),
+            'catalog_id' => $catalog->getId(),
         ]);
 
         if (empty($topicRequest)) {
             $topicRequest = $this->topicRequestRepository->getNew([
-                'topic_id' => $catalogTopic->getTopic()->getId(),
+                'topic_id' => $topic->getId(),
                 'student_id' => $student->getUserId(),
+                'catalog_id' => $catalog->getId(),
             ]);
 
             $topicRequest->saveOrFail();
@@ -175,12 +179,13 @@ class CatalogService
         }
 
         $topicRequest->updateOrFail(['status' => TopicRequest::STATUS_APPROVED]);
-        $topic = $topicRequest->getCatalogTopic();
+        $topic = $topicRequest->getTopic();
         $topic->updateOrFail(['student_id' => $student->getUserId()]);
 
         $otherTopicRequests = $this->topicRequestRepository->getAll([
             'topic_id' => $topicRequest->getTopicId(),
             'idNotIn' => [$topicRequest->getId()],
+            'catalog_id' => $topicRequest->getCatalogId(),
         ]);
 
         foreach ($otherTopicRequests as $otherTopicRequest) {
@@ -190,6 +195,7 @@ class CatalogService
         $otherStudentRequests = $this->topicRequestRepository->getAll([
             'student_id' => $student->getUserId(),
             'idNotIn' => [$topicRequest->getId()],
+            'catalog_id' => $topicRequest->getId(),
         ]);
 
         foreach ($otherStudentRequests as $otherStudentRequest) {

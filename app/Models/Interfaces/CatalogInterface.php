@@ -12,7 +12,7 @@ interface CatalogInterface
 
     public function getGroups(): HasMany;
 
-    public function getTopics(): Collection;
+    public function getCatalogTopics(): Collection;
 
     public function getSupervisors(): HasMany;
 

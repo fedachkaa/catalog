@@ -249,14 +249,14 @@ class CatalogController extends Controller
     /**
      * @param University $university
      * @param Catalog $catalog
-     * @param CatalogTopic $catalogTopic
+     * @param Topic $topic
      * @return JsonResponse
      */
-    public function sendRequestTopic(University $university, Catalog $catalog, CatalogTopic $catalogTopic): JsonResponse
+    public function sendRequestTopic(University $university, Catalog $catalog, Topic $topic): JsonResponse
     {
         DB::beginTransaction();
         try {
-            $this->catalogService->sendRequestTopic($catalogTopic, auth()->user()->getStudent());
+            $this->catalogService->sendRequestTopic($catalog, $topic, auth()->user()->getStudent());
         } catch (\Throwable $e) {
             DB::rollBack();
 

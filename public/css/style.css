@@ -1564,6 +1564,17 @@ video {
   background-color: rgb(239 68 68 / var(--tw-bg-opacity));
 }
 
+.ai-results-show {
+  display: flex;
+  width: 100%;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.ai-results-hidden {
+  display: none;
+}
+
 @media (prefers-color-scheme: dark) {
   .dark\:text-gray-600 {
     --tw-text-opacity: 1;

@@ -29,6 +29,7 @@ class TopicRequest extends Model implements TopicRequestInterface
      * @var string[]
      */
     protected $fillable = [
+        'catalog_id',
         'topic_id',
         'student_id',
         'status',
@@ -37,11 +38,11 @@ class TopicRequest extends Model implements TopicRequestInterface
     // --- Model relationships
 
     /**
-     * @return Model|CatalogTopic
+     * @return Model|Topic
      */
-    public function getCatalogTopic(): Model|CatalogTopic
+    public function getTopic(): Model|Topic
     {
-        return $this->belongsTo(CatalogTopic::class, 'topic_id', 'id')->first();
+        return $this->belongsTo(Topic::class, 'topic_id', 'id')->first();
     }
 
     /**
@@ -50,6 +51,14 @@ class TopicRequest extends Model implements TopicRequestInterface
     public function getStudent(): Model
     {
         return $this->belongsTo(Student::class, 'student_id', 'user_id')->first();
+    }
+
+    /**
+     * @return Model|Catalog
+     */
+    public function getCatalog(): Model|Catalog
+    {
+        return $this->belongsTo(Catalog::class, 'catalog_id', 'id')->first();
     }
 
     // --- Model getters
@@ -68,6 +77,14 @@ class TopicRequest extends Model implements TopicRequestInterface
     public function getTopicId(): int
     {
         return (int) $this->getAttribute('topic_id');
+    }
+
+    /**
+     * @return int
+     */
+    public function getCatalogId(): int
+    {
+        return (int) $this->getAttribute('catalog_id');
     }
 
     /**

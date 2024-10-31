@@ -100,6 +100,7 @@ const generateTopics = function () {
             response.data.forEach(function (topic) {
                 container.append(`<li><span class="js-generated-topic" data-keyword="` + keyword + `">` + topic + `</span><i class="fa-solid fa-plus action-icon js-pin-generated-topic"></i></li>`);
             });
+            $('#addAiTopicModal .js-results').removeClass('ai-results-hidden').addClass('ai-results-show');
             hideSpinner();
         },
         error: function (response) {

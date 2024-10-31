@@ -62,7 +62,7 @@ class Catalog extends Model implements CatalogInterface
     /**
      * @return Collection
      */
-    public function getTopics(): Collection
+    public function getCatalogTopics(): Collection
     {
         return $this->hasMany(CatalogTopic::class, 'catalog_id', 'id')->get();
     }

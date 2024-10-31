@@ -42,7 +42,7 @@ if ($user['role_id'] === \App\Models\UserRole::USER_ROLE_STUDENT) {
                                 <i class="fas fa-edit action-icon js-edit-topic" title="Редагувати"></i>
                                 <i class="fa-solid fa-person-circle-question js-view-requests action-icon" title="Переглянути запити"></i>
                             @elseif ($user['role_id'] === \App\Models\UserRole::USER_ROLE_STUDENT)
-                                @if (in_array($user['id'], array_column($topic['requests'], 'student_id')))
+                                @if (in_array($user['id'], array_column($topic['topic']['requests'], 'student_id')))
                                     <i class="fas fa-envelope-circle-check action-icon" title="Запит надіслано"></i>
                                 @elseif (!$hasStudentTopic)
                                     <i class="fas fa-paper-plane action-icon js-send-request" title="Надіслати запит" data-token="{{ csrf_token() }}"></i>

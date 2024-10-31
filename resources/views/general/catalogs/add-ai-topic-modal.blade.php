@@ -18,7 +18,7 @@
                 </div>
                 <button class="add-user-btn js-generate-topics">Згенерувати</button>
             </div>
-            <div style="display: flex; flex-direction: row; justify-content: space-between; width: 100%;">
+            <div class="ai-results-hidden js-results">
                 <div>
                     <p>Згенеровані результати</p>
                     <ul class="js-generated-results"></ul>

@@ -3,8 +3,9 @@
 namespace App\Exporters;
 
 use App\Models\TopicRequest as TopicRequestModel;
-use App\Repositories\Interfaces\CatalogTopicRepositoryInterface;
+use App\Repositories\Interfaces\CatalogRepositoryInterface;
 use App\Repositories\Interfaces\StudentRepositoryInterface;
+use App\Repositories\Interfaces\TopicRepositoryInterface;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\App;
 
@@ -18,6 +19,7 @@ class TopicRequest extends ExporterAbstract
         return [
             'topic' => 'topic',
             'student' => 'student',
+            'catalog' => 'catalog',
         ];
     }
 
@@ -30,6 +32,7 @@ class TopicRequest extends ExporterAbstract
         return [
             'id' => $model->getId(),
             'topic_id' => $model->getTopicId(),
+            'catalog_id' => $model->getCatalogId(),
             'student_id' => $model->getStudentId(),
             'status' => $model->getStatus(),
             'status_text' => TopicRequestModel::AVAILABLE_STATUSES[$model->getStatus()],
@@ -44,10 +47,10 @@ class TopicRequest extends ExporterAbstract
      */
     protected function expandTopic(TopicRequestModel $topicRequest): array
     {
-        /** @var CatalogTopicRepositoryInterface $catalogTopicRepository */
-        $catalogTopicRepository = App::get(CatalogTopicRepositoryInterface::class);
+        /** @var TopicRepositoryInterface $topicRepository */
+        $topicRepository = App::get(TopicRepositoryInterface::class);
 
-        return $catalogTopicRepository->export($topicRequest->getCatalogTopic(), ['catalog', 'teacher', 'student']);
+        return $topicRepository->export($topicRequest->getTopic(), ['catalog', 'teacher', 'student']);
     }
 
     /**
@@ -60,5 +63,17 @@ class TopicRequest extends ExporterAbstract
         $studentRepository = App::get(StudentRepositoryInterface::class);
 
         return $studentRepository->export($topicRequest->getStudent(), ['user']);
+    }
+
+    /**
+     * @param TopicRequestModel $topicRequest
+     * @return array
+     */
+    protected function expandCatalog(TopicRequestModel $topicRequest): array
+    {
+        /** @var CatalogRepositoryInterface $catalogRepository */
+        $catalogRepository = App::get(CatalogRepositoryInterface::class);
+
+        return $catalogRepository->export($topicRequest->getCatalog());
     }
 }

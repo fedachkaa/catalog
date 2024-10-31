@@ -294,3 +294,11 @@
 .status-inactive {
     @apply w-5 h-5 rounded-full bg-red-500 mt-2 ml-3;
 }
+
+.ai-results-show {
+    @apply flex flex-row justify-between w-full;
+}
+
+.ai-results-hidden {
+    @apply hidden;
+}
