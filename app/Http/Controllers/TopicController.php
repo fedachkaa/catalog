@@ -10,6 +10,7 @@ use App\Services\TopicAnalyticsService;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
 
 class TopicController extends Controller
 {
@@ -34,6 +35,32 @@ class TopicController extends Controller
      */
     public function getTopics(University $university)
     {
+        $topicsData = $this->getTopicsForUniversity($university);
+
+        return view('userProfile.common.topics.topics', compact('topicsData'));
+    }
+
+    /**
+     * @param University $university
+     * @return JsonResponse
+     */
+    public function getTopicsAnalytics(University $university): JsonResponse
+    {
+        $topicsData = $this->getTopicsForUniversity($university);
+        $analytics = $this->topicAnalyticsService->getTopicAnalytics($topicsData);
+
+        return response()->json([
+            'message' => 'Success.',
+            'data' => $analytics,
+        ])->setStatusCode(200);
+    }
+
+    /**
+     * @param University $university
+     * @return array
+     */
+    private function getTopicsForUniversity(University $university): array
+    {
         $topicsData = [];
         /** @var Catalog $catalog */
         foreach ($university->getCatalogs() as $catalog) {
@@ -43,8 +70,6 @@ class TopicController extends Controller
             }
         }
 
-        $analytics = $this->topicAnalyticsService->getTopicAnalytics($topicsData);
-
-        return view('userProfile.common.topics.topics', compact('topicsData', 'analytics'));
+        return$topicsData;
     }
 }

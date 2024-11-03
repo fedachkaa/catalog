@@ -9,6 +9,7 @@ use App\Http\Controllers\GroupController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\TeacherController;
+use App\Http\Controllers\TopicController;
 use App\Http\Controllers\UserProfileController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -71,6 +72,8 @@ Route::prefix('/university/{universityId}')->middleware(['auth', 'university.get
     Route::post('/catalogs/{catalogId}/ai-topics', [CatalogController::class, 'saveCatalogAiTopic'])->middleware('catalog.get');
 
     Route::post('/catalog/{catalogId}/topic/{topicId}/send-request', [CatalogController::class, 'sendRequestTopic'])->middleware('catalog.get')->middleware('topic.get');
+
+    Route::get('/topic-analytics', [TopicController::class, 'getTopicsAnalytics']);
 });
 
 Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {

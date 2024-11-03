@@ -8,6 +8,7 @@
     "/js/universityAdminProfile/university.js": "/js/universityAdminProfile/university.js",
     "/js/universityAdminProfile/catalogs.js": "/js/universityAdminProfile/catalogs.js",
     "/js/universityAdminProfile/edit-catalog.js": "/js/universityAdminProfile/edit-catalog.js",
+    "/js/universityAdminProfile/topics-analytics.js": "/js/universityAdminProfile/topics-analytics.js",
     "/js/teacher/subjects.js": "/js/teacher/subjects.js",
     "/js/teacher/students.js": "/js/teacher/students.js",
     "/js/teacher/catalogs.js": "/js/teacher/catalogs.js",

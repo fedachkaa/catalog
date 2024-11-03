@@ -22,6 +22,7 @@ mix.js('resources/js/universityAdminProfile/faculties.js', 'public/js/university
 mix.js('resources/js/universityAdminProfile/university.js', 'public/js/universityAdminProfile/university.js');
 mix.js('resources/js/universityAdminProfile/catalogs.js', 'public/js/universityAdminProfile/catalogs.js');
 mix.js('resources/js/universityAdminProfile/edit-catalog.js', 'public/js/universityAdminProfile/edit-catalog.js');
+mix.js('resources/js/universityAdminProfile/topics-analytics.js', 'public/js/universityAdminProfile/topics-analytics.js');
 
 mix.js('resources/js/teacher/subjects.js', 'public/js/teacher/subjects.js');
 mix.js('resources/js/teacher/students.js', 'public/js/teacher/students.js');

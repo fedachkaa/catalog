@@ -7,6 +7,7 @@ class TopicAnalyticsService
     /** @var string */
     const ANALYTICS_TYPE_MOST_POPULAR = 'most_popular';
     const ANALYTICS_TYPE_LEAST_POPULAR = 'least_popular';
+    const ANALYTICS_TYPE_PREDICTED_POPULAR_TOPICS = 'predicted_popular_topics';
 
     /** @var array */
     const AVAILABLE_ANALYTICS = [
@@ -14,13 +15,61 @@ class TopicAnalyticsService
         self::ANALYTICS_TYPE_LEAST_POPULAR => 'Найменш популярні теми',
     ];
 
+    /** @var OpenAiService */
+    private $openAiService;
+
+    /**
+     * @param OpenAiService $openAiService
+     */
+    public function __construct(OpenAiService $openAiService)
+    {
+        $this->openAiService = $openAiService;
+    }
+
     /**
      * @param array $topicsData
      * @return array
      */
     public function getTopicAnalytics(array $topicsData): array
     {
-        return $this->getAnalyticsByPopularity($topicsData);
+        return [
+            ...$this->getAnalyticsByPopularity($topicsData),
+            self::ANALYTICS_TYPE_PREDICTED_POPULAR_TOPICS => $this->getPredictedPopularTopics($topicsData),
+        ];
+    }
+
+    /**
+     * @param array $topicsData
+     * @return array
+     */
+    public function getPredictedPopularTopics(array $topicsData): array
+    {
+        $aiGeneratedTopics = array_filter($topicsData, function ($topic) {
+            return $topic['is_ai_generated'];
+        });
+
+        usort($aiGeneratedTopics, function ($a, $b) {
+            return count($b['requests']) <=> count($a['requests']);
+        });
+
+        $mostPopularTopics = array_slice($aiGeneratedTopics, 0, 3);
+
+        if (empty($mostPopularTopics)) {
+            return [];
+        }
+
+        $data = [];
+        foreach ($mostPopularTopics as $mostPopularTopic) {
+            if (in_array($mostPopularTopic['keyword'], array_column($data, 'keyword'))) {
+                continue;
+            }
+            $data[] = [
+                'keyword' => $mostPopularTopic['keyword'],
+                'topics' => explode("\n\n", $this->openAiService->sendRequest($mostPopularTopic['keyword']))
+            ];
+        }
+
+        return $data;
     }
 
     /**
