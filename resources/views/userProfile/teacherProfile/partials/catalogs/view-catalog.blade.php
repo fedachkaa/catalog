@@ -71,6 +71,7 @@
     </div>
 
     @include('general.catalogs.add-topic-modal', ['catalogData' => $catalogData])
+    @include('general.catalogs.add-ai-topic-modal', ['catalogData' => $catalogData])
 @endsection
 
 @push('scripts')

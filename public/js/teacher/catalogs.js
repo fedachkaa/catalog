@@ -2213,7 +2213,8 @@ var _require = __webpack_require__(/*! ../general */ "./resources/js/general.js"
   showSpinner = _require.showSpinner,
   hideSpinner = _require.hideSpinner,
   showErrors = _require.showErrors,
-  initPagination = _require.initPagination;
+  initPagination = _require.initPagination,
+  clearModal = _require.clearModal;
 var getCatalogs = function getCatalogs() {
   var searchParams = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
   var callback = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : function () {};
@@ -2292,9 +2293,15 @@ var drawCatalogCommonDataRow = function drawCatalogCommonDataRow(catalog) {
   return row;
 };
 var addTopic = function addTopic() {
+  $('#addTopicModal').find('input').val('');
+  $('#addTopicModal').find('p.error-message').empty();
+  $('#addTopicModal').removeAttr('data-topicid');
   showModal('addTopicModal');
 };
 var addAiTopic = function addAiTopic() {
+  $('#addTopicModal').find('input').val('');
+  $('#addTopicModal').find('p.error-message').empty();
+  $('#addTopicModal').removeAttr('data-topicid');
   showModal('addAiTopicModal');
 };
 var generateTopics = function generateTopics() {
@@ -2345,7 +2352,7 @@ var saveGeneratedTopics = function saveGeneratedTopics(e) {
     method: 'POST',
     data: {
       topics: topicsArray,
-      teacher_id: $('#addTopicModal .js-teacher').val(),
+      teacher_id: $('#addAiTopicModal .js-teacher').val(),
       _token: $(e.target).data('token')
     },
     success: function success() {
@@ -43897,9 +43904,14 @@ var _require2 = __webpack_require__(/*! ../common/catalogs.js */ "./resources/js
   getCatalogs = _require2.getCatalogs,
   drawCatalogCommonDataRow = _require2.drawCatalogCommonDataRow,
   addTopic = _require2.addTopic,
+  addAiTopic = _require2.addAiTopic,
+  generateTopics = _require2.generateTopics,
   saveTopic = _require2.saveTopic,
   editTopic = _require2.editTopic,
-  showTopicRequests = _require2.showTopicRequests;
+  showTopicRequests = _require2.showTopicRequests,
+  pinGeneratedTopic = _require2.pinGeneratedTopic,
+  unpinGeneratedTopic = _require2.unpinGeneratedTopic,
+  saveGeneratedTopics = _require2.saveGeneratedTopics;
 document.addEventListener('DOMContentLoaded', function () {
   toggleTabsSideBar('js-catalogs');
   getCatalogs({
@@ -43907,8 +43919,13 @@ document.addEventListener('DOMContentLoaded', function () {
   }, displayCatalogsData);
   $(document).on('click', '.js-view-catalog', viewCatalog);
   $(document).on('click', '.js-add-topic', addTopic);
+  $(document).on('click', '.js-add-ai-topic', addAiTopic);
+  $(document).on('click', '.js-generate-topics', generateTopics);
   $(document).on('click', '.js-save-topic', saveTopic);
   $(document).on('click', '.js-edit-topic', editTopic);
+  $(document).on('click', '.js-pin-generated-topic', pinGeneratedTopic);
+  $(document).on('click', '.js-unpin-generated-topic', unpinGeneratedTopic);
+  $(document).on('click', '.js-save-ai-topics', saveGeneratedTopics);
   $(document).on('click', '.js-view-requests', showTopicRequests);
   $(document).on('click', '.js-approve-request', approveRequest);
   $(document).on('click', '.js-reject-request', rejectRequest);

@@ -1,4 +1,4 @@
-const { showModal, showSpinner, hideSpinner, showErrors, initPagination } = require("../general");
+const { showModal, showSpinner, hideSpinner, showErrors, initPagination, clearModal} = require("../general");
 
 const getCatalogs = function (searchParams ={}, callback = () => {}) {
     showSpinner();
@@ -80,10 +80,18 @@ const drawCatalogCommonDataRow = function (catalog) {
 }
 
 const addTopic = function () {
+    $('#addTopicModal').find('input').val('');
+    $('#addTopicModal').find('p.error-message').empty();
+    $('#addTopicModal').removeAttr('data-topicid');
+
     showModal('addTopicModal');
 }
 
 const addAiTopic = function () {
+    $('#addTopicModal').find('input').val('');
+    $('#addTopicModal').find('p.error-message').empty();
+    $('#addTopicModal').removeAttr('data-topicid');
+
     showModal('addAiTopicModal');
 }
 
@@ -139,7 +147,7 @@ const saveGeneratedTopics = function (e) {
         method: 'POST',
         data: {
             topics: topicsArray,
-            teacher_id: $('#addTopicModal .js-teacher').val(),
+            teacher_id: $('#addAiTopicModal .js-teacher').val(),
             _token: $(e.target).data('token'),
         },
         success: function () {

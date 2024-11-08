@@ -43682,12 +43682,12 @@ function displayAnalytics(analytics) {
     return topic.topic;
   }), mostPopularTopicsData.map(function (topic) {
     return topic.requestCount;
-  }), mostPopularAnalyticsType);
+  }), 'Найбільш популярні теми');
   initChart('leastPopular', leastPopularTopicsData.map(function (topic) {
     return topic.topic;
   }), leastPopularTopicsData.map(function (topic) {
     return topic.requestCount === 0 ? 0.01 : topic.requestCount;
-  }), leastPopularAnalyticsType);
+  }), 'Найменш популярні теми');
   var container = $('.js-predicted-topics-container');
   container.empty();
   $.each(predictedPopularTopicsData, function (index, topicData) {

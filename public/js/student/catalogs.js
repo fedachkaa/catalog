@@ -2213,7 +2213,8 @@ var _require = __webpack_require__(/*! ../general */ "./resources/js/general.js"
   showSpinner = _require.showSpinner,
   hideSpinner = _require.hideSpinner,
   showErrors = _require.showErrors,
-  initPagination = _require.initPagination;
+  initPagination = _require.initPagination,
+  clearModal = _require.clearModal;
 var getCatalogs = function getCatalogs() {
   var searchParams = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
   var callback = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : function () {};
@@ -2292,9 +2293,15 @@ var drawCatalogCommonDataRow = function drawCatalogCommonDataRow(catalog) {
   return row;
 };
 var addTopic = function addTopic() {
+  $('#addTopicModal').find('input').val('');
+  $('#addTopicModal').find('p.error-message').empty();
+  $('#addTopicModal').removeAttr('data-topicid');
   showModal('addTopicModal');
 };
 var addAiTopic = function addAiTopic() {
+  $('#addTopicModal').find('input').val('');
+  $('#addTopicModal').find('p.error-message').empty();
+  $('#addTopicModal').removeAttr('data-topicid');
   showModal('addAiTopicModal');
 };
 var generateTopics = function generateTopics() {
@@ -2345,7 +2352,7 @@ var saveGeneratedTopics = function saveGeneratedTopics(e) {
     method: 'POST',
     data: {
       topics: topicsArray,
-      teacher_id: $('#addTopicModal .js-teacher').val(),
+      teacher_id: $('#addAiTopicModal .js-teacher').val(),
       _token: $(e.target).data('token')
     },
     success: function success() {

@@ -92,5 +92,3 @@
 @push('scripts')
     <script src="{{ asset('js/universityAdminProfile/edit-catalog.js')}}"></script>
 @endpush
-
-

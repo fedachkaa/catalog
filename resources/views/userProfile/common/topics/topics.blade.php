@@ -18,14 +18,7 @@
     </script>
 
     <div class="pl-60">
-        <ol>
-            <li>Популярні/непопулярні +</li>
-            <li>Простіші/складніші</li>
-            <li>Відслідковування частоти запитів за ключовими словами і на їх основі прогнозування популярних тем в майбутньому +</li>
-            <li>Відслідковування часу виконання роботи - середній час, необхідний для виконання різних тем, що може допомогти в оцінці їх складності</li>
-        </ol>
-
-        <button class="js-get-analytics">Статистика</button>
+        <button class="js-get-analytics add-user-btn">Статистика</button>
         <div class="js-analytics hidden">
             <div style="width:40%; display: flex; flex-direction: row; justify-content: space-around;">
                 <canvas id="mostPopular" width="400" height="400"></canvas>

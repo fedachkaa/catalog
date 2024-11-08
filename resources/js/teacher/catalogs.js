@@ -1,5 +1,17 @@
 const { toggleTabsSideBar } = require('./../general.js');
-const { getCatalogs, drawCatalogCommonDataRow, addTopic, saveTopic, editTopic, showTopicRequests } = require('../common/catalogs.js');
+const {
+    getCatalogs,
+    drawCatalogCommonDataRow,
+    addTopic,
+    addAiTopic,
+    generateTopics,
+    saveTopic,
+    editTopic,
+    showTopicRequests,
+    pinGeneratedTopic,
+    unpinGeneratedTopic,
+    saveGeneratedTopics
+} = require('../common/catalogs.js');
 
 document.addEventListener('DOMContentLoaded', function () {
     toggleTabsSideBar('js-catalogs');
@@ -7,10 +19,14 @@ document.addEventListener('DOMContentLoaded', function () {
     getCatalogs({teacherId: teacherId }, displayCatalogsData);
 
     $(document).on('click', '.js-view-catalog', viewCatalog);
-
     $(document).on('click', '.js-add-topic', addTopic);
+    $(document).on('click', '.js-add-ai-topic', addAiTopic);
+    $(document).on('click', '.js-generate-topics', generateTopics)
     $(document).on('click', '.js-save-topic', saveTopic);
     $(document).on('click', '.js-edit-topic', editTopic);
+    $(document).on('click', '.js-pin-generated-topic', pinGeneratedTopic);
+    $(document).on('click', '.js-unpin-generated-topic', unpinGeneratedTopic);
+    $(document).on('click', '.js-save-ai-topics', saveGeneratedTopics);
     $(document).on('click', '.js-view-requests', showTopicRequests);
     $(document).on('click', '.js-approve-request', approveRequest);
     $(document).on('click', '.js-reject-request', rejectRequest);
